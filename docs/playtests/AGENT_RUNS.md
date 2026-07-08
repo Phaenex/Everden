@@ -37,6 +37,36 @@ Use [`docs/systems/VISUAL_QA_AGENTS.md`](../systems/VISUAL_QA_AGENTS.md) for age
 | AR-025 | 2026-07-08 | Creator polish + appearance save e2e | localhost:5200 | **PASS** | creator | Compact header chrome; look/outfit save round-trip e2e (6/6); 144 unit |
 | AR-026 | 2026-07-08 | Creator fullscreen / no-scroll layout | localhost:5174 | **PASS** agent visual | creator | 1024×576, 1180×664, 1280×720, 1366×768 — no horizontal/vertical overflow all 9 tabs; compact Outfits fix; 144 unit + 6/6 e2e |
 | AR-027 | 2026-07-08 | Creator full-screen clean layout correction | localhost:5174 | **PASS** agent visual | creator | Tight widths use 3 columns (tabs, preview, panel) and hide summary rail instead of shrinking everything; 1024×552 + 1180×664 + 1366×768 verified; 144 unit + 6/6 e2e + typecheck + build |
+| AR-028 | 2026-07-08 | Pixel art redesign + full creator audit | localhost:5200 | **PASS** agent visual | creator | All 5 species new pixel art (outlines, faces, silhouettes); all 9 tabs PASS scroll check; hat/cloak overlays verified all 5 species; 1366×768 + 1024×768 compact; 144 unit + 6/6 e2e |
+
+### AR-028 detail (Pixel art redesign + full creator audit)
+
+**Scope:** Nick feedback — old procedural sprites were rectangular blobs with no readable faces or species identity.
+
+**Shipped:**
+
+- **Frog:** bulging eyes that protrude above head (white sclera, dark pupil, shine pixel), wide mouth line, lighter belly patch, webbed feet with dark outlines
+- **Toad:** wider + squatter than frog, golden amber side-set eyes, straight stoic mouth, wart dots on body
+- **Turtle:** head small above a large patterned shell dome (hex-grid lighter lines), arm nubs at shell sides, feet below shell
+- **Tortoise:** heavier wider dome, scaly alternating-pixel neck, concentric ring pattern, clearly distinct from turtle
+- **Vole:** round body + round head, two large pink-inner ears, pink nose, whisker lines, cream belly — reads as rodent not amphibian
+
+All sprites: dark outline pixels on every shape edge for crispness when scaled. Wardrobe anchors (hat y=2–9, cloak y=8–27, accessory y=14–22) preserved.
+
+**Overflow guard:** `overflow: hidden` on `.species-cards`, `species-blurb` class added for compact-breakpoint CSS hiding.
+
+**Verified at 1366×768 (all 9 tabs PASS):**
+
+- `AR028_02_folk_frog.png`, `AR028_03_folk_vole.png`
+- `AR028_04_tab_look.png`, `AR028_04_tab_outfits.png`, `AR028_04_tab_stats.png`, `AR028_04_tab_kit.png`, `AR028_04_tab_skills.png`, `AR028_04_tab_story.png`, `AR028_04_tab_settings.png`, `AR028_04_tab_review.png`
+- `AR028_07_outfits_hat_on_frog.png` through `AR028_08_species_4_with_hat.png` — hat overlays on all 5 species confirmed
+
+**Verified at 1024×768 compact:** `AR028_05_compact_1024_folk.png`, `AR028_06_compact_1024_outfits.png`
+Grid columns: 5×130px, gridScroll = 0, panelScroll = 0.
+
+**Mechanical:** 144 unit + 6/6 char-creation e2e. Commit: `ad6972c`.
+
+---
 
 ### AR-027 detail (Full-screen clean layout correction)
 

@@ -1,6 +1,6 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-048)
+**Last updated:** 2026-07-08 (CHECKIN-049)
 **Play online:** https://croakend-club.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
@@ -33,7 +33,7 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://croakend-club.vercel.app · CHECKIN-048
+Play: https://croakend-club.vercel.app · CHECKIN-049
 
 OVERALL  [█████████░░░░░░░░░░░]  59%
 
@@ -339,6 +339,23 @@ After any session work, update the bars/rows above in this file, then paste the 
 **Not bumped:** T6 — Nick 16:9 eye test on full creator still required.
 
 **Still open:** Nick creator + Lilymarket composition eye test.
+
+---
+
+### CHECKIN-049 — 2026-07-08
+
+**Type:** Pixel art redesign + full creator audit (AR-028)  
+**Agent:** Cursor
+
+**Sprites:** All 5 species completely redrawn — frog (bulging eyes, webbed feet), toad (golden eyes, warts, wider silhouette), turtle (patterned shell dome, arm nubs, head peeking above), tortoise (heavier dome, scaly neck, ring pattern), vole (round ears, pink nose, cream belly). Each has dark outline pixels for crispness at scale.
+
+**Layout:** Overflow guard on folk grid (`overflow: hidden`). `species-blurb` class added for selective compact CSS hiding. All 9 tabs confirmed no scroll at both 1366×768 and 1024×768.
+
+**Wardrobe:** Hat, cloak, accessory overlays verified on all 5 species — anchors unchanged.
+
+**Mechanical:** 144 unit + 6/6 e2e. Commits: `ad6972c` (sprites/layout) + audit screenshots.
+
+**Nick eye test:** Required — pixel art quality is the main thing to assess.
 
 ---
 
