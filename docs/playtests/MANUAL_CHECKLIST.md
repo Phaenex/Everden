@@ -7,6 +7,16 @@
 **Build:** `npm run dev` or https://everden-chi.vercel.app  
 **Fresh save:** clear `localStorage` key `everden_save_v1`, or use title screen (no F1/dev menu for the fresh-player row)
 
+### Interactive checklist (recommended)
+
+```bash
+npm run playtest:nick
+```
+
+Opens `/nick-playtest.html` — Yes / No / N/A + comments per row. **Save** writes `docs/playtests/NICK_RESPONSES.json` in the repo (dev server only). Agents read that file on your next Cursor session.
+
+On production URL only: use **Download JSON** and drop the file into `docs/playtests/NICK_RESPONSES.json`, then commit or leave for the agent.
+
 ---
 
 ## New-game opening (character creation + intro)

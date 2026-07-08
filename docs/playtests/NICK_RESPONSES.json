@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "updatedAt": null,
+  "session": {
+    "tester": "Nick",
+    "build": "https://everden-chi.vercel.app",
+    "species": "",
+    "display": "16:9",
+    "durationMinutes": null,
+    "freshSave": true
+  },
+  "sections": [],
+  "metrics": [],
+  "globalNotes": "",
+  "p0Bugs": "",
+  "overallVerdict": null
+}

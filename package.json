@@ -6,6 +6,7 @@
   "description": "Everden — a browser RPG by Nanabozho",
   "scripts": {
     "dev": "vite",
+    "playtest:nick": "vite --open /nick-playtest.html",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "deploy:preview": "npm run build && npx vercel deploy --prod --yes --scope astral-productions --name everden",

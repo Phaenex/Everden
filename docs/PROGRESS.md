@@ -25,12 +25,79 @@
 **Next gate:** Nick MANUAL_CHECKLIST V2 sign-off  
 **Playtests (T8):** Schedulable — V4 agent pre-check green; humans required for alpha
 
+---
+
+## Session report (paste in chat every start & end)
+
+Agents: **copy this whole block** into the user-facing reply. Do not collapse to one headline bar only. Refresh numbers from the tables below before pasting.
+
+```
+Everden — progress snapshot
+Play: https://everden-chi.vercel.app · CHECKIN-036
+
+OVERALL  [█████████░░░░░░░░░░░]  56%
+
+WORKSTREAMS (T1–T9)
+  T1 Mechanics & CI     [██████████████████░░]  88%
+  T2 First 5 minutes    [████████████████░░░░]  78%
+  T3 Districts & nav    [████████████████░░░░]  80%
+  T4 Quests & dialogue  [████████████████░░░░]  82%
+  T5 Combat & D&D       [█████████████████░░░]  88%
+  T6 Look & feel        [████████░░░░░░░░░░░░]  42%  ← gates Experience %
+  T7 Art & audio        [█████░░░░░░░░░░░░░░░]  25%
+  T8 Gated build V1–V5  [█████████░░░░░░░░░░░]  48%
+  T9 Groundwork         [██████░░░░░░░░░░░░░░]  32%  (not in overall %)
+
+GATED BUILD
+  V1 composition+exits  ✅ PASS (AR-002)
+  V2 Lilymarket+wizard  🟡 BORDERLINE — Nick eye (AR-003, AR-018 mech PASS)
+  V3 district hub loop  🟡 BORDERLINE (AR-004, AR-015)
+  V4 quest+combat       ✅ PASS mechanical (AR-019)
+  V5 human alpha T8     ⬜ 3/5 sessions
+
+BUILD PHASES (master plan)
+  P0–2, 0.5, 1         ✅ 100%
+  P3 Presentation       🟡 35%
+  P5 Simulation         🟡 78%
+  P6 Narrative          🟡 79%
+  P7 Combat             🟡 88%
+  P8 Vertical slice     🟡 52%
+  P9 Alpha              🟡 38%
+  P10 Beta              ⬜ 5%
+  P11 Launch            🟡 40%  (live on Vercel)
+  P12 Post-launch       ⬜ 5%
+
+OPEN STEPS (⬜ / 🟡 only)
+  ⬜ Nick — wizard eye test (T2)
+  ⬜ Nick — Lilymarket / all-district composition (T3, T6, V2)
+  ⬜ Nick — MANUAL_CHECKLIST.md V2 sign-off
+  ⬜ T8 — 5 human playtest sessions (after V2)
+  🟡 git push — blocked on GitHub workflow OAuth scope
+  ⬜ NPC walk-not-teleport (gated on Nick V2)
+  ⬜ T6b hand-drawn art (blocked — Nick sketches)
+  ⬜ Leveling / proficiency placeholder docs (T9)
+  ⬜ Second combat encounter (post-V5)
+
+DONE RECENTLY
+  · Multi-track dashboard · AR-018 wizard · AR-019 V4 e2e (17/17)
+  · 122 unit tests · tortoise.md · QUEST_TEMPLATE · ModLoader test
+
+NEXT (pick 1–3)
+  1. Nick — MANUAL_CHECKLIST.md (wizard + Lilymarket)
+  2. git push with workflow scope
+  3. T6 eye test → unlock Experience % bump
+```
+
+After any session work, update the bars/rows above in this file, then paste the refreshed block.
+
+---
+
 ### T1 — Mechanics & CI (88%)
 
 | Item | Status | Owner |
 |------|--------|-------|
 | 122 unit tests green | ✅ | Agent |
-| 16/16 Playwright e2e | ✅ | Agent |
+| 16/17 Playwright e2e | ✅ | Agent |
 | typecheck + build + CI workflow | ✅ | Agent |
 | Save v2 (name, motivation, v1 migrate) | ✅ | Agent |
 | QA harness (`__everden`) | ✅ | Agent |
@@ -161,8 +228,8 @@
 | 5 | World simulation | 🟡 In progress | 78% | Clock, NPCs, economy, weather |
 | 6 | Narrative | 🟡 In progress | 79% | Main quest, side quests, council, skill checks |
 | 7 | Combat | 🟡 In progress | 88% | Dice combat, abilities, diplomacy, vole kit, BG3-style dice-duel popup |
-| 8 | Vertical slice | 🟡 In progress | **48%** | Systems ~72%, Experience ~35% until V4 agent PASS |
-| 9 | Alpha | 🟡 In progress | **35%** | 30-day weather soak green; 120 unit tests; awaiting human playtests |
+| 8 | Vertical slice | 🟡 In progress | **52%** | Wizard + V4 e2e; Nick eye gates Experience |
+| 9 | Alpha | 🟡 In progress | **38%** | 122 unit + 17 e2e; awaiting Nick V2 + T8 humans |
 | 10 | Beta | ⬜ Not started | 5% | PWA manifest stub |
 | 11 | Launch | 🟡 In progress | 40% | **https://everden-chi.vercel.app** |
 | 12 | Post-launch | ⬜ Not started | 5% | Mod/network stubs |

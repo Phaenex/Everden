@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Everden — Nick playtest checklist</title>
+  <style>
+    :root {
+      --bg: #1a2420;
+      --panel: #243029;
+      --border: #3d5244;
+      --text: #e8ebe4;
+      --muted: #9aab9e;
+      --accent: #7cb87a;
+      --yes: #4a8f5c;
+      --no: #b85c4a;
+      --skip: #6a756c;
+      --warn: #c9a227;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding: 1rem 1.25rem 4rem;
+      max-width: 52rem;
+      margin-inline: auto;
+    }
+    h1 { font-size: 1.35rem; margin: 0 0 0.25rem; font-weight: 600; }
+    .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
+    .status-bar {
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      border: 1px solid var(--border);
+      background: var(--panel);
+    }
+    .status-bar.ok { border-color: var(--yes); }
+    .status-bar.err { border-color: var(--no); }
+    .session-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+    @media (max-width: 520px) { .session-grid { grid-template-columns: 1fr; } }
+    label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.2rem; }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.45rem 0.55rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #1e2a24;
+      color: var(--text);
+      font: inherit;
+    }
+    textarea { min-height: 4rem; resize: vertical; }
+    section.block {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      background: var(--panel);
+    }
+    section.block h2 {
+      margin: 0;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.95rem;
+      background: #2a3a32;
+      border-bottom: 1px solid var(--border);
+    }
+    .item {
+      padding: 0.75rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .item:last-child { border-bottom: none; }
+    .item-label { font-size: 0.9rem; margin-bottom: 0.5rem; }
+    .btn-row { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
+    .btn-row button {
+      padding: 0.35rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #1e2a24;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .btn-row button:hover { border-color: var(--accent); }
+    .btn-row button.active-yes { background: var(--yes); border-color: var(--yes); color: #fff; }
+    .btn-row button.active-no { background: var(--no); border-color: var(--no); color: #fff; }
+    .btn-row button.active-skip { background: var(--skip); border-color: var(--skip); color: #fff; }
+    .item-comment { font-size: 0.8rem; }
+    .metrics-table { width: 100%; border-collapse: collapse; }
+    .metrics-table th, .metrics-table td {
+      padding: 0.5rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 0.85rem;
+    }
+    .metrics-table th { color: var(--muted); font-weight: 500; }
+    .sticky-save {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0.75rem 1.25rem;
+      background: #152018ee;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+    .sticky-save button {
+      padding: 0.55rem 1.1rem;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .save-primary { background: var(--accent); color: #1a2420; }
+    .save-secondary { background: transparent; border: 1px solid var(--border) !important; color: var(--text); }
+    .verdict-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.5rem 0; }
+    .verdict-row button.active { outline: 2px solid var(--accent); }
+  </style>
+</head>
+<body>
+  <h1>Everden playtest checklist</h1>
+  <p class="sub">Save writes to <code>docs/playtests/NICK_RESPONSES.json</code> when running <code>npm run dev</code>. Agents read that file on your next session.</p>
+  <div id="status" class="status-bar">Loading checklist…</div>
+
+  <div class="session-grid">
+    <div><label>Tester</label><input id="tester" value="Nick" /></div>
+    <div><label>Build URL</label><input id="build" value="https://everden-chi.vercel.app" /></div>
+    <div><label>Species played</label><input id="species" placeholder="frog, tortoise, vole…" /></div>
+    <div><label>Display</label><input id="display" value="16:9" /></div>
+    <div><label>Session length (min)</label><input id="duration" type="number" min="0" placeholder="45" /></div>
+    <div><label>Fresh save?</label>
+      <select id="freshSave"><option value="true">Yes</option><option value="false">No — continued</option></select>
+    </div>
+  </div>
+
+  <section class="block">
+    <h2>Overall verdict</h2>
+    <div class="item">
+      <div class="verdict-row" id="verdict-btns">
+        <button type="button" data-v="pass">Pass — good for V2</button>
+        <button type="button" data-v="borderline">Borderline — fix list</button>
+        <button type="button" data-v="fail">Fail — blockers</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="sections"></div>
+
+  <section class="block">
+    <h2>Post-session metrics</h2>
+    <table class="metrics-table"><thead><tr><th>Metric</th><th>Pass?</th><th>Notes</th></tr></thead><tbody id="metrics-body"></tbody></table>
+  </section>
+
+  <section class="block">
+    <h2>Global notes</h2>
+    <div class="item"><textarea id="globalNotes" placeholder="General feel, story, pacing…"></textarea></div>
+  </section>
+
+  <section class="block">
+    <h2>P0 bugs (stop ship)</h2>
+    <div class="item"><textarea id="p0Bugs" placeholder="Crash, save wipe, soft-lock, quest hard-block…"></textarea></div>
+  </section>
+
+  <div class="sticky-save">
+    <button type="button" class="save-primary" id="btn-save">Save to project file</button>
+    <button type="button" class="save-secondary" id="btn-export">Download JSON</button>
+    <button type="button" class="save-secondary" id="btn-load">Reload saved</button>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'everden_nick_checklist_draft';
+    let template = null;
+    let state = null;
+
+    function emptyAnswers(template) {
+      return {
+        version: 1,
+        updatedAt: null,
+        session: {
+          tester: 'Nick',
+          build: 'https://everden-chi.vercel.app',
+          species: '',
+          display: '16:9',
+          durationMinutes: null,
+          freshSave: true,
+        },
+        sections: template.sections.map((s) => ({
+          id: s.id,
+          title: s.title,
+          items: s.items.map((it) => ({
+            id: it.id,
+            label: it.label,
+            answer: null,
+            comment: '',
+          })),
+        })),
+        metrics: template.metrics.map((m) => ({
+          id: m.id,
+          label: m.label,
+          pass: null,
+          notes: '',
+        })),
+        globalNotes: '',
+        p0Bugs: '',
+        overallVerdict: null,
+      };
+    }
+
+    function mergeSaved(template, saved) {
+      const base = emptyAnswers(template);
+      if (!saved || saved.version !== 1) return base;
+      if (saved.session) Object.assign(base.session, saved.session);
+      base.globalNotes = saved.globalNotes ?? '';
+      base.p0Bugs = saved.p0Bugs ?? '';
+      base.overallVerdict = saved.overallVerdict ?? null;
+      if (saved.sections) {
+        for (const sec of base.sections) {
+          const s2 = saved.sections.find((x) => x.id === sec.id);
+          if (!s2) continue;
+          for (const it of sec.items) {
+            const i2 = s2.items?.find((x) => x.id === it.id);
+            if (i2) {
+              it.answer = i2.answer ?? null;
+              it.comment = i2.comment ?? '';
+            }
+          }
+        }
+      }
+      if (saved.metrics) {
+        for (const m of base.metrics) {
+          const m2 = saved.metrics.find((x) => x.id === m.id);
+          if (m2) {
+            m.pass = m2.pass ?? null;
+            m.notes = m2.notes ?? '';
+          }
+        }
+      }
+      return base;
+    }
+
+    function setStatus(msg, ok) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status-bar ' + (ok === true ? 'ok' : ok === false ? 'err' : '');
+    }
+
+    function render() {
+      document.getElementById('tester').value = state.session.tester ?? '';
+      document.getElementById('build').value = state.session.build ?? '';
+      document.getElementById('species').value = state.session.species ?? '';
+      document.getElementById('display').value = state.session.display ?? '';
+      document.getElementById('duration').value = state.session.durationMinutes ?? '';
+      document.getElementById('freshSave').value = String(state.session.freshSave !== false);
+      document.getElementById('globalNotes').value = state.globalNotes ?? '';
+      document.getElementById('p0Bugs').value = state.p0Bugs ?? '';
+
+      document.querySelectorAll('#verdict-btns button').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.v === state.overallVerdict);
+        btn.onclick = () => {
+          state.overallVerdict = btn.dataset.v;
+          render();
+        };
+      });
+
+      const root = document.getElementById('sections');
+      root.innerHTML = '';
+      for (const sec of state.sections) {
+        const section = document.createElement('section');
+        section.className = 'block';
+        section.innerHTML = '<h2></h2>';
+        section.querySelector('h2').textContent = sec.title;
+        for (const it of sec.items) {
+          const div = document.createElement('div');
+          div.className = 'item';
+          const label = document.createElement('div');
+          label.className = 'item-label';
+          label.textContent = it.label;
+          div.appendChild(label);
+
+          const row = document.createElement('div');
+          row.className = 'btn-row';
+          for (const [ans, text] of [['yes', 'Yes'], ['no', 'No'], ['skip', 'N/A']]) {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.textContent = text;
+            if (it.answer === ans) b.className = 'active-' + ans;
+            b.onclick = () => {
+              it.answer = ans;
+              render();
+              persistDraft();
+            };
+            row.appendChild(b);
+          }
+          div.appendChild(row);
+
+          const ta = document.createElement('textarea');
+          ta.className = 'item-comment';
+          ta.placeholder = 'Comment (optional)';
+          ta.value = it.comment ?? '';
+          ta.oninput = () => {
+            it.comment = ta.value;
+            persistDraft();
+          };
+          div.appendChild(ta);
+          section.appendChild(div);
+        }
+        root.appendChild(section);
+      }
+
+      const mb = document.getElementById('metrics-body');
+      mb.innerHTML = '';
+      for (const m of state.metrics) {
+        const tr = document.createElement('tr');
+        const td0 = document.createElement('td');
+        td0.textContent = m.label;
+        const td1 = document.createElement('td');
+        const sel = document.createElement('select');
+        sel.innerHTML = '<option value="">—</option><option value="true">Pass</option><option value="false">Fail</option>';
+        sel.value = m.pass === true ? 'true' : m.pass === false ? 'false' : '';
+        sel.onchange = () => {
+          m.pass = sel.value === '' ? null : sel.value === 'true';
+          persistDraft();
+        };
+        td1.appendChild(sel);
+        const td2 = document.createElement('td');
+        const notes = document.createElement('input');
+        notes.value = m.notes ?? '';
+        notes.placeholder = 'Notes';
+        notes.oninput = () => {
+          m.notes = notes.value;
+          persistDraft();
+        };
+        td2.appendChild(notes);
+        tr.append(td0, td1, td2);
+        mb.appendChild(tr);
+      }
+    }
+
+    function collectFromForm() {
+      state.session.tester = document.getElementById('tester').value.trim();
+      state.session.build = document.getElementById('build').value.trim();
+      state.session.species = document.getElementById('species').value.trim();
+      state.session.display = document.getElementById('display').value.trim();
+      const d = document.getElementById('duration').value;
+      state.session.durationMinutes = d === '' ? null : Number(d);
+      state.session.freshSave = document.getElementById('freshSave').value === 'true';
+      state.globalNotes = document.getElementById('globalNotes').value;
+      state.p0Bugs = document.getElementById('p0Bugs').value;
+      state.updatedAt = new Date().toISOString();
+      return state;
+    }
+
+    function persistDraft() {
+      collectFromForm();
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (_) {}
+    }
+
+    async function loadFromServer() {
+      try {
+        const res = await fetch('/api/nick-checklist');
+        if (res.ok) return await res.json();
+      } catch (_) {}
+      return null;
+    }
+
+    async function saveToServer() {
+      const payload = JSON.stringify(collectFromForm(), null, 2);
+      const res = await fetch('/api/nick-checklist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || res.statusText);
+      return data;
+    }
+
+    function downloadJson() {
+      const blob = new Blob([JSON.stringify(collectFromForm(), null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'NICK_RESPONSES.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    async function init() {
+      const tplRes = await fetch('/data/nick-checklist.json');
+      template = await tplRes.json();
+
+      let saved = await loadFromServer();
+      if (!saved || !saved.sections?.length) {
+        try {
+          const draft = localStorage.getItem(STORAGE_KEY);
+          if (draft) saved = JSON.parse(draft);
+        } catch (_) {}
+      }
+      state = mergeSaved(template, saved);
+      render();
+
+      const onLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      if (onLocalhost) {
+        setStatus('Ready — Save writes to docs/playtests/NICK_RESPONSES.json in this repo.', true);
+      } else {
+        setStatus('Preview mode — use Download JSON, or run npm run dev locally to save into the repo.', false);
+      }
+
+      document.getElementById('btn-save').onclick = async () => {
+        try {
+          if (!onLocalhost) {
+            downloadJson();
+            setStatus('Downloaded NICK_RESPONSES.json — place it in docs/playtests/ in the repo.', true);
+            return;
+          }
+          await saveToServer();
+          persistDraft();
+          setStatus('Saved to docs/playtests/NICK_RESPONSES.json — agents will read this file.', true);
+        } catch (e) {
+          setStatus('Save failed: ' + e.message, false);
+        }
+      };
+      document.getElementById('btn-export').onclick = () => {
+        downloadJson();
+        setStatus('Downloaded NICK_RESPONSES.json', true);
+      };
+      document.getElementById('btn-load').onclick = async () => {
+        const s = await loadFromServer();
+        state = mergeSaved(template, s);
+        render();
+        setStatus(s ? 'Reloaded from project file.' : 'No saved file yet.', !!s);
+      };
+
+      ['tester', 'build', 'species', 'display', 'duration', 'freshSave', 'globalNotes', 'p0Bugs'].forEach((id) => {
+        document.getElementById(id).addEventListener('change', persistDraft);
+        document.getElementById(id).addEventListener('input', persistDraft);
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

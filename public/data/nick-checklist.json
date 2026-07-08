@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "title": "Nick — Everden playtest checklist",
+  "buildHint": "https://everden-chi.vercel.app or npm run dev",
+  "sections": [
+    {
+      "id": "opening",
+      "title": "New-game opening (character creation + intro)",
+      "items": [
+        { "id": "title_menu", "label": "Title menu — Continue / New game; overwrite confirm on New game" },
+        { "id": "species_step", "label": "Species step — five folk with role + flavor blurb from data" },
+        { "id": "name_step", "label": "Name step — enter name or blank → Traveler" },
+        { "id": "motivation_step", "label": "Motivation step — investigator / messenger / neighbor; copy makes sense" },
+        { "id": "confirm_sheet", "label": "Confirm sheet — STR–CHA mods, AC, initiative, three abilities match species" },
+        { "id": "opening_beat", "label": "Opening beat — 3 flavored narration lines; Continue / Begin" },
+        { "id": "control_hint", "label": "Control hint toast readable after beat" },
+        { "id": "continue_skips", "label": "Continue skips wizard + opening beat" },
+        { "id": "pip_name", "label": "Pip uses your name + motivation append line" }
+      ]
+    },
+    {
+      "id": "visual",
+      "title": "Visual & composition (16:9 display)",
+      "items": [
+        { "id": "causeway", "label": "Causeway — backdrop fills frame; exits readable" },
+        { "id": "lilymarket", "label": "Lilymarket — stalls not cropped; NPCs on ground plane" },
+        { "id": "croakend", "label": "Croakend — focal art readable; NPCs not stacked" },
+        { "id": "mudwall", "label": "Mudwall — levy/wall visible; combat area obvious" },
+        { "id": "ferry_rest", "label": "Ferryman's Rest — ferry/lamp readable; Grizz placement OK" },
+        { "id": "sprites", "label": "Sprites — feet on floor, shadows OK, no z-fight" },
+        { "id": "ui_readability", "label": "UI — prompts/panels not clipped at 1080p" },
+        { "id": "click_ring", "label": "Click ring only on walkable ground, not domes/walls" }
+      ]
+    },
+    {
+      "id": "feel",
+      "title": "Feel & navigation",
+      "items": [
+        { "id": "click_move", "label": "Click-to-move responsive; no wild zigzag" },
+        { "id": "e_key", "label": "E key picks nearest interactable when close" },
+        { "id": "places", "label": "Districts feel like places, not grey boxes" },
+        { "id": "cant_walk", "label": "Can't walk there only when genuinely off-nav" }
+      ]
+    },
+    {
+      "id": "npcs",
+      "title": "NPCs & living world",
+      "items": [
+        { "id": "schedule", "label": "Schedule — wrong folk leave; expected folk appear" },
+        { "id": "no_teleport", "label": "No hour-teleport glitch on clock tick" },
+        { "id": "role_clarity", "label": "Merchants/elders/ferry hand in sensible spots" },
+        { "id": "overlap", "label": "No ugly 3+ NPC stacks in normal hours" },
+        { "id": "vole_line", "label": "Vole: Sable Meadowrun species dialogue (if playing vole)" }
+      ]
+    },
+    {
+      "id": "dice",
+      "title": "Dice duel pacing",
+      "items": [
+        { "id": "domet_duel", "label": "Domet WIS — duel popup with d20 + mod + DC" },
+        { "id": "kess_duel", "label": "Kess INT — duel popup + species line" },
+        { "id": "combat_duel", "label": "Combat attacks show duel popup; pacing OK" },
+        { "id": "outcome_banner", "label": "SUCCESS/FAIL/HIT/MISS banner readable" }
+      ]
+    },
+    {
+      "id": "main_quest",
+      "title": "Main quest — What the Water Remembers",
+      "items": [
+        { "id": "quest_hud", "label": "Quest active from opening; HUD shows real title/stage" },
+        { "id": "pip_ack", "label": "Pip acknowledges you already heard" },
+        { "id": "four_examines", "label": "All four examines findable without guessing" },
+        { "id": "domet_kess", "label": "Domet + Kess make levy vs Charter clear" },
+        { "id": "council_vote", "label": "Council vote — choices understandable" },
+        { "id": "two_endings", "label": "At least 2 endings feel distinct" },
+        { "id": "explain_conflict", "label": "Can explain levy vs Charter in one sentence" }
+      ]
+    },
+    {
+      "id": "side_quests",
+      "title": "Side quests",
+      "items": [
+        { "id": "ferry_toll", "label": "Ferryman's Toll — Grizz → Jenna → Grizz flow" },
+        { "id": "wrong_label", "label": "Wrong Label — Pondwort → shelf → Marta → Pondwort" }
+      ]
+    },
+    {
+      "id": "combat",
+      "title": "Combat & agency",
+      "items": [
+        { "id": "diplomacy", "label": "Blackfen — Persuade/Intimidate before first attack" },
+        { "id": "abilities", "label": "Species abilities make sense for your folk" },
+        { "id": "combat_log", "label": "Combat log matches screen" },
+        { "id": "flee_turns", "label": "Flee works; enemy turns resolve — no soft-lock" }
+      ]
+    },
+    {
+      "id": "systems",
+      "title": "Systems",
+      "items": [
+        { "id": "journal", "label": "[J] Journal entries unlock; opened voluntarily" },
+        { "id": "weather", "label": "Weather icon + rain VFX; amphibian buff noticeable" },
+        { "id": "merchants", "label": "Pip/Marta buy flow works" },
+        { "id": "save_reload", "label": "Esc pause → save → reload persists state" },
+        { "id": "mute", "label": "Mute toggle works; survives reload" }
+      ]
+    }
+  ],
+  "metrics": [
+    { "id": "quest_comprehension", "label": "Quest comprehension — levy vs Charter" },
+    { "id": "agency", "label": "Agency — named a consequence from a choice" },
+    { "id": "skill_check_clarity", "label": "Skill-check clarity — saw d20 + DC" },
+    { "id": "combat_clarity", "label": "Combat clarity — diplomacy or dice log clear" },
+    { "id": "immersion", "label": "Immersion — opened journal without being told" }
+  ]
+}
