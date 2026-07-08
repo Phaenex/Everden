@@ -3,6 +3,16 @@ import type { CharacterAppearance, CharacterWardrobe } from '@/gameplay/Characte
 
 const CANVAS_SIZE = 32;
 const WARDROBE_ART_BASE = '/assets/sprites/wardrobe';
+const BUILD_SLUGS = ['slim', 'medium', 'heavy'] as const;
+const CLOAK_IDS = new Set([
+  'basin_cloak',
+  'ferry_shawl',
+  'croakend_weave',
+  'levy_mantle',
+  'rain_poncho',
+  'elder_robe',
+]);
+const BUILD_AWARE_ITEMS = new Set(['ferry_kepi', 'basin_cloak', 'marsh_hood']);
 
 /** Lightweight chromakey: removes near-corner-color pixels from a white-bg item PNG. */
 function chromaKeyItem(img: HTMLImageElement): HTMLCanvasElement {
@@ -29,17 +39,60 @@ function chromaKeyItem(img: HTMLImageElement): HTMLCanvasElement {
 
 const _wardrobeItemCache = new Map<string, Promise<HTMLCanvasElement | null>>();
 
-/** Try loading a wardrobe item overlay PNG. Returns null if not found (404 / error). */
-function loadWardrobeItemPng(itemId: string): Promise<HTMLCanvasElement | null> {
-  const cached = _wardrobeItemCache.get(itemId);
-  if (cached) return cached;
-  const p = new Promise<HTMLCanvasElement | null>((resolve) => {
+function extractWardrobeFrame(sheet: HTMLCanvasElement, frameIndex: number): HTMLCanvasElement {
+  const fw = sheet.height;
+  const count = Math.max(1, Math.round(sheet.width / fw));
+  const idx = Math.min(Math.max(0, frameIndex), count - 1);
+  const out = document.createElement('canvas');
+  out.width = fw;
+  out.height = fw;
+  const ctx = out.getContext('2d')!;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(sheet, idx * fw, 0, fw, fw, 0, 0, fw, fw);
+  return out;
+}
+
+function tryLoadWardrobeImage(path: string): Promise<HTMLCanvasElement | null> {
+  return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => resolve(chromaKeyItem(img));
     img.onerror = () => resolve(null);
-    img.src = `${WARDROBE_ART_BASE}/${itemId}.png`;
+    img.src = path;
   });
-  _wardrobeItemCache.set(itemId, p);
+}
+
+function wardrobeLoadPaths(itemId: string, build = 1): string[] {
+  const slug = BUILD_SLUGS[Math.min(2, Math.max(0, build))] ?? 'medium';
+  const paths: string[] = [];
+  if (BUILD_AWARE_ITEMS.has(itemId)) {
+    paths.push(`${WARDROBE_ART_BASE}/${itemId}_${slug}.png`);
+  }
+  if (CLOAK_IDS.has(itemId)) {
+    paths.push(`${WARDROBE_ART_BASE}/${itemId}_sheet.png`);
+  }
+  paths.push(`${WARDROBE_ART_BASE}/${itemId}.png`);
+  return paths;
+}
+
+/** Try loading a wardrobe item overlay PNG. Returns null if not found (404 / error). */
+function loadWardrobeItemPng(
+  itemId: string,
+  build = 1,
+  frameIndex = 0,
+): Promise<HTMLCanvasElement | null> {
+  const cacheKey = `${itemId}:${build}:${frameIndex}`;
+  const cached = _wardrobeItemCache.get(cacheKey);
+  if (cached) return cached;
+  const p = (async () => {
+    for (const path of wardrobeLoadPaths(itemId, build)) {
+      const sheet = await tryLoadWardrobeImage(path);
+      if (!sheet) continue;
+      if (path.endsWith('_sheet.png')) return extractWardrobeFrame(sheet, frameIndex);
+      return sheet;
+    }
+    return null;
+  })();
+  _wardrobeItemCache.set(cacheKey, p);
   return p;
 }
 
@@ -350,12 +403,40 @@ export function applyWardrobeOverlay(
 }
 
 /**
- * PNG-first wardrobe overlay. Tries to load each equipped item from
- * /assets/sprites/wardrobe/{itemId}.png (128×128, white background).
- * Falls back to procedural drawing when the PNG is not found.
- * Call this after the body sprite PNG has already been drawn onto `target`.
+ * PNG-first cloak layer (behind body). Tries build-aware paths and animated `_sheet.png`.
  */
-export async function applyWardrobeOverlayAsync(
+export async function applyWardrobeBackOverlayAsync(
+  target: HTMLCanvasElement,
+  appearance: CharacterAppearance,
+  wardrobeItems: WardrobeDefinition[],
+  speciesId: string,
+  cloakFrameIndex = 0,
+): Promise<void> {
+  const ctx = target.getContext('2d');
+  if (!ctx) return;
+  const gfx = ctx;
+  const w = target.width;
+  const h = target.height;
+  const build = appearance.build ?? 1;
+  gfx.imageSmoothingEnabled = false;
+
+  const cloakId = resolveItem(appearance.wardrobe, 'cloak', wardrobeItems, speciesId);
+  if (!cloakId) return;
+  const png = await loadWardrobeItemPng(cloakId, build, cloakFrameIndex);
+  if (png) {
+    gfx.drawImage(png, 0, 0, w, h);
+    return;
+  }
+  gfx.save();
+  gfx.scale(w / CANVAS_SIZE, h / CANVAS_SIZE);
+  drawItemById(gfx, cloakId);
+  gfx.restore();
+}
+
+/**
+ * PNG-first hat and accessory layers (in front of body).
+ */
+export async function applyWardrobeFrontOverlayAsync(
   target: HTMLCanvasElement,
   appearance: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[],
@@ -366,28 +447,43 @@ export async function applyWardrobeOverlayAsync(
   const gfx = ctx;
   const w = target.width;
   const h = target.height;
+  const build = appearance.build ?? 1;
   gfx.imageSmoothingEnabled = false;
 
-  async function drawItem(itemId: string | undefined, useProcedural: () => void): Promise<void> {
+  async function drawItem(itemId: string | undefined): Promise<void> {
     if (!itemId) return;
-    const png = await loadWardrobeItemPng(itemId);
+    const png = await loadWardrobeItemPng(itemId, build, 0);
     if (png) {
       gfx.drawImage(png, 0, 0, w, h);
-    } else {
-      gfx.save();
-      gfx.scale(w / CANVAS_SIZE, h / CANVAS_SIZE);
-      useProcedural();
-      gfx.restore();
+      return;
     }
+    gfx.save();
+    gfx.scale(w / CANVAS_SIZE, h / CANVAS_SIZE);
+    drawItemById(gfx, itemId);
+    gfx.restore();
   }
 
-  const cloakId = resolveItem(appearance.wardrobe, 'cloak', wardrobeItems, speciesId);
   const hatId = resolveItem(appearance.wardrobe, 'hat', wardrobeItems, speciesId);
   const accId = resolveItem(appearance.wardrobe, 'accessory', wardrobeItems, speciesId);
+  await drawItem(hatId);
+  await drawItem(accId);
+}
 
-  await drawItem(cloakId, () => cloakId && drawItemById(gfx, cloakId));
-  await drawItem(hatId, () => hatId && drawItemById(gfx, hatId));
-  await drawItem(accId, () => accId && drawItemById(gfx, accId));
+/**
+ * PNG-first wardrobe overlay. Tries to load each equipped item from
+ * /assets/sprites/wardrobe/{itemId}.png (128×128, white background).
+ * Falls back to procedural drawing when the PNG is not found.
+ * @deprecated Prefer back + front split via composeCharacterArtCanvas.
+ */
+export async function applyWardrobeOverlayAsync(
+  target: HTMLCanvasElement,
+  appearance: CharacterAppearance,
+  wardrobeItems: WardrobeDefinition[],
+  speciesId: string,
+  cloakFrameIndex = 0,
+): Promise<void> {
+  await applyWardrobeBackOverlayAsync(target, appearance, wardrobeItems, speciesId, cloakFrameIndex);
+  await applyWardrobeFrontOverlayAsync(target, appearance, wardrobeItems, speciesId);
 }
 
 export function filterWardrobeForSpecies(

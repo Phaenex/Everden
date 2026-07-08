@@ -6,12 +6,7 @@ describe('CharacterAppearance', () => {
     expect(appearanceNeedsProceduralRender(defaultAppearance())).toBe(false);
   });
 
-  it('any Look or Outfit choice keeps procedural player sprite', () => {
-    expect(appearanceNeedsProceduralRender({ ...defaultAppearance(), hueShift: 10 })).toBe(true);
-    expect(appearanceNeedsProceduralRender({ ...defaultAppearance(), marking: 'spots' })).toBe(true);
-    expect(appearanceNeedsProceduralRender({ ...defaultAppearance(), variant: 2 })).toBe(true);
-    expect(
-      appearanceNeedsProceduralRender({ ...defaultAppearance(), wardrobe: { hat: 'ferry_kepi' } }),
-    ).toBe(true);
+  it('PNG art is attempted for all pattern variants', () => {
+    expect(appearanceNeedsProceduralRender({ ...defaultAppearance(), variant: 2 })).toBe(false);
   });
 });

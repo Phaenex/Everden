@@ -1,7 +1,7 @@
 import type { AbilityDefinition, SpeciesDefinition, WardrobeDefinition } from '@/data/types';
 import type { ArrivalMotivation } from '@/gameplay/PlayerProfile';
 import { defaultCreatorSettings } from '@/gameplay/CreatorSettings';
-import { defaultAppearance, randomAppearance } from '@/gameplay/CharacterAppearance';
+import { defaultAppearance, randomAppearance, BODY_BUILD_LABELS, type BodyBuild } from '@/gameplay/CharacterAppearance';
 import {
   adjustBaseStat,
   applyRacial,
@@ -13,7 +13,7 @@ import {
 } from '@/gameplay/PointBuy';
 import { abilityModifier } from '@/gameplay/OpeningNarration';
 import { filterWardrobeForSpecies } from '@/presentation/WardrobeLayers';
-import { drawVariantThumbnail, drawWardrobeThumbnail } from './WardrobePreview';
+import { drawSpeciesCardThumbnail, drawVariantThumbnail, drawWardrobeThumbnail, drawBuildThumbnail } from './WardrobePreview';
 import { button, el } from './domUtils';
 import { renderCreatorPreview, renderCreatorSummary } from './CreatorPreview';
 import { loadCreatorGuide, type CreatorGuide } from './CreatorGuide';
@@ -91,6 +91,7 @@ export class CharacterCreator {
     this.state.appearance = {
       ...defaultAppearance(),
       variant: 0,
+      build: prevLook.build ?? 1,
       hueShift: prevLook.hueShift,
       marking: prevLook.marking,
       wardrobe: { ...prevLook.wardrobe },
@@ -208,7 +209,12 @@ export class CharacterCreator {
       card.className = 'style-card species-card';
       card.dataset.species = id;
       if (id === this.state.species) card.classList.add('selected');
-      const thumb = drawVariantThumbnail(id, def.id === this.state.species ? this.state.appearance.variant : 0, this.state.appearance, this.wardrobe);
+      const thumb = drawSpeciesCardThumbnail(
+        id,
+        id === this.state.species,
+        this.state.appearance,
+        this.wardrobe,
+      );
       card.append(thumb);
       card.append(el('span', 'style-card-label', def.name.replace(' Folk', '')));
       card.append(el('span', 'species-card-role', def.selectRole ?? def.role));
@@ -226,6 +232,26 @@ export class CharacterCreator {
       appendInfoBox(panel, this.guide.tabs.appearance ?? '');
       appendInfoBox(panel, this.guide.appearance.variant, 'note');
     }
+    panel.append(el('p', 'select-label', 'Body build'));
+    const buildGrid = el('div', 'variant-grid build-grid');
+    for (let b = 0; b < 3; b++) {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'style-card build-card';
+      if (this.state.appearance.build === b) card.classList.add('selected');
+      const thumb = drawBuildThumbnail(this.state.species, b as BodyBuild, this.state.appearance, this.wardrobe);
+      card.append(thumb);
+      card.append(el('span', 'style-card-label', BODY_BUILD_LABELS[b]!));
+      card.addEventListener('click', () => {
+        this.state.appearance.build = b as BodyBuild;
+        this.renderPanel();
+        this.refreshPreview();
+        this.renderSummary();
+      });
+      buildGrid.append(card);
+    }
+    panel.append(buildGrid);
+
     panel.append(el('p', 'select-label', 'Body pattern — pick a look'));
 
     const variantGrid = el('div', 'variant-grid');
@@ -241,6 +267,7 @@ export class CharacterCreator {
         this.state.appearance.variant = v;
         this.renderPanel();
         this.refreshPreview();
+        this.renderSummary();
       });
       variantGrid.append(card);
     }
@@ -257,6 +284,7 @@ export class CharacterCreator {
       this.state.appearance.hueShift = Number(hue.value);
       hueLabel.textContent = `Color tint (${this.state.appearance.hueShift})`;
       this.refreshPreview();
+      this.renderSummary();
     });
     panel.append(hueLabel, hue);
 
@@ -267,6 +295,7 @@ export class CharacterCreator {
         this.state.appearance.marking = m;
         this.renderPanel();
         this.refreshPreview();
+        this.renderSummary();
       });
       btn.classList.add('marking-btn');
       if (this.state.appearance.marking === m) btn.classList.add('selected');
@@ -544,7 +573,7 @@ export class CharacterCreator {
       el(
         'li',
         '',
-        `Look: Pattern ${this.state.appearance.variant + 1}, tint ${this.state.appearance.hueShift}, ${markingLabel}`,
+        `Look: ${BODY_BUILD_LABELS[this.state.appearance.build]!} build, pattern ${this.state.appearance.variant + 1}, tint ${this.state.appearance.hueShift}, ${markingLabel}`,
       ),
     );
     const wornLabels: string[] = [];
@@ -569,6 +598,7 @@ export class CharacterCreator {
         stats: finalStats,
         appearance: {
           variant: this.state.appearance.variant,
+          build: this.state.appearance.build,
           hueShift: this.state.appearance.hueShift,
           marking: this.state.appearance.marking,
           wardrobe: { ...this.state.appearance.wardrobe },

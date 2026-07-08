@@ -44,6 +44,7 @@ export class PlayerProfile implements ISaveable {
     this.settings = { ...settings };
     this.appearance = {
       variant: appearance.variant,
+      build: appearance.build ?? 1,
       hueShift: appearance.hueShift,
       marking: appearance.marking,
       wardrobe: { ...appearance.wardrobe },
@@ -58,6 +59,7 @@ export class PlayerProfile implements ISaveable {
       stats: { ...this.stats },
       appearance: {
         variant: this.appearance.variant,
+        build: this.appearance.build,
         hueShift: this.appearance.hueShift,
         marking: this.appearance.marking,
         wardrobe: { ...this.appearance.wardrobe },
@@ -85,6 +87,7 @@ export class PlayerProfile implements ISaveable {
     if (state.appearance) {
       this.appearance = {
         variant: state.appearance.variant ?? 0,
+        build: (state.appearance.build ?? 1) as 0 | 1 | 2,
         hueShift: state.appearance.hueShift ?? 0,
         marking: state.appearance.marking ?? 'none',
         wardrobe: { ...state.appearance.wardrobe },

@@ -1,7 +1,7 @@
 import type { AbilityDefinition, SpeciesDefinition, WardrobeDefinition } from '@/data/types';
-import { drawCharacterCanvas, loadArtCanvas, applyAppearanceToArtCanvas } from '@/presentation/CharacterSprites';
-import { applyWardrobeOverlayAsync } from '@/presentation/WardrobeLayers';
+import { composeCharacterArtCanvas, drawCharacterCanvas } from '@/presentation/CharacterSprites';
 import type { CreatorState } from './types';
+import { BODY_BUILD_LABELS } from '@/gameplay/CharacterAppearance';
 import { applyRacial } from '@/gameplay/PointBuy';
 import { abilityModifier } from '@/gameplay/OpeningNarration';
 import { el } from './domUtils';
@@ -41,14 +41,11 @@ export function renderCreatorPreview(
 
   drawProcedural();
 
-  // Async upgrade: swap in real art + PNG wardrobe overlays when available.
-  loadArtCanvas(state.species).then(async (art) => {
-    if (seq !== _seq || !art) return;
+  void composeCharacterArtCanvas(state.species, state.appearance, wardrobe, 0).then((composed) => {
+    if (seq !== _seq || !composed) return;
     ctx.fillStyle = '#0c1814';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(art, 0, 0, canvas.width, canvas.height);
-    applyAppearanceToArtCanvas(canvas, state.species, state.appearance, wardrobe);
-    await applyWardrobeOverlayAsync(canvas, state.appearance, wardrobe, state.species);
+    ctx.drawImage(composed, 0, 0, canvas.width, canvas.height);
   });
 }
 
@@ -131,4 +128,11 @@ export function renderCreatorSummary(
   if (worn.length) {
     root.append(el('p', 'summary-wardrobe', `Outfit: ${worn.join(' · ')}`));
   }
+  root.append(
+    el(
+      'p',
+      'summary-look',
+      `Look: ${BODY_BUILD_LABELS[state.appearance.build]!} · pattern ${state.appearance.variant + 1} · tint ${state.appearance.hueShift}`,
+    ),
+  );
 }

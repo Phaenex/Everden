@@ -13,14 +13,14 @@ describe('PlayerProfile', () => {
       'Myrtle',
       'neighbor',
       { str: 12, dex: 8, con: 16, int: 12, wis: 14, cha: 10 },
-      { variant: 1, hueShift: 10, marking: 'spots', wardrobe: { hat: 'shell_cap' } },
+      { variant: 1, build: 2, hueShift: 10, marking: 'spots', wardrobe: { hat: 'shell_cap' } },
     );
     expect(profile.serialize()).toEqual({
       species: 'tortoise',
       name: 'Myrtle',
       motivation: 'neighbor',
       stats: { str: 12, dex: 8, con: 16, int: 12, wis: 14, cha: 10 },
-      appearance: { variant: 1, hueShift: 10, marking: 'spots', wardrobe: { hat: 'shell_cap' } },
+      appearance: { variant: 1, build: 2, hueShift: 10, marking: 'spots', wardrobe: { hat: 'shell_cap' } },
       settings: defaultCreatorSettings(),
     });
   });

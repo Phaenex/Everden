@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 import { ISO_CAMERA_OFFSET } from './IsometricCamera';
 import type { CharacterAppearance } from '@/gameplay/CharacterAppearance';
-import { defaultAppearance, appearanceNeedsProceduralRender } from '@/gameplay/CharacterAppearance';
+import { defaultAppearance } from '@/gameplay/CharacterAppearance';
 import type { WardrobeDefinition } from '@/data/types';
-import { applyWardrobeBackLayers, applyWardrobeFrontLayers } from './WardrobeLayers';
+import { applyWardrobeBackLayers, applyWardrobeFrontLayers, applyWardrobeBackOverlayAsync, applyWardrobeFrontOverlayAsync } from './WardrobeLayers';
+import { SpriteAnimator } from './SpriteAnimator';
+import type { EventBus } from '@/core/EventBus';
 
 /**
  * The isometric camera's view direction never changes (it translates but never
@@ -84,6 +86,25 @@ function chromaKeyCanvas(img: HTMLImageElement): HTMLCanvasElement {
   return canvas;
 }
 
+/** Horizontal sprite sheets use square frames (e.g. 256×128 → 2 frames of 128×128). */
+function spriteFrameCount(sheet: HTMLCanvasElement): number {
+  if (sheet.height <= 0) return 1;
+  return Math.max(1, Math.round(sheet.width / sheet.height));
+}
+
+function extractSpriteFrame(sheet: HTMLCanvasElement, frameIndex: number): HTMLCanvasElement {
+  const fw = sheet.height;
+  const count = spriteFrameCount(sheet);
+  const idx = Math.min(Math.max(0, frameIndex), count - 1);
+  const out = document.createElement('canvas');
+  out.width = fw;
+  out.height = fw;
+  const ctx = out.getContext('2d')!;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(sheet, idx * fw, 0, fw, fw, 0, 0, fw, fw);
+  return out;
+}
+
 function tryLoadImage(path: string): Promise<HTMLCanvasElement | null> {
   return new Promise((resolve) => {
     const img = new Image();
@@ -97,12 +118,72 @@ function tryLoadImage(path: string): Promise<HTMLCanvasElement | null> {
  * Named-NPC art first, then species art, then null so callers keep their procedural
  * fallback. Never throws — a missing/failed asset must never break the game.
  */
-export async function loadArtCanvas(species: string, npcId?: string): Promise<HTMLCanvasElement | null> {
+async function loadArtSheet(
+  species: string,
+  npcId?: string,
+  build = 1,
+  variant = 0,
+): Promise<HTMLCanvasElement | null> {
   if (npcId) {
     const npcArt = await tryLoadImage(`${ART_BASE}/sprites/npcs/${npcId}.png`);
     if (npcArt) return npcArt;
   }
+  const slug = ['slim', 'medium', 'heavy'][Math.min(2, Math.max(0, build))] ?? 'medium';
+  const pattern = Math.min(3, Math.max(0, variant)) + 1;
+  const patterned = await tryLoadImage(
+    `${ART_BASE}/sprites/species/${species}_${slug}_p${pattern}.png`,
+  );
+  if (patterned) return patterned;
+  const buildDefault = await tryLoadImage(`${ART_BASE}/sprites/species/${species}_${slug}_p1.png`);
+  if (buildDefault) return buildDefault;
+  const legacyBuild = await tryLoadImage(`${ART_BASE}/sprites/species/${species}_${slug}.png`);
+  if (legacyBuild) return legacyBuild;
   return tryLoadImage(`${ART_BASE}/sprites/species/${species}.png`);
+}
+
+/** First frame of a species/NPC sheet (single portraits return the whole image). */
+export async function loadArtCanvas(
+  species: string,
+  npcId?: string,
+  build = 1,
+  variant = 0,
+): Promise<HTMLCanvasElement | null> {
+  const sheet = await loadArtSheet(species, npcId, build, variant);
+  if (!sheet) return null;
+  return extractSpriteFrame(sheet, 0);
+}
+
+/**
+ * Compose one animation frame: body PNG + hue/markings + Habbo-style wardrobe overlays.
+ * Returns null when art is missing (callers keep procedural fallback).
+ */
+export async function composeCharacterArtCanvas(
+  species: string,
+  appearance: CharacterAppearance,
+  wardrobeItems: WardrobeDefinition[],
+  frameIndex = 0,
+  npcId?: string,
+  cloakFrameIndex = 0,
+): Promise<HTMLCanvasElement | null> {
+  const sheet = await loadArtSheet(species, npcId, appearance.build ?? 1, appearance.variant ?? 0);
+  if (!sheet) return null;
+  const bodyFrame = extractSpriteFrame(sheet, frameIndex);
+  applyAppearanceToArtCanvas(bodyFrame, species, appearance, wardrobeItems);
+
+  const out = document.createElement('canvas');
+  out.width = bodyFrame.width;
+  out.height = bodyFrame.height;
+  const ctx = out.getContext('2d')!;
+  ctx.imageSmoothingEnabled = false;
+
+  await applyWardrobeBackOverlayAsync(out, appearance, wardrobeItems, species, cloakFrameIndex);
+  ctx.drawImage(bodyFrame, 0, 0);
+  await applyWardrobeFrontOverlayAsync(out, appearance, wardrobeItems, species);
+  return out;
+}
+
+export function artSheetFrameCount(sheet: HTMLCanvasElement): number {
+  return spriteFrameCount(sheet);
 }
 
 /** Swap a 2D `<img>`'s src to real art if/when it loads, keeping its current src otherwise. */
@@ -265,9 +346,9 @@ export function drawCharacterCanvas(
 /** Apply tint, markings, and wardrobe on top of loaded species/NPC portrait art. */
 export function applyAppearanceToArtCanvas(
   target: HTMLCanvasElement,
-  species: string,
+  _species: string,
   appearance: CharacterAppearance,
-  wardrobeItems: WardrobeDefinition[],
+  _wardrobeItems: WardrobeDefinition[],
 ): void {
   const ctx = target.getContext('2d');
   if (!ctx) return;
@@ -288,13 +369,13 @@ export function applyAppearanceToArtCanvas(
     ctx.putImageData(img, 0, 0);
   }
 
-  ctx.save();
-  ctx.imageSmoothingEnabled = false;
-  ctx.scale(w / 32, h / 32);
-  applyMarkings(ctx, appearance.marking);
-  applyWardrobeBackLayers(ctx, appearance, wardrobeItems, species);
-  applyWardrobeFrontLayers(ctx, appearance, wardrobeItems, species);
-  ctx.restore();
+  if (appearance.marking !== 'none') {
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    ctx.scale(w / 32, h / 32);
+    applyMarkings(ctx, appearance.marking);
+    ctx.restore();
+  }
 }
 
 function drawFrog(v: number): Pixel[] {
@@ -549,6 +630,7 @@ export function createCharacterMesh(
   npcId?: string,
   appearance?: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[] = [],
+  eventBus?: EventBus,
 ): THREE.Mesh {
   const canvas = drawCharacterCanvas(species, variant, appearance, wardrobeItems);
   const texture = new THREE.CanvasTexture(canvas);
@@ -567,21 +649,29 @@ export function createCharacterMesh(
   // character stands on the ground plane instead of being buried through it.
   mesh.position.y = size / 2;
 
-  // Procedural mesh above renders immediately (zero regression); swap the texture in
-  // if/when real art loads. Silently keeps the procedural texture on a 404.
-  loadArtCanvas(species, npcId).then((art) => {
-    if (!art) return;
-    // Customized player avatars stay procedural so Look/Outfit match the creator preview.
-    if (!npcId && appearance && appearanceNeedsProceduralRender(appearance)) return;
-    if (appearance) {
-      applyAppearanceToArtCanvas(art, species, appearance, wardrobeItems);
-    }
-    const artTexture = new THREE.CanvasTexture(art);
-    artTexture.magFilter = THREE.NearestFilter;
-    artTexture.minFilter = THREE.NearestFilter;
-    mat.map = artTexture;
-    mat.needsUpdate = true;
-  });
+  // Procedural mesh above renders immediately; swap to composed PNG art when available.
+  const app = appearance ?? defaultAppearance();
+  if (!npcId) {
+    void (async () => {
+      const composed = await composeCharacterArtCanvas(species, app, wardrobeItems, 0, npcId, 0);
+      if (!composed) return;
+      const tex = new THREE.CanvasTexture(composed);
+      tex.magFilter = THREE.NearestFilter;
+      tex.minFilter = THREE.NearestFilter;
+      mat.map = tex;
+      mat.needsUpdate = true;
+      SpriteAnimator.attach(mesh, species, app, wardrobeItems, npcId, eventBus);
+    })();
+  } else {
+    void loadArtCanvas(species, npcId).then((art) => {
+      if (!art) return;
+      const artTexture = new THREE.CanvasTexture(art);
+      artTexture.magFilter = THREE.NearestFilter;
+      artTexture.minFilter = THREE.NearestFilter;
+      mat.map = artTexture;
+      mat.needsUpdate = true;
+    });
+  }
 
   return mesh;
 }

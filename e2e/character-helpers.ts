@@ -78,11 +78,13 @@ export async function completeCharacterWithAppearance(
     species?: string;
     name?: string;
     skipNarration?: boolean;
+    buildIndex?: number;
     variantIndex?: number;
     marking?: 'none' | 'spots' | 'stripes';
     hueShift?: number;
     hatLabel?: RegExp;
     cloakLabel?: RegExp;
+    accessoryLabel?: RegExp;
   } = {},
 ): Promise<void> {
   const species = opts.species ?? 'frog';
@@ -95,6 +97,9 @@ export async function completeCharacterWithAppearance(
   await page.locator(`.species-card[data-species="${species}"]`).click();
 
   await page.locator('.creator-tab[data-tab="appearance"]').click();
+  if (opts.buildIndex !== undefined) {
+    await page.locator('.build-card').nth(opts.buildIndex).click();
+  }
   if (opts.variantIndex !== undefined) {
     await page.locator('.variant-card').nth(opts.variantIndex).click();
   }
@@ -110,10 +115,11 @@ export async function completeCharacterWithAppearance(
     }, opts.hueShift);
   }
 
-  if (opts.hatLabel || opts.cloakLabel) {
+  if (opts.hatLabel || opts.cloakLabel || opts.accessoryLabel) {
     await page.locator('.creator-tab[data-tab="wardrobe"]').click();
     if (opts.hatLabel) await page.getByRole('button', { name: opts.hatLabel }).click();
     if (opts.cloakLabel) await page.getByRole('button', { name: opts.cloakLabel }).click();
+    if (opts.accessoryLabel) await page.getByRole('button', { name: opts.accessoryLabel }).click();
   }
 
   if (skipNarration) {
@@ -147,6 +153,7 @@ export function readSaveProfile(page: Page): Promise<{
   stats?: Record<string, number>;
   appearance?: {
     variant?: number;
+    build?: number;
     hueShift?: number;
     marking?: string;
     wardrobe?: { hat?: string; cloak?: string; accessory?: string };
@@ -166,6 +173,7 @@ export function readSaveProfile(page: Page): Promise<{
             stats?: Record<string, number>;
             appearance?: {
               variant?: number;
+              build?: number;
               hueShift?: number;
               marking?: string;
               wardrobe?: { hat?: string; cloak?: string; accessory?: string };

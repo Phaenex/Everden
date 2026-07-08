@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createCharacterMesh, createGroundShadow, createNameLabel, CHARACTER_MESH_SIZE } from './CharacterSprites';
 import type { CharacterAppearance } from '@/gameplay/CharacterAppearance';
 import type { WardrobeDefinition } from '@/data/types';
+import type { EventBus } from '@/core/EventBus';
 
 export { createCharacterMesh, createNameLabel, drawCharacterCanvas, CHARACTER_MESH_SIZE } from './CharacterSprites';
 
@@ -27,10 +28,11 @@ export function createCharacterActor(
   npcId?: string,
   appearance?: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[] = [],
+  eventBus?: EventBus,
 ): CharacterActor {
   const group = new THREE.Group();
   group.add(createGroundShadow(CHARACTER_MESH_SIZE));
-  const mesh = createCharacterMesh(species, variant, CHARACTER_MESH_SIZE, npcId, appearance, wardrobeItems);
+  const mesh = createCharacterMesh(species, variant, CHARACTER_MESH_SIZE, npcId, appearance, wardrobeItems, eventBus);
   const label = createNameLabel(name, CHARACTER_MESH_SIZE);
   group.add(mesh);
   group.add(label);

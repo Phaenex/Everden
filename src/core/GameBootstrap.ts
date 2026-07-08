@@ -74,7 +74,7 @@ export class GameBootstrap {
     name: 'Traveler',
     motivation: 'investigator',
     stats: { str: 8, dex: 14, con: 10, int: 10, wis: 10, cha: 12 },
-    appearance: { variant: 0, hueShift: 0, marking: 'none', wardrobe: {} },
+    appearance: { variant: 0, build: 1, hueShift: 0, marking: 'none', wardrobe: {} },
     settings: defaultCreatorSettings(),
   }): Promise<void> {
     if (this.started) return;
@@ -165,6 +165,7 @@ export class GameBootstrap {
       undefined,
       this.playerProfile.appearance,
       wardrobe,
+      this.eventBus,
     );
     this.sceneManager.setPlayerActor(playerActor.group);
 

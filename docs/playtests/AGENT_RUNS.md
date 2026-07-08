@@ -38,6 +38,9 @@ Use [`docs/systems/VISUAL_QA_AGENTS.md`](../systems/VISUAL_QA_AGENTS.md) for age
 | AR-026 | 2026-07-08 | Creator fullscreen / no-scroll layout | localhost:5174 | **PASS** agent visual | creator | 1024×576, 1180×664, 1280×720, 1366×768 — no horizontal/vertical overflow all 9 tabs; compact Outfits fix; 144 unit + 6/6 e2e |
 | AR-027 | 2026-07-08 | Creator full-screen clean layout correction | localhost:5174 | **PASS** agent visual | creator | Tight widths use 3 columns (tabs, preview, panel) and hide summary rail instead of shrinking everything; 1024×552 + 1180×664 + 1366×768 verified; 144 unit + 6/6 e2e + typecheck + build |
 | AR-028 | 2026-07-08 | Pixel art redesign + full creator audit | localhost:5200 | **PASS** agent visual | creator | All 5 species new pixel art (outlines, faces, silhouettes); all 9 tabs PASS scroll check; hat/cloak overlays verified all 5 species; 1366×768 + 1024×768 compact; 144 unit + 6/6 e2e |
+| AR-031 | 2026-07-08 | Frog pattern PNG gate + p2–p4 sheets | localhost:5200 | **PASS** agent visual | creator | 12 frog body sheets; variant loader wired; Look tab pattern thumbnails |
+| AR-032 | 2026-07-08 | Full Character Art Pipeline | localhost:5200 | **PASS** agent visual | creator | 60 body sheets (5×3×4); 18 wardrobe PNGs + 6 animated cloak sheets + 9 build-aware hero overlays; SpriteAnimator (body bob + cloak flutter + rain); Folk/Look/Outfits PNG compose; 144 unit + 6/6 e2e + typecheck + build — Nick eye pending |
+| AR-033 | 2026-07-08 | Creator full PNG integration pass | localhost:5200 | **PASS** agent visual | creator | Fixed cloak-behind-body layer order; thumbnails carry wardrobe; summary rail shows build/pattern/tint; 7/7 e2e incl. 5-folk outfit matrix screenshots — Nick eye pending |
 
 ### AR-028 detail (Pixel art redesign + full creator audit)
 

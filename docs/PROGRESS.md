@@ -1,13 +1,13 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-049)
+**Last updated:** 2026-07-08 (CHECKIN-050)
 **Play online:** https://croakend-club.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
 
 ## Progress dashboard (9 workstreams)
 
-**Headline overall:** `█████████░░░░░░░░░░░` **59%** — average of T1–T8 (T9 Future excluded)
+**Headline overall:** `█████████░░░░░░░░░░░` **61%** — average of T1–T8 (T9 Future excluded)
 
 | # | Track | Bar | % | Blocks % when |
 |---|-------|-----|---|---------------|
@@ -17,7 +17,7 @@
 | T4 | **Quests & dialogue** | `████████████████░░░░` | **82%** | quest hard-block; missing fail-forward |
 | T5 | **Combat & D&D** | `█████████████████░░░` | **88%** | soft-lock; RAW doc gaps |
 | T6 | **Look & feel** | `████████░░░░░░░░░░░░` | **42%** | scout FAIL; Nick eye no |
-| T7 | **Art & audio** | `█████░░░░░░░░░░░░░░░` | **25%** | T6b blocked on Nick sketches |
+| T7 | **Art & audio** | `███████████░░░░░░░░░` | **55%** | playable folk PNG set incomplete |
 | T8 | **Gated build V1–V5** | `█████████░░░░░░░░░░░` | **48%** | any V-row FAIL |
 | T9 | **Groundwork** | `████████░░░░░░░░░░░░` | **45%** | (future; does not move headline %) |
 
@@ -33,9 +33,9 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://croakend-club.vercel.app · CHECKIN-049
+Play: https://croakend-club.vercel.app · CHECKIN-050
 
-OVERALL  [█████████░░░░░░░░░░░]  59%
+OVERALL  [█████████░░░░░░░░░░░]  61%
 
 WORKSTREAMS (T1–T9)
   T1 Mechanics & CI     [███████████████████░]  92%  (144 unit)
@@ -44,7 +44,7 @@ WORKSTREAMS (T1–T9)
   T4 Quests & dialogue  [████████████████░░░░]  82%
   T5 Combat & D&D       [█████████████████░░░]  88%
   T6 Look & feel        [████████░░░░░░░░░░░░]  42%  ← gates Experience %
-  T7 Art & audio        [█████░░░░░░░░░░░░░░░]  25%
+  T7 Art & audio        [███████████░░░░░░░░░]  55%
   T8 Gated build V1–V5  [█████████░░░░░░░░░░░]  48%
   T9 Groundwork         [████████░░░░░░░░░░░░]  45%  (not in overall %)
 
@@ -78,9 +78,9 @@ OPEN STEPS (⬜ / 🟡 only)
   ⬜ Second combat encounter (post-V5)
 
 DONE RECENTLY
+  · AR-032 Full Character Art Pipeline — 60 body sheets, wardrobe PNGs, SpriteAnimator
+  · AR-031 frog pattern PNG loader + p2–p4 sheets
   · AR-025 compact creator header + appearance save e2e (6/6)
-  · AR-024 full creator pass + in-world appearance fix
-  · AR-023 Look/Outfits/tint before-after proof
 
 NEXT (pick 1–3)
   1. Nick — MANUAL_CHECKLIST.md (wizard + Lilymarket) → Save or Download JSON
@@ -339,6 +339,25 @@ After any session work, update the bars/rows above in this file, then paste the 
 **Not bumped:** T6 — Nick 16:9 eye test on full creator still required.
 
 **Still open:** Nick creator + Lilymarket composition eye test.
+
+---
+
+### CHECKIN-050 — 2026-07-08
+
+**Type:** Full Character Art Pipeline (AR-032)  
+**Agent:** Cursor
+
+**Body art:** 60 PNG sheets installed — `{species}_{slim|medium|heavy}_p{1-4}.png` for frog, toad, vole, turtle, tortoise. Loader fallback chain wired; variant gate removed.
+
+**Wardrobe:** 18 item PNGs + 6 animated cloak `_sheet.png` strips + 9 build-aware hero overlays (`ferry_kepi`, `basin_cloak`, `marsh_hood` slim/heavy). `wardrobe.json` layer → `sprite` for all items.
+
+**Animation:** `SpriteAnimator` module — body idle bob (900ms), occasional cloak flutter (8–15s), faster flutter on rain/storm via `weather:changed`. Player mesh wired through `GameBootstrap` eventBus.
+
+**Creator:** Folk cards use medium-build PNG previews for unselected species; Look/Outfits thumbnails compose real art.
+
+**Verified:** 144 unit + 6/6 e2e + typecheck + build. Screenshots: `AR032_folk_all_species.png`, `AR032_look_patterns_builds.png`, `AR032_outfits_all_items.png`, `AR032_hero_outfit_kepi_cloak.png`.
+
+**Nick eye test:** Required — PNG art quality + wardrobe fit on all 5 folk.
 
 ---
 

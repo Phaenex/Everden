@@ -208,6 +208,7 @@ describe('CharacterSprites art fallback', () => {
   it('drawCharacterCanvas accepts appearance options without throwing', () => {
     const canvas = drawCharacterCanvas('frog', 0, {
       variant: 2,
+      build: 1,
       hueShift: 15,
       marking: 'spots',
       wardrobe: { hat: 'reed_hat' },
@@ -215,7 +216,7 @@ describe('CharacterSprites art fallback', () => {
     expect(canvas.width).toBe(32);
   });
 
-  it('applyAppearanceToArtCanvas applies tint and wardrobe without throwing', () => {
+  it('applyAppearanceToArtCanvas applies tint and markings without throwing', () => {
     const canvas = document.createElement('canvas');
     canvas.width = 64;
     canvas.height = 64;
@@ -223,7 +224,7 @@ describe('CharacterSprites art fallback', () => {
       applyAppearanceToArtCanvas(
         canvas,
         'frog',
-        { variant: 0, hueShift: 25, marking: 'spots', wardrobe: { cloak: 'levy_mantle', hat: 'ferry_kepi' } },
+        { variant: 0, build: 1, hueShift: 25, marking: 'spots', wardrobe: { cloak: 'levy_mantle', hat: 'ferry_kepi' } },
         [{ id: 'levy_mantle', slot: 'cloak', label: 'Mantle', species: ['*'], layer: 'procedural' }],
       ),
     ).not.toThrow();

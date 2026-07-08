@@ -90,11 +90,13 @@ test.describe('Character creation wizard', () => {
     await completeCharacterWithAppearance(page, {
       species: 'frog',
       name: 'OutfitSave',
+      buildIndex: 2,
       variantIndex: 2,
       marking: 'spots',
       hueShift: 35,
       hatLabel: /Ferry kepi/,
       cloakLabel: /Levy mantle/,
+      accessoryLabel: /Shell brooch/,
     });
 
     await page.locator('#game-canvas').click({ position: { x: 320, y: 240 } });
@@ -104,10 +106,33 @@ test.describe('Character creation wizard', () => {
     await page.keyboard.press('Escape');
 
     const profile = await readSaveProfile(page);
+    expect(profile?.appearance?.build).toBe(2);
     expect(profile?.appearance?.variant).toBe(2);
     expect(profile?.appearance?.marking).toBe('spots');
     expect(profile?.appearance?.hueShift).toBe(35);
     expect(profile?.appearance?.wardrobe?.hat).toBe('ferry_kepi');
     expect(profile?.appearance?.wardrobe?.cloak).toBe('levy_mantle');
+    expect(profile?.appearance?.wardrobe?.accessory).toBe('shell_brooch');
+  });
+
+  test('creator preview updates for all five folk with PNG art', async ({ page }) => {
+    test.setTimeout(90_000);
+    await clearEverdenSave(page);
+    await page.reload();
+    await page.waitForSelector('.creator-shell');
+
+    for (const species of ['frog', 'toad', 'vole', 'turtle', 'tortoise']) {
+      await page.locator('.creator-tab[data-tab="species"]').click();
+      await page.locator(`.species-card[data-species="${species}"]`).click();
+      await page.locator('.creator-tab[data-tab="appearance"]').click();
+      await page.locator('.build-card').nth(1).click();
+      await page.locator('.variant-card').nth(3).click();
+      await page.locator('.creator-tab[data-tab="wardrobe"]').click();
+      await page.getByRole('button', { name: /Ferry kepi/ }).click();
+      await page.getByRole('button', { name: /Basin travel cloak/ }).click();
+      await page.screenshot({
+        path: `docs/playtests/screenshots/AR033_${species}_stout_p4_outfit.png`,
+      }).catch(() => {});
+    }
   });
 });
