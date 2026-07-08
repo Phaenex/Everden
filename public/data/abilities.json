@@ -4,7 +4,8 @@
     "name": "Leap",
     "species": "frog",
     "type": "utility",
-    "description": "Reposition up to 3 tiles, ignoring obstacles."
+    "description": "Reposition up to 3 tiles, ignoring obstacles.",
+    "gameHint": "Combat utility — reposition before or after an attack on your turn."
   },
   {
     "id": "tongue_lash",
@@ -12,14 +13,16 @@
     "species": "frog",
     "type": "attack",
     "description": "Short range attack.",
-    "damage": "1d6"
+    "damage": "1d6",
+    "gameHint": "Your main damage button. Uses attack roll vs enemy AC."
   },
   {
     "id": "amphibious_rush",
     "name": "Amphibious Rush",
     "species": "frog",
     "type": "utility",
-    "description": "+2 movement in water or rain."
+    "description": "+2 movement in water or rain.",
+    "gameHint": "Auto-buffs movement in rain and applies a combat edge when weather is wet."
   },
   {
     "id": "bufotoxin_spit",
@@ -27,7 +30,8 @@
     "species": "toad",
     "type": "attack",
     "description": "Poison attack.",
-    "damage": "1d4"
+    "damage": "1d4",
+    "gameHint": "Ranged poison hit — pairs with Fear Croak for control."
   },
   {
     "id": "fear_croak",
@@ -36,28 +40,32 @@
     "type": "debuff",
     "description": "WIS save or flee.",
     "saveDc": 12,
-    "saveStat": "wis"
+    "saveStat": "wis",
+    "gameHint": "Enemy WIS save — on fail they may flee combat."
   },
   {
     "id": "burrow",
     "name": "Burrow",
     "species": "toad",
     "type": "utility",
-    "description": "Hide with advantage on stealth."
+    "description": "Hide with advantage on stealth.",
+    "gameHint": "Defensive setup — flavor for slipping out of sight between turns."
   },
   {
     "id": "shell_block",
     "name": "Shell Block",
     "species": "turtle",
     "type": "defense",
-    "description": "Reduce damage by 1d6."
+    "description": "Reduce damage by 1d6.",
+    "gameHint": "Tank button — roll when you expect a big hit incoming."
   },
   {
     "id": "withdraw",
     "name": "Withdraw",
     "species": "turtle",
     "type": "defense",
-    "description": "Immobile, attacks at disadvantage against you."
+    "description": "Immobile, attacks at disadvantage against you.",
+    "gameHint": "Brace in place — enemies attack with disadvantage until you move again."
   },
   {
     "id": "ram",
@@ -65,14 +73,16 @@
     "species": "turtle",
     "type": "attack",
     "description": "Knockback attack.",
-    "damage": "1d8"
+    "damage": "1d8",
+    "gameHint": "Heavy melee hit — turtle/tortoise primary damage option."
   },
   {
     "id": "burrow_hide",
     "name": "Burrow Hide",
     "species": "vole",
     "type": "utility",
-    "description": "Flatten into the undergrowth; attacks against you have disadvantage this round."
+    "description": "Flatten into the undergrowth; attacks against you have disadvantage this round.",
+    "gameHint": "Defensive — enemies have disadvantage attacking you until next turn."
   },
   {
     "id": "cheek_poultice",
@@ -80,7 +90,8 @@
     "species": "vole",
     "type": "heal",
     "description": "Restore 1d8+1 HP to whichever ally needs it most.",
-    "damage": "1d8"
+    "damage": "1d8",
+    "gameHint": "Heals the most hurt ally on your side — ignores UI target quirk."
   },
   {
     "id": "nibble_distraction",
@@ -89,6 +100,7 @@
     "type": "debuff",
     "description": "WIS save or the target loses its next turn.",
     "saveDc": 12,
-    "saveStat": "wis"
+    "saveStat": "wis",
+    "gameHint": "Stun setup — WIS save or enemy skips their next turn."
   }
 ]

@@ -73,7 +73,7 @@ export class CombatManager implements IGameModule {
     this.runEnemyTurn(actorId);
   }
 
-  startEncounter(encounterId: string, playerSpecies = 'frog'): void {
+  startEncounter(encounterId: string, playerSpecies = 'frog', playerStats?: SpeciesStats): void {
     const enc = this.data.getById<EncounterDefinition>('encounters', encounterId);
     if (!enc) return;
 
@@ -105,6 +105,7 @@ export class CombatManager implements IGameModule {
     // ensure player combatant
     if (!this.combatants.some((c) => c.team === 'player')) {
       const species = this.data.getById<SpeciesDefinition>('species', playerSpecies)!;
+      const stats = playerStats ?? { ...species.stats };
       this.combatants.unshift({
         id: 'player',
         name: 'You',
@@ -113,7 +114,7 @@ export class CombatManager implements IGameModule {
         hp: 24,
         maxHp: 24,
         ac: species.combat.ac,
-        stats: { ...species.stats },
+        stats: { ...stats },
         initiativeMod: species.combat.initiativeMod,
         conditions: [],
       });

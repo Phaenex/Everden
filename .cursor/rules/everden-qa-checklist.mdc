@@ -9,25 +9,28 @@ Before ending a session or starting the next feature (T3, T5, T9, etc.):
 
 1. Read `docs/PROGRESS.md` — update % and append CHECKIN.
 2. Run `npm test && npm run typecheck && npm run build`.
-3. **Visual/play gate** (presentation, scenes, input — see `everden-visual-gate.mdc`):
+3. **Always visual-verify UI you touched** (see `everden-visual-verify.mdc` + global rule):
+   - Browser walk + screenshots + Playwright for that flow
+   - Do **not** say "verified" on unit tests alone
+4. **Visual/play gate** (presentation, scenes, input — see `everden-visual-gate.mdc`):
    - Run **everden-visual-scout** in browser (gates G1–G5)
    - Log to `docs/playtests/AGENT_RUNS.md` — agent runs ≠ human T8
    - **FAIL** → do not bump Experience %; fix blockers first
    - Lilymarket / district composition → **Nick eye test** before PASS
-4. For gameplay logic-only changes, verify in browser (`npm run dev`):
+5. For gameplay logic-only changes, still open the game once (`npm run dev`):
    - Main quest: 4 examines → council vote → gold/flags
    - Ferry quest: Grizz toll line → Jenna (quest-gated) → Grizz report line (quest-gated)
    - Combat: enemy turns fire, abilities work, flee ends turn on fail
    - Save/load: quest stage + species + scene persist
-5. Fix **known gaps** listed in latest CHECKIN or `AGENT_RUNS.md` before adding new scope.
-6. Add a unit test for each bug fixed (regression guard).
+6. Fix **known gaps** listed in latest CHECKIN or `AGENT_RUNS.md` before adding new scope.
+7. Add a unit test for each bug fixed (regression guard).
 
 ## Two tracks
 
 | Track | Tool | Gates Experience %? |
 |-------|------|---------------------|
 | Mechanical | `npm test` | No (regression only) |
-| Visual/play | Scout + persona agents + Nick | Yes, after PASS |
+| Visual/play | Browser + Playwright screenshots + Nick | Yes, after PASS |
 
 See `docs/systems/VISUAL_QA_AGENTS.md` and `.cursor/skills/everden-playtest/SKILL.md`.
 
@@ -41,3 +44,4 @@ See `docs/systems/VISUAL_QA_AGENTS.md` and `.cursor/skills/everden-playtest/SKIL
 ## Honesty
 
 Vertical slice ~50% ≠ shippable. See `everden-progress.mdc`.
+Mechanical green ≠ visually checked (AR-021 lesson).

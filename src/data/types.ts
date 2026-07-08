@@ -15,6 +15,11 @@ export interface SpeciesCombat {
   abilities: string[];
 }
 
+export interface SpeciesRacialBonuses {
+  plus2: keyof SpeciesStats;
+  plus1: keyof SpeciesStats;
+}
+
 export interface SpeciesDefinition {
   id: string;
   name: string;
@@ -25,6 +30,7 @@ export interface SpeciesDefinition {
   selectBlurb?: string;
   color: string;
   stats: SpeciesStats;
+  racialBonuses?: SpeciesRacialBonuses;
   combat: SpeciesCombat;
 }
 
@@ -193,9 +199,21 @@ export interface AbilityDefinition {
   species: string;
   type: 'attack' | 'defense' | 'utility' | 'debuff' | 'heal';
   description: string;
+  /** Creator Kit tab — when/how this ability matters in play. */
+  gameHint?: string;
   damage?: string;
   saveDc?: number;
   saveStat?: keyof SpeciesStats;
+}
+
+export interface WardrobeDefinition {
+  id: string;
+  slot: 'hat' | 'cloak' | 'accessory';
+  label: string;
+  hint?: string;
+  species: string[];
+  layer: 'procedural' | 'sprite';
+  sprite?: string;
 }
 
 export interface GameData {
@@ -211,6 +229,7 @@ export interface GameData {
   objects: WorldObjectDefinition[];
   journal: JournalDefinition[];
   districts: DistrictDefinition[];
+  wardrobe: WardrobeDefinition[];
 }
 
 export interface DistrictDefinition {

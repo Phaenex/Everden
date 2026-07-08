@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   applyArtToCanvas,
   applyArtToImage,
+  applyAppearanceToArtCanvas,
   applyEnemyArtToImage,
   createCharacterMesh,
   createGroundShadow,
@@ -39,6 +40,9 @@ function fakeContext() {
       colorSpace: 'srgb' as PredefinedColorSpace,
     }),
     putImageData: () => {},
+    save: () => {},
+    restore: () => {},
+    scale: () => {},
   };
 }
 
@@ -199,5 +203,29 @@ describe('CharacterSprites art fallback', () => {
     const shadow = createGroundShadow();
     expect(shadow).toBeInstanceOf(THREE.Mesh);
     expect(() => createGroundShadow(CHARACTER_MESH_SIZE)).not.toThrow();
+  });
+
+  it('drawCharacterCanvas accepts appearance options without throwing', () => {
+    const canvas = drawCharacterCanvas('frog', 0, {
+      variant: 2,
+      hueShift: 15,
+      marking: 'spots',
+      wardrobe: { hat: 'reed_hat' },
+    });
+    expect(canvas.width).toBe(32);
+  });
+
+  it('applyAppearanceToArtCanvas applies tint and wardrobe without throwing', () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    expect(() =>
+      applyAppearanceToArtCanvas(
+        canvas,
+        'frog',
+        { variant: 0, hueShift: 25, marking: 'spots', wardrobe: { cloak: 'levy_mantle', hat: 'ferry_kepi' } },
+        [{ id: 'levy_mantle', slot: 'cloak', label: 'Mantle', species: ['*'], layer: 'procedural' }],
+      ),
+    ).not.toThrow();
   });
 });

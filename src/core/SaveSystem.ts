@@ -1,7 +1,7 @@
 import type { ISaveable } from './IGameModule';
 
 const SAVE_KEY = 'everden_save_v1';
-const SAVE_VERSION = 2;
+const SAVE_VERSION = 3;
 
 export interface SaveFile {
   version: number;

@@ -1,0 +1,20 @@
+[
+  { "id": "reed_hat", "slot": "hat", "label": "Reed sun hat", "hint": "Wide reed brim — basin traveler look.", "species": ["frog", "toad", "vole"], "layer": "procedural" },
+  { "id": "shell_cap", "slot": "hat", "label": "Shell cap", "hint": "Domed shell plate — Croakend mason style.", "species": ["turtle", "tortoise"], "layer": "procedural" },
+  { "id": "mudwall_helm", "slot": "hat", "label": "Mudwall helm", "hint": "Stone-grey levy guard cap.", "species": ["turtle", "tortoise"], "layer": "procedural" },
+  { "id": "lily_bloom", "slot": "hat", "label": "Lily bloom", "hint": "Market flower crown — Lilymarket festive.", "species": ["frog", "toad", "vole"], "layer": "procedural" },
+  { "id": "ferry_kepi", "slot": "hat", "label": "Ferry kepi", "hint": "Peaked ferry cap with gold band.", "species": ["*"], "layer": "procedural" },
+  { "id": "marsh_hood", "slot": "hat", "label": "Marsh hood", "hint": "Deep hood — rain and anonymity.", "species": ["*"], "layer": "procedural" },
+  { "id": "basin_cloak", "slot": "cloak", "label": "Basin travel cloak", "hint": "Full green cloak — default basin wanderer.", "species": ["*"], "layer": "procedural" },
+  { "id": "ferry_shawl", "slot": "cloak", "label": "Ferryman's shawl", "hint": "Brown wrap — ferry night shifts.", "species": ["frog", "toad", "vole"], "layer": "procedural" },
+  { "id": "croakend_weave", "slot": "cloak", "label": "Croakend patchcloak", "hint": "Artisan patchwork — Croakend guild colors.", "species": ["*"], "layer": "procedural" },
+  { "id": "levy_mantle", "slot": "cloak", "label": "Levy mantle", "hint": "Official mantle with gold trim.", "species": ["*"], "layer": "procedural" },
+  { "id": "rain_poncho", "slot": "cloak", "label": "Rain poncho", "hint": "Blue-grey oilcloth — heavy weather.", "species": ["*"], "layer": "procedural" },
+  { "id": "elder_robe", "slot": "cloak", "label": "Elder robe", "hint": "Long council robe — formal basin elder.", "species": ["turtle", "tortoise", "frog"], "layer": "procedural" },
+  { "id": "reed_charm", "slot": "accessory", "label": "Reed hop charm", "hint": "Matches your starter charm — lucky reed.", "species": ["*"], "layer": "procedural" },
+  { "id": "clay_bead", "slot": "accessory", "label": "Clay prayer bead", "hint": "Mudwall prayer string — mason tradition.", "species": ["turtle", "tortoise"], "layer": "procedural" },
+  { "id": "market_scarf", "slot": "accessory", "label": "Lilymarket scarf", "hint": "Red trader scarf — Lilymarket traders.", "species": ["frog", "toad", "vole"], "layer": "procedural" },
+  { "id": "levy_pin", "slot": "accessory", "label": "Levy clerk's pin", "hint": "Gold levy seal — bureaucracy chic.", "species": ["*"], "layer": "procedural" },
+  { "id": "shell_brooch", "slot": "accessory", "label": "Shell brooch", "hint": "Polished shell pin — heirloom look.", "species": ["*"], "layer": "procedural" },
+  { "id": "hop_whistle", "slot": "accessory", "label": "Hop whistle", "hint": "Brass pea whistle on a cord.", "species": ["frog", "toad", "vole"], "layer": "procedural" }
+]

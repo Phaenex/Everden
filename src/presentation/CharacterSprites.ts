@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 import { ISO_CAMERA_OFFSET } from './IsometricCamera';
+import type { CharacterAppearance } from '@/gameplay/CharacterAppearance';
+import { defaultAppearance, appearanceNeedsProceduralRender } from '@/gameplay/CharacterAppearance';
+import type { WardrobeDefinition } from '@/data/types';
+import { applyWardrobeBackLayers, applyWardrobeFrontLayers } from './WardrobeLayers';
 
 /**
  * The isometric camera's view direction never changes (it translates but never
@@ -152,13 +156,89 @@ interface Pixel {
   c: string;
 }
 
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace('#', '');
+  const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function rgbToHex(r: number, g: number, b: number): string {
+  const clamp = (v: number) => Math.max(0, Math.min(255, Math.round(v)));
+  return `#${[clamp(r), clamp(g), clamp(b)].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+}
+
+function shiftColor(hex: string, hueShift: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  const max = Math.max(r, g, b) / 255;
+  const min = Math.min(r, g, b) / 255;
+  const l = (max + min) / 2;
+  let h = 0;
+  let s = 0;
+  const d = max - min;
+  if (d !== 0) {
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r / 255) h = ((g / 255 - b / 255) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g / 255) h = ((b / 255 - r / 255) / d + 2) / 6;
+    else h = ((r / 255 - g / 255) / d + 4) / 6;
+  }
+  h = (h + hueShift / 360 + 1) % 1;
+  const hue2rgb = (p: number, q: number, t: number) => {
+    let tt = t;
+    if (tt < 0) tt += 1;
+    if (tt > 1) tt -= 1;
+    if (tt < 1 / 6) return p + (q - p) * 6 * tt;
+    if (tt < 1 / 2) return q;
+    if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
+    return p;
+  };
+  let r2: number;
+  let g2: number;
+  let b2: number;
+  if (s === 0) {
+    r2 = g2 = b2 = l;
+  } else {
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r2 = hue2rgb(p, q, h + 1 / 3);
+    g2 = hue2rgb(p, q, h);
+    b2 = hue2rgb(p, q, h - 1 / 3);
+  }
+  return rgbToHex(r2 * 255, g2 * 255, b2 * 255);
+}
+
+function applyMarkings(ctx: CanvasRenderingContext2D, marking: CharacterAppearance['marking']): void {
+  if (marking === 'none') return;
+  if (marking === 'spots') {
+    ctx.fillStyle = 'rgba(10, 16, 8, 0.75)';
+    const spots = [
+      [12, 14], [18, 16], [14, 20], [20, 12], [10, 18], [16, 13], [13, 17],
+    ];
+    for (const [x, y] of spots) {
+      ctx.fillRect(x, y, 2, 2);
+    }
+  } else {
+    ctx.fillStyle = 'rgba(12, 18, 10, 0.7)';
+    for (let y = 10; y < 26; y += 3) {
+      ctx.fillRect(10, y, 12, 2);
+    }
+  }
+}
+
 /** 32×32 procedural pixel characters — replace with real art in public/assets/sprites/ */
-export function drawCharacterCanvas(species: string, variant = 0): HTMLCanvasElement {
+export function drawCharacterCanvas(
+  species: string,
+  variant = 0,
+  appearance?: CharacterAppearance,
+  wardrobeItems: WardrobeDefinition[] = [],
+): HTMLCanvasElement {
+  const app = appearance ?? defaultAppearance();
   const canvas = document.createElement('canvas');
   canvas.width = 32;
   canvas.height = 32;
   const ctx = canvas.getContext('2d')!;
   ctx.clearRect(0, 0, 32, 32);
+
+  applyWardrobeBackLayers(ctx, app, wardrobeItems, species);
 
   const drawers: Record<string, (v: number) => Pixel[]> = {
     frog: drawFrog,
@@ -169,17 +249,59 @@ export function drawCharacterCanvas(species: string, variant = 0): HTMLCanvasEle
     player_frog: drawFrog,
   };
 
-  const pixels = (drawers[species] ?? drawFrog)(variant);
+  let pixels = (drawers[species] ?? drawFrog)(app.variant ?? variant);
+  if (app.hueShift !== 0) {
+    pixels = pixels.map((p) => ({ ...p, c: shiftColor(p.c, app.hueShift) }));
+  }
   for (const p of pixels) {
     ctx.fillStyle = p.c;
     ctx.fillRect(p.x, p.y, 1, 1);
   }
+  applyMarkings(ctx, app.marking);
+  applyWardrobeFrontLayers(ctx, app, wardrobeItems, species);
   return canvas;
 }
 
+/** Apply tint, markings, and wardrobe on top of loaded species/NPC portrait art. */
+export function applyAppearanceToArtCanvas(
+  target: HTMLCanvasElement,
+  species: string,
+  appearance: CharacterAppearance,
+  wardrobeItems: WardrobeDefinition[],
+): void {
+  const ctx = target.getContext('2d');
+  if (!ctx) return;
+  const w = target.width;
+  const h = target.height;
+
+  if (appearance.hueShift !== 0) {
+    const img = ctx.getImageData(0, 0, w, h);
+    const { data } = img;
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3]! < 12) continue;
+      const shifted = shiftColor(rgbToHex(data[i]!, data[i + 1]!, data[i + 2]!), appearance.hueShift);
+      const [r, g, b] = hexToRgb(shifted);
+      data[i] = r;
+      data[i + 1] = g;
+      data[i + 2] = b;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  ctx.scale(w / 32, h / 32);
+  applyMarkings(ctx, appearance.marking);
+  applyWardrobeBackLayers(ctx, appearance, wardrobeItems, species);
+  applyWardrobeFrontLayers(ctx, appearance, wardrobeItems, species);
+  ctx.restore();
+}
+
 function drawFrog(v: number): Pixel[] {
-  const body = v === 0 ? '#5c7a52' : '#4a6a42';
-  const belly = '#8ab070';
+  const bodies = ['#5c7a52', '#3a8a70', '#7a9a40', '#2a6a50'];
+  const bellies = ['#8ab070', '#a0d090', '#c0e070', '#70b098'];
+  const body = bodies[v % 4]!;
+  const belly = bellies[v % 4]!;
   const eye = '#1a1a1a';
   const highlight = '#e8ffe0';
   return [
@@ -196,7 +318,8 @@ function drawFrog(v: number): Pixel[] {
 }
 
 function drawToad(v: number): Pixel[] {
-  const body = v === 0 ? '#6a5540' : '#4a3728';
+  const bodies = ['#6a5540', '#4a3728', '#8a6040', '#3a2820'];
+  const body = bodies[v % 4]!;
   const wart = '#3d2e20';
   const eye = '#c4a000';
   return [
@@ -288,8 +411,10 @@ export function createCharacterMesh(
   variant = 0,
   size = CHARACTER_MESH_SIZE,
   npcId?: string,
+  appearance?: CharacterAppearance,
+  wardrobeItems: WardrobeDefinition[] = [],
 ): THREE.Mesh {
-  const canvas = drawCharacterCanvas(species, variant);
+  const canvas = drawCharacterCanvas(species, variant, appearance, wardrobeItems);
   const texture = new THREE.CanvasTexture(canvas);
   texture.magFilter = THREE.NearestFilter;
   texture.minFilter = THREE.NearestFilter;
@@ -310,6 +435,11 @@ export function createCharacterMesh(
   // if/when real art loads. Silently keeps the procedural texture on a 404.
   loadArtCanvas(species, npcId).then((art) => {
     if (!art) return;
+    // Customized player avatars stay procedural so Look/Outfit match the creator preview.
+    if (!npcId && appearance && appearanceNeedsProceduralRender(appearance)) return;
+    if (appearance) {
+      applyAppearanceToArtCanvas(art, species, appearance, wardrobeItems);
+    }
     const artTexture = new THREE.CanvasTexture(art);
     artTexture.magFilter = THREE.NearestFilter;
     artTexture.minFilter = THREE.NearestFilter;

@@ -26,8 +26,10 @@ import { UIManager } from '@/ui/UIManager';
 import type { DialogueTree, NPCDefinition, WorldObjectDefinition, ItemDefinition } from '@/data/types';
 import type { SceneDefinition } from '@/data/sceneTypes';
 import { PlayerProfile, applyMotivationFlags } from '@/gameplay/PlayerProfile';
+import { defaultCreatorSettings } from '@/gameplay/CreatorSettings';
 import { getOpeningNarrationLines } from '@/gameplay/OpeningNarration';
-import type { GameStartRequest } from '@/ui/TitleScreen';
+import { recommendedFinalStats } from '@/gameplay/PointBuy';
+import type { GameStartRequest } from '@/ui/characterCreation/types';
 import { filterDialogueChoices, resolveDialogueText } from '@/gameplay/DialogueConditions';
 import { SkillCheckResolver } from '@/gameplay/SkillCheckResolver';
 import { npcPresentInScene } from '@/gameplay/NpcPresence';
@@ -66,7 +68,15 @@ export class GameBootstrap {
   private npcArriving = new Set<string>();
   private npcDeparting = new Set<string>();
 
-  async start(canvas: HTMLCanvasElement, request: GameStartRequest = { mode: 'new', species: 'frog', name: 'Traveler', motivation: 'investigator' }): Promise<void> {
+  async start(canvas: HTMLCanvasElement, request: GameStartRequest = {
+    mode: 'new',
+    species: 'frog',
+    name: 'Traveler',
+    motivation: 'investigator',
+    stats: { str: 8, dex: 14, con: 10, int: 10, wis: 10, cha: 12 },
+    appearance: { variant: 0, hueShift: 0, marking: 'none', wardrobe: {} },
+    settings: defaultCreatorSettings(),
+  }): Promise<void> {
     if (this.started) return;
     this.started = true;
 
@@ -125,18 +135,37 @@ export class GameBootstrap {
 
     const isNewGame = request.mode === 'new';
     if (isNewGame) {
-      this.playerProfile.species = request.species;
-      this.playerProfile.name = request.name.trim() || 'Traveler';
-      this.playerProfile.motivation = request.motivation;
+      this.playerProfile.setFromCreation(
+        request.species,
+        request.name.trim() || 'Traveler',
+        request.motivation,
+        request.stats,
+        request.appearance,
+        request.settings,
+      );
       playerSpecies = request.species;
       this.playerSpecies = playerSpecies;
     } else {
       this.save.load();
       playerSpecies = this.playerProfile.species;
       this.playerSpecies = playerSpecies;
+      if (this.playerProfile.needsStatMigration()) {
+        const speciesDef = this.data.getById<import('@/data/types').SpeciesDefinition>('species', playerSpecies);
+        if (speciesDef) {
+          this.playerProfile.applySpeciesDefaults(recommendedFinalStats(speciesDef));
+        }
+      }
     }
 
-    const playerActor = createCharacterActor(playerSpecies, this.playerProfile.name, 0);
+    const wardrobe = this.data.get('wardrobe');
+    const playerActor = createCharacterActor(
+      playerSpecies,
+      this.playerProfile.name,
+      this.playerProfile.appearance.variant,
+      undefined,
+      this.playerProfile.appearance,
+      wardrobe,
+    );
     this.sceneManager.setPlayerActor(playerActor.group);
 
     this.ui = new UIManager(this.eventBus);
@@ -224,16 +253,23 @@ export class GameBootstrap {
     // e2e mechanical gates stay deterministic and don't need to dismiss a narrative panel
     // they have no reason to know about.
     if (isNewGame && !new URLSearchParams(window.location.search).has('qa')) {
-      this.ui.showNarration(
-        getOpeningNarrationLines(this.playerProfile.species, this.playerProfile.motivation),
-        () => {
-          this.ui.showToast('Equipped: Reed Hop Charm — +1 attack', 3500);
+      const afterEnter = (): void => {
+        this.ui.showToast('Equipped: Reed Hop Charm — +1 attack', 3500);
+        if (this.playerProfile.settings.showControlHints) {
           setTimeout(
             () => this.ui.showToast('Click to move · [E] to interact · [J] for journal', 6000),
             3600,
           );
-        },
-      );
+        }
+      };
+      if (this.playerProfile.settings.skipOpeningNarration) {
+        afterEnter();
+      } else {
+        this.ui.showNarration(
+          getOpeningNarrationLines(this.playerProfile.species, this.playerProfile.motivation),
+          afterEnter,
+        );
+      }
     }
 
     this.setupDevMenu();
@@ -300,7 +336,7 @@ export class GameBootstrap {
   }
 
   qaStartCombat(encounterId = 'blackfen_poachers'): void {
-    this.combatManager.startEncounter(encounterId, this.playerSpecies);
+    this.combatManager.startEncounter(encounterId, this.playerSpecies, this.playerProfile.stats);
   }
 
   qaAdvanceHours(hours: number): void {
@@ -424,7 +460,7 @@ export class GameBootstrap {
         void this.refreshNpcPresence();
       },
       startCombat: (encounterId = 'blackfen_poachers') => {
-        this.combatManager.startEncounter(encounterId, this.playerSpecies);
+        this.combatManager.startEncounter(encounterId, this.playerSpecies, this.playerProfile.stats);
       },
       setQuestStage: (questId, stage) => this.questManager.forceStage(questId, stage),
       setFlag: (key) => this.worldState.setFlag(key, true),
@@ -661,7 +697,7 @@ export class GameBootstrap {
           `${label} block the path ahead. This will start a fight.`,
           'Fight',
           'Back away',
-          () => this.combatManager.startEncounter(encId, this.playerSpecies),
+          () => this.combatManager.startEncounter(encId, this.playerSpecies, this.playerProfile.stats),
         );
       } else if (t.type === 'merchant') {
         this.onMerchant(t.payload);
@@ -747,7 +783,7 @@ export class GameBootstrap {
       getReputation: (faction: string) => this.worldState.getReputation(faction),
     };
 
-    const speciesStats = this.data.getById<import('@/data/types').SpeciesDefinition>('species', this.playerSpecies)?.stats;
+    const playerStats = this.playerProfile.stats;
 
     const showNode = (nodeId: string) => {
       const node = tree.nodes.find((n) => n.id === nodeId);
@@ -765,7 +801,7 @@ export class GameBootstrap {
         showNode,
         species,
         (check) => {
-          const statVal = speciesStats?.[check.stat] ?? 10;
+          const statVal = playerStats?.[check.stat] ?? 10;
           let bonus = 0;
           let advantage = check.advantage ? 'advantage' as const : 'normal' as const;
           if (check.stat === 'cha' && this.inventory.getRollModifiers('social').length) {

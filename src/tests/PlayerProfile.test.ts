@@ -1,18 +1,27 @@
 import { describe, it, expect } from 'vitest';
 import { PlayerProfile, applyMotivationFlags } from '@/gameplay/PlayerProfile';
+import { defaultAppearance } from '@/gameplay/CharacterAppearance';
+import { defaultCreatorSettings } from '@/gameplay/CreatorSettings';
 import { abilityModifier, getOpeningNarrationLines } from '@/gameplay/OpeningNarration';
 import { resolveInitialTitleStep } from '@/ui/TitleScreen';
 
 describe('PlayerProfile', () => {
-  it('serializes name and motivation with species', () => {
+  it('serializes v3 state with stats and appearance', () => {
     const profile = new PlayerProfile();
-    profile.species = 'tortoise';
-    profile.name = 'Myrtle';
-    profile.motivation = 'neighbor';
+    profile.setFromCreation(
+      'tortoise',
+      'Myrtle',
+      'neighbor',
+      { str: 12, dex: 8, con: 16, int: 12, wis: 14, cha: 10 },
+      { variant: 1, hueShift: 10, marking: 'spots', wardrobe: { hat: 'shell_cap' } },
+    );
     expect(profile.serialize()).toEqual({
       species: 'tortoise',
       name: 'Myrtle',
       motivation: 'neighbor',
+      stats: { str: 12, dex: 8, con: 16, int: 12, wis: 14, cha: 10 },
+      appearance: { variant: 1, hueShift: 10, marking: 'spots', wardrobe: { hat: 'shell_cap' } },
+      settings: defaultCreatorSettings(),
     });
   });
 
@@ -21,12 +30,24 @@ describe('PlayerProfile', () => {
     profile.deserialize({ species: 'frog' });
     expect(profile.name).toBe('Traveler');
     expect(profile.motivation).toBe('investigator');
+    expect(profile.needsStatMigration()).toBe(true);
   });
 
   it('truncates overlong names to 24 characters', () => {
     const profile = new PlayerProfile();
     profile.deserialize({ species: 'frog', name: 'a'.repeat(40) });
     expect(profile.name).toHaveLength(24);
+  });
+
+  it('loads v3 stats without migration flag', () => {
+    const profile = new PlayerProfile();
+    profile.deserialize({
+      species: 'frog',
+      stats: { str: 8, dex: 16, con: 10, int: 10, wis: 10, cha: 12 },
+      appearance: defaultAppearance(),
+    });
+    expect(profile.needsStatMigration()).toBe(false);
+    expect(profile.stats.dex).toBe(16);
   });
 });
 
@@ -57,8 +78,8 @@ describe('OpeningNarration', () => {
 });
 
 describe('TitleScreen.resolveInitialTitleStep', () => {
-  it('shows menu when a save exists, species step otherwise', () => {
+  it('shows menu when a save exists, creator otherwise', () => {
     expect(resolveInitialTitleStep(true)).toBe('menu');
-    expect(resolveInitialTitleStep(false)).toBe('species');
+    expect(resolveInitialTitleStep(false)).toBe('creator');
   });
 });

@@ -1,0 +1,42 @@
+---
+description: Everden — browser visual check + Playwright + screenshots before claiming UI or creator work done
+alwaysApply: true
+---
+
+# Everden Visual Verify (always)
+
+Nick's rule: **look at it**. Green unit tests are not a screenshot.
+
+Global rule: `.cursor/rules/visual-verify-when-building.mdc` (before/after proof table for Look / Outfits / Folk).
+
+## Hard requirement
+
+Before claiming creator, HUD, dialogue, combat UI, district, or title-screen work done:
+
+1. `npm run dev` (or preview) on a known port
+2. Browser MCP: walk the real path (not only `?qa=1` when validating player-facing UI)
+3. Save screenshots under `docs/playtests/screenshots/`
+4. Run Playwright for the touched flow (e.g. `npx playwright test e2e/character-creation.spec.ts`)
+5. Append / update `docs/playtests/AGENT_RUNS.md` (AR-NNN) with what you saw and bugs fixed
+6. Re-shot after every visual bugfix
+7. **Before/after pairs** for Look (pattern, tint, markings) and Outfits (hat/cloak/accessory) — pixel change without visible screenshot diff = FAIL
+
+## "Verified" means
+
+| Claim | Required proof |
+|-------|----------------|
+| Menu / creator works | Live click all new tabs + enter game + screenshot Causeway/HUD |
+| Save/settings toggle | Toggle in UI, confirm behavior (e.g. no narration panel), save if needed |
+| Presentation / districts | `everden-visual-gate.mdc` G1–G5 + scout log |
+
+Mechanical only (`npm test`) → write **"mechanical only — visual pending"** in the CHECKIN. Never imply eye-check done.
+
+## Bugs found in AR-021 (do not regress)
+
+- Folk change must update center title immediately (`render()`, not partial refresh)
+- Panel re-draws must `renderPanel()` / clear — never append a second panel
+- Story motivation guide note must refresh with selection
+
+## Skill
+
+Follow `.cursor/skills/everden-playtest/SKILL.md` for scouts. Agent visual ≠ Nick T6 / T8.

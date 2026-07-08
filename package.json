@@ -10,7 +10,7 @@
     "nick:summary": "node scripts/summarize-nick-playtest.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "deploy:preview": "npm run build && npx vercel deploy --prod --yes --scope astral-productions --name everden",
+    "deploy:preview": "npm run build && npx vercel deploy --prod --yes --scope astral-productions",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",

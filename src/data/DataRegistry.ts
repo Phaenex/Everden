@@ -13,6 +13,7 @@ const DATA_FILES = [
   'objects',
   'journal',
   'districts',
+  'wardrobe',
 ] as const;
 
 type DataKey = (typeof DATA_FILES)[number];

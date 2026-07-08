@@ -1,18 +1,18 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-039)  
-**Play online:** https://everden-chi.vercel.app
+**Last updated:** 2026-07-08 (CHECKIN-046)  
+**Play online:** https://croakend-club.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
 
 ## Progress dashboard (9 workstreams)
 
-**Headline overall:** `█████████░░░░░░░░░░░` **56%** — average of T1–T8 (T9 Future excluded)
+**Headline overall:** `█████████░░░░░░░░░░░` **59%** — average of T1–T8 (T9 Future excluded)
 
 | # | Track | Bar | % | Blocks % when |
 |---|-------|-----|---|---------------|
 | T1 | **Mechanics & CI** | `███████████████████░` | **92%** | e2e or CI red |
-| T2 | **First 5 minutes** | `████████████████░░░░` | **78%** | wizard broken; Nick eye pending |
+| T2 | **First 5 minutes** | `██████████████████░░` | **88%** | Nick creator eye pending |
 | T3 | **Districts & nav** | `█████████████████░░░` | **85%** | scene load fail; nav off-art |
 | T4 | **Quests & dialogue** | `████████████████░░░░` | **82%** | quest hard-block; missing fail-forward |
 | T5 | **Combat & D&D** | `█████████████████░░░` | **88%** | soft-lock; RAW doc gaps |
@@ -33,13 +33,13 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://everden-chi.vercel.app · CHECKIN-039
+Play: https://croakend-club.vercel.app · CHECKIN-046
 
-OVERALL  [█████████░░░░░░░░░░░]  56%
+OVERALL  [█████████░░░░░░░░░░░]  59%
 
 WORKSTREAMS (T1–T9)
-  T1 Mechanics & CI     [███████████████████░]  92%
-  T2 First 5 minutes    [████████████████░░░░]  78%
+  T1 Mechanics & CI     [███████████████████░]  92%  (144 unit)
+  T2 First 5 minutes    [██████████████████░░]  88%
   T3 Districts & nav    [█████████████████░░░]  85%
   T4 Quests & dialogue  [████████████████░░░░]  82%
   T5 Combat & D&D       [█████████████████░░░]  88%
@@ -50,7 +50,7 @@ WORKSTREAMS (T1–T9)
 
 GATED BUILD
   V1 composition+exits  ✅ PASS (AR-002)
-  V2 Lilymarket+wizard  🟡 BORDERLINE — Nick eye (AR-003, AR-018 mech PASS)
+  V2 Lilymarket+wizard  🟡 BORDERLINE — Nick eye (AR-003, AR-018, AR-022/023 agent creator retest)
   V3 district hub loop  🟡 BORDERLINE (AR-004, AR-015)
   V4 quest+combat       ✅ PASS mechanical (AR-019)
   V5 human alpha T8     ⬜ 3/5 sessions
@@ -68,7 +68,7 @@ BUILD PHASES (master plan)
   P12 Post-launch       ⬜ 5%
 
 OPEN STEPS (⬜ / 🟡 only)
-  ⬜ Nick — wizard eye test (T2)
+  ⬜ Nick — wizard eye test (T2) — AR-024 all tabs + in-world outfit green, still needs Nick
   ⬜ Nick — Lilymarket / all-district composition (T3, T6, V2)
   ⬜ Nick — MANUAL_CHECKLIST.md V2 sign-off
   ⬜ T8 — 5 human playtest sessions (after V2)
@@ -78,8 +78,9 @@ OPEN STEPS (⬜ / 🟡 only)
   ⬜ Second combat encounter (post-V5)
 
 DONE RECENTLY
-  · NPC walk from exit on schedule change · V3 hub-loop e2e · demo mod pack
-  · 5-species combat e2e (23/23) · HUD name · nick:summary · AR-020
+  · AR-025 compact creator header + appearance save e2e (6/6)
+  · AR-024 full creator pass + in-world appearance fix
+  · AR-023 Look/Outfits/tint before-after proof
 
 NEXT (pick 1–3)
   1. Nick — MANUAL_CHECKLIST.md (wizard + Lilymarket) → Save or Download JSON
@@ -95,20 +96,23 @@ After any session work, update the bars/rows above in this file, then paste the 
 
 | Item | Status | Owner |
 |------|--------|-------|
-| 129 unit tests green | ✅ | Agent |
-| 23/23 Playwright e2e | ✅ | Agent |
+| 129 unit tests green | ✅ | Agent — now 141 unit |
+| 23/23 Playwright e2e | ✅ | Agent — char-creation 6/6 |
 | typecheck + build + CI workflow | ✅ | Agent |
 | Save v2 (name, motivation, v1 migrate) | ✅ | Agent |
 | QA harness (`__everden`) | ✅ | Agent |
 | Wizard e2e (non-qa) | ✅ | Agent — T30 |
 | V4 quest rows 7–12 automated | ✅ | Agent — T27 |
 
-### T2 — First 5 minutes (78%)
+### T2 — First 5 minutes (88%)
 
 | Item | Status | Owner |
 |------|--------|-------|
 | Continue / New Game + overwrite confirm | ✅ | Agent |
-| Wizard: species → name → motivation → confirm | ✅ | Agent |
+| Wizard: species → name → motivation → confirm | ✅ | Agent — superseded by tabbed creator T31 |
+| Tabbed creator (9 tabs, point-buy, wardrobe) | ✅ | Agent — T31 + T32 |
+| Kit / Skills / Settings tabs + creator-guide | ✅ | Agent — T32 |
+| Skip opening narration + control-hint toggles | ✅ | Agent — T32 |
 | Five folk incl. tortoise | ✅ | Agent |
 | Species/motivation opening narration | ✅ | Agent |
 | Pip `{playerName}` + motivation append | ✅ | Agent |
@@ -307,10 +311,143 @@ After any session work, update the bars/rows above in this file, then paste the 
 | T28 | tortoise culture sheet | ✅ Done | docs/world/species/tortoise.md |
 | T29 | ModLoader smoke test + QUEST_TEMPLATE.md | ✅ Done | 122 unit tests |
 | T30 | e2e character-creation.spec.ts (wizard + Continue) | ✅ Done | 3 tests green |
+| T31 | Character creator overhaul — point-buy, appearance, wardrobe, save v3 | ✅ Done | 136 unit + 3 e2e; Nick creator eye pending |
+| T32 | Creator menu groundwork — Kit/Skills/Settings, guide copy, settings wired | ✅ Done | 141 unit + 5 char-creation e2e |
 
 ---
 
 ## Check-in Log
+
+### CHECKIN-041 — 2026-07-08
+
+**Type:** Character menu groundwork (Kit, Skills, Settings, guide, settings in save/bootstrap)  
+**Agent:** Cursor
+
+**Shipped:**
+
+1. **9-tab creator** — Folk / Look / Outfits / Stats / **Kit** / **Skills** / Story / **Settings** / Review
+2. **`creator-guide.json`** — in-game explanations per tab, stat blurbs, skill reference, settings copy
+3. **`CreatorPanels.ts`** — kit ability cards (`gameHint` on abilities), skills reference, settings toggles
+4. **Settings wired** — `skipOpeningNarration` + `showControlHints` → `PlayerProfile` save v3 + `GameBootstrap` on new game
+5. **Wardrobe thumbnails** on species cards; info boxes on all tabs; review checklist
+6. **CSS** — kit/skills/settings/info panel styles
+
+**Tests:** 141 unit + character-creation e2e 5/5 (tab smoke + skip-narration path) + typecheck + build green.
+
+**Play URL:** https://croakend-club.vercel.app (everden-chi removed)
+
+**Not bumped:** T6 — Nick 16:9 eye test on full creator still required.
+
+**Still open:** Nick creator + Lilymarket composition eye test.
+
+---
+
+### CHECKIN-046 — 2026-07-08
+
+**Type:** Creator compact chrome + appearance save e2e (AR-025)  
+**Agent:** Cursor
+
+**UI:** Creator mode hides premise/studio blurb and shrinks title — more room for tabs + preview (AR-022 dense chrome follow-up).
+
+**E2e:** Added `completeCharacterWithAppearance` + test that variant/markings/tint/wardrobe persist through save. Char-creation suite **6/6**. Fixed canvas-click-before-Escape so pause menu opens after creator.
+
+**Mechanical:** 144 unit + build green.
+
+**Nick eye test:** still blocks T6 bump.
+
+---
+
+### CHECKIN-045 — 2026-07-08
+
+**Type:** Full creator pass + in-world Look/Outfit fix (AR-024)  
+**Agent:** Cursor
+
+**Root fix:** Player sprite was swapping to species PNG and losing tint/wardrobe (broken overlay box in-world). Customized avatars now stay procedural via `appearanceNeedsProceduralRender()` — matches creator preview on Causeway.
+
+**UI polish:** Folk 2-column grid (all 5 visible), brighter stat hints, richer review checklist, folk switch keeps hue/markings/wardrobe, settings toggles without panel flash.
+
+**Visual:** Live walk all 9 tabs + enter with Ferry kepi + Levy mantle — procedural frog with outfit visible in-world. Screenshots `AR024_*`.
+
+**Mechanical:** 144 unit + build + **5/5** char-creation Playwright.
+
+**Nick eye test:** still blocks T6 bump.
+
+---
+
+### CHECKIN-044 — 2026-07-08
+
+**Type:** Look / Outfits / tint visual proof (AR-023)  
+**Agent:** Cursor
+
+**Visual (live localhost:5200):** Clicked every appearance control with before/after screenshots. Pattern 3 + Spots + tint 45 visibly changes preview (pixel avg 62,84,59 → 45,92,52; darkSpots 32764). Ferry kepi + Levy mantle + Shell brooch render on preview (gold pixels 0 → 7248) and update summary line. Tortoise folk switch updates center title. Contrast/readability improved vs prior session.
+
+**Mechanical:** `e2e/character-creation.spec.ts` **5/5** green.
+
+**Screenshots:** `AR023_look_baseline.png`, `AR023_look_pattern3_spots_tint45.png`, `AR023_outfits_baseline.png`, `AR023_outfit_full_equipped.png`, `AR023_folk_tortoise.png`.
+
+**Rules:** Strengthened `everden-visual-verify.mdc` with before/after requirement; global rule already at `.cursor/rules/visual-verify-when-building.mdc`.
+
+**Verdict:** agent visual PASS for Look/Outfits/tint. Nick 16:9 eye still blocks T6 bump.
+
+---
+
+### CHECKIN-043 — 2026-07-08
+
+**Type:** Full retest of character menu groundwork (AR-022)  
+**Agent:** Cursor
+
+**Mechanical:** 141 unit + typecheck + build + **25/25** Playwright.
+
+**Visual (live localhost:5200):** Full 9-tab automated + eyes walk. AR-021 regressions held (title sync, no panel duplicate, motivation note refresh). Skip-narration enter → Causeway HUD `FullCheck · Tortoise`, no opening dialogue.
+
+**Screenshots:** `AR022_creator_review.png`, `AR022_creator_enter_causeway.png`.
+
+**Verdict:** mechanical PASS / visual BORDERLINE (dense creator; Nick eye still blocks T6).
+
+**Not bumped:** T6 / headline % — Nick required.
+
+---
+
+### CHECKIN-042 — 2026-07-08
+
+**Type:** Honest visual QA of creator (AR-021)  
+**Agent:** Cursor
+
+**Truth:** Earlier "verified" claim was mechanical only (unit + Playwright). This session walked the 9-tab creator live in browser.
+
+**Fixed from eyes:**
+
+1. Folk center title desync
+2. Panel-duplicate append on Look/Outfits/Stats picks
+3. Story motivation guide note stuck on investigator
+
+**Live enter:** Tortoise + skip narration → Causeway, HUD correct (no opening panel).
+
+**Verdict:** AR-021 BORDERLINE — T6 / Nick eye still pending. Creator is usable but dense.
+
+---
+
+### CHECKIN-040 — 2026-07-08
+
+**Type:** Character Creator Overhaul (BG3/MMO-style)  
+**Agent:** Cursor
+
+**Shipped:**
+
+1. **PointBuy.ts** — 5e 27-point pool, racial +2/+1 in `species.json`
+2. **PlayerProfile v3** — `stats` + `appearance`; save version 3; v2 migration on load
+3. **Combat + dialogue** — `PlayerProfile.stats` wired (not species defaults)
+4. **Appearance** — hue/markings/variant + `wardrobe.json` + `WardrobeLayers.ts`
+5. **Tabbed creator** — Folk / Look / Wardrobe / Stats / Story / Review with live preview
+6. **Docs** — `INTRO_AND_CHARACTER_CREATION.md`, `CHARACTER_CUSTOMIZATION.md`; nick-checklist opening rows
+
+**Tests:** 136 unit + character-creation e2e 3/3 + build green.
+
+**Not bumped:** T6 — Nick 16:9 eye test on new creator still required.
+
+**Still open:** Nick creator + Lilymarket composition eye test.
+
+---
 
 ### CHECKIN-039 — 2026-07-08
 

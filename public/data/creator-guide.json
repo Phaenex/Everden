@@ -1,0 +1,78 @@
+{
+  "tabs": {
+    "species": "Folk sets your combat role, AC, initiative, and three biology abilities. Stats are built separately on the Stats tab.",
+    "appearance": "Body pattern, tint, and markings are cosmetic — they show on your portrait in the basin and save with your character.",
+    "wardrobe": "Hat, cloak, and accessory layers stack on your portrait. Cosmetic only in this slice — no stat changes.",
+    "stats": "Standard 5e point-buy: 27 points, scores 8–15 before racial +2/+1. Higher stats improve dialogue dice and combat rolls.",
+    "kit": "Your folk's three combat abilities — used in turn-based fights. Species kit is fixed; you customize stats instead.",
+    "skills": "Dialogue uses d20 + ability modifier vs DC. Labels like Persuasion map to CHA, Insight to WIS, etc.",
+    "story": "Name appears in dialogue and the HUD. Motivation sets world flags Pip and others can reference.",
+    "settings": "Controls the first minutes after you enter — narration and hint toasts only affect a new game.",
+    "review": "Final check before entering the Causeway. Fix red warnings before Enter."
+  },
+  "stats": {
+    "str": {
+      "label": "Strength",
+      "modAffects": "Melee attack rolls and damage.",
+      "inGame": "Basic Attack in combat. Rare in dialogue this slice."
+    },
+    "dex": {
+      "label": "Dexterity",
+      "modAffects": "Initiative-adjacent checks; amphibians get advantage on some DEX dialogue in rain.",
+      "inGame": "Movement feel; rain buffs frog/toad in combat and travel."
+    },
+    "con": {
+      "label": "Constitution",
+      "modAffects": "HP and endurance (future leveling).",
+      "inGame": "Tank folk start with higher CON spreads — soak damage in fights."
+    },
+    "int": {
+      "label": "Intelligence",
+      "modAffects": "Knowledge and analysis checks.",
+      "inGame": "History check with Elder Domet on levy law (DC 13). Kess ridge lines use INT."
+    },
+    "wis": {
+      "label": "Wisdom",
+      "modAffects": "Insight, perception, and willpower saves.",
+      "inGame": "Insight with Pip on the levy (DC 12). Enemy WIS saves vs some abilities."
+    },
+    "cha": {
+      "label": "Charisma",
+      "modAffects": "Persuasion and social presence.",
+      "inGame": "Persuade Grizz on the ferry toll (DC 12). Social item bonuses stack on CHA checks."
+    }
+  },
+  "skills": [
+    { "name": "Insight", "stat": "wis", "inGame": "Pip — read whether the levy story holds (Causeway / Lilymarket)." },
+    { "name": "History", "stat": "int", "inGame": "Elder Domet — cite the Charter's fifteen-percent flow limit." },
+    { "name": "Persuasion", "stat": "cha", "inGame": "Grizz — petition to cross without paying the toll." },
+    { "name": "Intimidation", "stat": "cha", "inGame": "Combat diplomacy before Blackfen poachers fight." },
+    { "name": "Athletics", "stat": "str", "inGame": "Reserved for future physical gates — not in vertical slice dialogue yet." },
+    { "name": "Stealth", "stat": "dex", "inGame": "Toad burrow flavor; no dialogue DC in slice." }
+  ],
+  "settings": {
+    "skipOpeningNarration": {
+      "label": "Skip opening narration",
+      "description": "Enter the Causeway immediately — no 3-line intro beat. Good for repeat playtests."
+    },
+    "showControlHints": {
+      "label": "Show control hints",
+      "description": "After the intro (or on enter if narration skipped), toast click-to-move, E, and journal keys."
+    }
+  },
+  "appearance": {
+    "variant": "Alternate pixel patterns on your folk's body — four palettes per species.",
+    "hueShift": "Tints every body color warmer or cooler (−30 to +30).",
+    "marking": {
+      "none": "Clean coat — no extra pattern.",
+      "spots": "Soft spots on the torso and limbs.",
+      "stripes": "Horizontal banding across the body."
+    }
+  },
+  "motivations": {
+    "investigator": "Sets arrival_investigator — Pip treats you as hired to find the truth.",
+    "messenger": "Sets arrival_messenger — you're delivering someone else's worry.",
+    "neighbor": "Sets arrival_neighbor — personal stake in the basin, not abstract duty."
+  },
+  "wardrobeNote": "Outfits render on your portrait in-game. All wardrobe is cosmetic in the vertical slice."
+}

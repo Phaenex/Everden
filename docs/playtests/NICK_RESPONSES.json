@@ -1,17 +1,403 @@
 {
   "version": 1,
-  "updatedAt": null,
+  "updatedAt": "2026-07-08T05:56:14.484Z",
   "session": {
     "tester": "Nick",
     "build": "https://everden-chi.vercel.app",
-    "species": "",
+    "species": "Tortise",
     "display": "16:9",
     "durationMinutes": null,
     "freshSave": true
   },
-  "sections": [],
-  "metrics": [],
-  "globalNotes": "",
+  "sections": [
+    {
+      "id": "opening",
+      "title": "New-game opening (character creation + intro)",
+      "items": [
+        {
+          "id": "title_menu",
+          "label": "Title menu — Continue / New game; overwrite confirm on New game",
+          "answer": "skip",
+          "comment": "Arent you usually able to sort of edit your starting stats and have some potential skills to get when you start up"
+        },
+        {
+          "id": "species_step",
+          "label": "Species step — five folk with role + flavor blurb from data",
+          "answer": "skip",
+          "comment": "When we go into coversations it should go into a cutscene like thing where its our character and the players that our on the quest and the npc all in it sort of like how baldurs gate 3 and other games do. then if its more for a choice thing players can sort of vote for what they want to do for the choices but its still the player whos turn it is choice. "
+        },
+        {
+          "id": "name_step",
+          "label": "Name step — enter name or blank → Traveler",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "motivation_step",
+          "label": "Motivation step — investigator / messenger / neighbor; copy makes sense",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "confirm_sheet",
+          "label": "Confirm sheet — STR–CHA mods, AC, initiative, three abilities match species",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "opening_beat",
+          "label": "Opening beat — 3 flavored narration lines; Continue / Begin",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "control_hint",
+          "label": "Control hint toast readable after beat",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "continue_skips",
+          "label": "Continue skips wizard + opening beat",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "pip_name",
+          "label": "Pip uses your name + motivation append line",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "hud_player",
+          "label": "HUD top-left shows your name · species (or species only if Traveler)",
+          "answer": null,
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "id": "visual",
+      "title": "Visual & composition (16:9 display)",
+      "items": [
+        {
+          "id": "causeway",
+          "label": "Causeway — backdrop fills frame; exits readable",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "lilymarket",
+          "label": "Lilymarket — stalls not cropped; NPCs on ground plane",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "croakend",
+          "label": "Croakend — focal art readable; NPCs not stacked",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "mudwall",
+          "label": "Mudwall — levy/wall visible; combat area obvious",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "ferry_rest",
+          "label": "Ferryman's Rest — ferry/lamp readable (Grizz/Silt only 18:00–06:00; empty at midday is OK)",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "sprites",
+          "label": "Sprites — feet on floor, shadows OK, no z-fight",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "ui_readability",
+          "label": "UI — prompts/panels not clipped at 1080p",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "click_ring",
+          "label": "Click ring only on walkable ground, not domes/walls",
+          "answer": null,
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "id": "feel",
+      "title": "Feel & navigation",
+      "items": [
+        {
+          "id": "click_move",
+          "label": "Click-to-move responsive; no wild zigzag",
+          "answer": null,
+          "comment": "cant move to what we can fully move to areas we can click to still and the movement and what not is still a lot janky"
+        },
+        {
+          "id": "e_key",
+          "label": "E key picks nearest interactable when close",
+          "answer": "yes",
+          "comment": ""
+        },
+        {
+          "id": "places",
+          "label": "Districts feel like places, not grey boxes",
+          "answer": "skip",
+          "comment": "its a start"
+        },
+        {
+          "id": "cant_walk",
+          "label": "Can't walk there only when genuinely off-nav",
+          "answer": "no",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "id": "npcs",
+      "title": "NPCs & living world",
+      "items": [
+        {
+          "id": "schedule",
+          "label": "Schedule — wrong folk leave; expected folk appear",
+          "answer": "skip",
+          "comment": "no clue on how i would now that "
+        },
+        {
+          "id": "npc_walk",
+          "label": "Schedule arrivals walk in from exit; leavers walk out — no random snap on hour tick",
+          "answer": "skip",
+          "comment": "not sure how to test this "
+        },
+        {
+          "id": "no_teleport",
+          "label": "No old hour-teleport glitch (folk don't jump to wrong coords mid-scene)",
+          "answer": "skip",
+          "comment": "i mean it looks fucking stupid can we make this 3d and 2d you know with actual character movement from the npc?"
+        },
+        {
+          "id": "role_clarity",
+          "label": "Merchants/elders/ferry hand in sensible spots",
+          "answer": null,
+          "comment": "not really just standing there doing nothing, idk if we want need to redesisn scenes or make the scenes actually moveable for us to get a full world to walkin like baldurs gate 3 and just explore natrually instead of all those pointint and clicking "
+        },
+        {
+          "id": "overlap",
+          "label": "No ugly 3+ NPC stacks in normal hours",
+          "answer": "skip",
+          "comment": "Names and stuff super hard to see"
+        },
+        {
+          "id": "vole_line",
+          "label": "Vole: Sable Meadowrun species dialogue (if playing vole)",
+          "answer": null,
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "id": "dice",
+      "title": "Dice duel pacing",
+      "items": [
+        {
+          "id": "domet_duel",
+          "label": "Domet WIS — duel popup with d20 + mod + DC",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "kess_duel",
+          "label": "Kess INT — duel popup + species line",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "combat_duel",
+          "label": "Combat attacks show duel popup; pacing OK",
+          "answer": "no",
+          "comment": "The dual needs to be like a cut scene and slower and the player should cick roll dice and the animation happen like baldgurs gate"
+        },
+        {
+          "id": "outcome_banner",
+          "label": "SUCCESS/FAIL/HIT/MISS banner readable",
+          "answer": "no",
+          "comment": "goes to fsat"
+        }
+      ]
+    },
+    {
+      "id": "main_quest",
+      "title": "Main quest — What the Water Remembers",
+      "items": [
+        {
+          "id": "quest_hud",
+          "label": "Quest active from opening; HUD shows real title/stage",
+          "answer": "no",
+          "comment": ""
+        },
+        {
+          "id": "pip_ack",
+          "label": "Pip acknowledges you already heard",
+          "answer": "no",
+          "comment": ""
+        },
+        {
+          "id": "four_examines",
+          "label": "All four examines findable without guessing",
+          "answer": "no",
+          "comment": "no because no clue what that means because the findable stuff isnt desidng well yet"
+        },
+        {
+          "id": "domet_kess",
+          "label": "Domet + Kess make levy vs Charter clear",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "council_vote",
+          "label": "Council vote — choices understandable",
+          "answer": null,
+          "comment": "game isnt nearly there for anyone to udnerstand what the fuck is happening"
+        },
+        {
+          "id": "two_endings",
+          "label": "At least 2 endings feel distinct",
+          "answer": "skip",
+          "comment": ""
+        },
+        {
+          "id": "explain_conflict",
+          "label": "Can explain levy vs Charter in one sentence",
+          "answer": null,
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "id": "side_quests",
+      "title": "Side quests",
+      "items": [
+        {
+          "id": "ferry_toll",
+          "label": "Ferryman's Toll — Grizz → Jenna → Grizz flow",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "wrong_label",
+          "label": "Wrong Label — Pondwort → shelf → Marta → Pondwort",
+          "answer": null,
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "id": "combat",
+      "title": "Combat & agency",
+      "items": [
+        {
+          "id": "diplomacy",
+          "label": "Blackfen — Persuade/Intimidate before first attack",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "abilities",
+          "label": "Species abilities make sense (incl. tortoise shell/withdraw if playing tortoise)",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "combat_log",
+          "label": "Combat log matches screen",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "flee_turns",
+          "label": "Flee works; enemy turns resolve — no soft-lock",
+          "answer": null,
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "id": "systems",
+      "title": "Systems",
+      "items": [
+        {
+          "id": "journal",
+          "label": "[J] Journal entries unlock; opened voluntarily",
+          "answer": "yes",
+          "comment": "but it looks so plain and like it means nothing and hard for a player to maybe understand also doesnt the journal usually have character trackers for who you meet and things like that "
+        },
+        {
+          "id": "weather",
+          "label": "Weather icon + rain VFX; amphibian buff noticeable",
+          "answer": "yes",
+          "comment": ""
+        },
+        {
+          "id": "merchants",
+          "label": "Pip/Marta buy flow works",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "save_reload",
+          "label": "Esc pause → save → reload persists species, name, scene, quest",
+          "answer": null,
+          "comment": ""
+        },
+        {
+          "id": "mute",
+          "label": "Mute toggle works; survives reload",
+          "answer": null,
+          "comment": ""
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "quest_comprehension",
+      "label": "Quest comprehension — levy vs Charter",
+      "pass": null,
+      "notes": ""
+    },
+    {
+      "id": "agency",
+      "label": "Agency — named a consequence from a choice",
+      "pass": null,
+      "notes": ""
+    },
+    {
+      "id": "skill_check_clarity",
+      "label": "Skill-check clarity — saw d20 + DC",
+      "pass": null,
+      "notes": ""
+    },
+    {
+      "id": "combat_clarity",
+      "label": "Combat clarity — diplomacy or dice log clear",
+      "pass": null,
+      "notes": ""
+    },
+    {
+      "id": "immersion",
+      "label": "Immersion — opened journal without being told",
+      "pass": null,
+      "notes": ""
+    }
+  ],
+  "globalNotes": "Okay what the fuck is with all these checklisted options.... you are getting way to ahead of yourself for what you think is testable easily and complete to do that. tons of shit not looking right and the world is flat and stale, no life, idk if we need to redesign the engine, but this is shit a little ",
   "p0Bugs": "",
   "overallVerdict": null
 }

@@ -758,3 +758,36 @@ describe('CombatManager dice duel events (BG3-style vs popup)', () => {
     }
   });
 });
+
+describe('CombatManager player stats', () => {
+  it('uses custom player stats when provided at encounter start', () => {
+    const bus = new EventBus();
+    const data = new DataRegistry();
+    data.loadFromObject({
+      species: [
+        {
+          id: 'frog',
+          name: 'Frog',
+          role: 'mobile',
+          color: '#5c7a52',
+          stats: { str: 8, dex: 14, con: 10, int: 10, wis: 10, cha: 12 },
+          combat: { ac: 12, initiativeMod: 2, abilities: [] },
+        },
+      ],
+      encounters: [
+        {
+          id: 'custom_stats',
+          name: 'Test',
+          gridSize: 8,
+          combatants: [],
+        },
+      ],
+      abilities: [],
+    });
+    const inv = new Inventory(bus, () => undefined);
+    const combat = new CombatManager(bus, data, inv);
+    const custom = { str: 18, dex: 8, con: 10, int: 10, wis: 10, cha: 8 };
+    combat.startEncounter('custom_stats', 'frog', custom);
+    expect(combat.getPlayer()?.stats).toEqual(custom);
+  });
+});

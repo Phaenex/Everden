@@ -30,6 +30,166 @@ Use [`docs/systems/VISUAL_QA_AGENTS.md`](../systems/VISUAL_QA_AGENTS.md) for age
 | AR-018 | 2026-07-08 | Wizard eye — tortoise / messenger non-QA path | preview + screenshots | **PASS** | mechanical | Playwright wizard flow + screenshots; Nick human eye still pending |
 | AR-019 | 2026-07-08 | V4 quest-runner + combat-tester expansion | preview e2e | **PASS** | mechanical | Main quest stage chain, Kess INT + species line, council expose, frog ability smoke — 16/16 e2e |
 | AR-020 | 2026-07-08 | Parallel sprint — NPC walk, hub e2e, species combat | preview e2e | **PASS** | mechanical | NpcPathFollower (exit→slot walk); 5-species ability e2e; V3 hub loop; 129 unit + 23/23 Playwright |
+| AR-021 | 2026-07-08 | Creator visual QA — 9-tab menu live walk | localhost:5200 | **BORDERLINE** | creator | Found + fixed 3 UI bugs; skip-narration enter Causeway verified — Nick 16:9 eye still needed |
+| AR-022 | 2026-07-08 | Full retest — creator + mechanical | localhost:5200 | **PASS** mechanical / **BORDERLINE** visual | creator | 141 unit + 25/25 Playwright; live 9-tab walk + enter; AR-021 regressions held; Nick eye still pending |
+| AR-023 | 2026-07-08 | Look / Outfits / tint before-after visual proof | localhost:5200 | **PASS** agent visual | creator | Live clicks + pixel samples; contrast + preview size fixes confirmed; 5/5 char-creation e2e |
+| AR-024 | 2026-07-08 | Full creator pass + in-world appearance fix | localhost:5200 | **PASS** agent visual | creator | All 9 tabs walked; PNG overlay bug fixed; folk 2-col grid; review checklist; 144 unit + 5/5 e2e |
+| AR-025 | 2026-07-08 | Creator polish + appearance save e2e | localhost:5200 | **PASS** | creator | Compact header chrome; look/outfit save round-trip e2e (6/6); 144 unit |
+
+### AR-025 detail (Compact chrome + appearance save e2e)
+
+**Scope:** Continue creator groundwork — dense header fix + automated regression for appearance persistence.
+
+**Shipped:**
+
+- **Compact creator header** — hide premise/studio when `.creator-shell` is active; smaller title so tabs + preview get vertical room
+- **`completeCharacterWithAppearance` helper** — e2e path for Look + Outfits + Settings skip
+- **New e2e:** `look and outfit choices persist in save` — variant 3, spots, tint 35, ferry kepi + levy mantle round-trip through save v2
+- **E2e fix:** click `#game-canvas` before Escape so pause menu opens after creator (focus was trapped on form controls)
+
+**Mechanical:** 144 unit + **6/6** char-creation Playwright + build green.
+
+**Screenshot:** `AR025_creator_all_tabs.png` (from smokeCreatorTabs).
+
+**Nick eye test:** still pending.
+
+---
+
+### AR-024 detail (Full creator polish + in-world Look/Outfit fix)
+
+**Scope:** User asked to verify/fix everything in the character menu — all tabs, contrast, wardrobe/tint in creator AND in-world.
+
+**Root bug fixed:** `createCharacterMesh` swapped player to species PNG after load, which **discarded** tint/markings and drew wardrobe as a broken full-canvas overlay. Customized players now keep the **procedural sprite** (`appearanceNeedsProceduralRender`) so in-world matches creator preview. Default look (no customization) still uses PNG art.
+
+**Other fixes:**
+
+- Folk panel → 2-column compact grid (all 5 folk visible without scroll)
+- Brighter stat row hints + skills mod chips
+- Review checklist → motivation, look line, named outfit pieces
+- Folk switch preserves hue/marking/wardrobe (only variant resets)
+- Settings toggles no longer re-render entire panel on each click
+- `applyWardrobeOverlay` now includes cloak back-layer
+- `applyAppearanceToArtCanvas` for NPC/default PNG tint path
+
+**Live browser (`localhost:5200`):**
+
+| Tab | Result |
+|-----|--------|
+| Folk | 5 cards in 2-col grid, tortoise/vole visible |
+| Look | Pattern/tint/markings change preview (AR-023 held) |
+| Outfits | Ferry kepi + Levy mantle on preview + summary |
+| Stats / Kit / Skills | Readable panels, mods visible |
+| Story | Name → summary; motivation note refreshes |
+| Settings | Skip narration → review shows "skipped" |
+| Review | Full checklist lines; Enter works |
+| In-world | Procedural frog with hat/cloak visible on Causeway (no PNG glitch box) |
+
+**Mechanical:** 144 unit + typecheck + build + **5/5** char-creation Playwright.
+
+**Screenshots:** `AR024_tab_folk_grid.png`, `AR024_tab_stats.png`, `AR024_tab_story.png`, `AR024_inworld_procedural_outfit.png`.
+
+**Nick eye test:** still pending for 16:9 density / default-PNG vs procedural feel.
+
+---
+
+### AR-023 detail (Look / Outfits / tint — before-after proof)
+
+**Scope:** User-reported "wardrobe and skin coloring don't work" + unreadable contrast. Re-verify after preview-size / contrast / wardrobe-color fixes with **before/after screenshots and canvas pixel samples** (not code-only).
+
+**Live browser (`localhost:5200`, fresh save):**
+
+| Check | Before | After | Result |
+|-------|--------|-------|--------|
+| Look baseline | avg RGB 62,84,59 | — | baseline shot |
+| Pattern 3 + Spots + tint 45 | — | avg RGB 45,92,52; darkSpots 32764 | ✅ visible |
+| Outfits baseline | gold pixels 0 | — | bare frog |
+| Ferry kepi + Levy mantle + Shell brooch | — | gold 7248, redCloak 4076; summary line updates | ✅ visible on preview |
+| Folk vole→tortoise | center still said Frog (AR-021 bug) | center "Tortoise" + Tank · Chronicle-minded | ✅ held |
+| Panel duplicate on equip | AR-021 bug | single Outfits panel after each click | ✅ held |
+| Contrast / readability | user complaint | dark panels, gold borders, large preview | ✅ improved (Nick 16:9 still pending) |
+
+**Screenshots (saved under `docs/playtests/screenshots/`):**
+
+- `AR023_baseline_folk.png`
+- `AR023_look_baseline.png` → `AR023_look_pattern3_spots_tint45.png`
+- `AR023_outfits_baseline.png` → `AR023_outfit_full_equipped.png`
+- `AR023_folk_tortoise.png`
+
+**Mechanical:** `npx playwright test e2e/character-creation.spec.ts` → **5/5** green.
+
+**Nick eye test:** still required for 16:9 layout density and in-world wardrobe vs creator preview parity.
+
+---
+
+### AR-022 detail (Full creator + mechanical retest)
+
+**Scope:** Honest full check after AR-021 fixes — not a new feature build.
+
+**Mechanical:**
+
+- `npm test` → 141 passed
+- `npm run typecheck` + `npm run build` → green
+- Full Playwright → **25/25** (char creation 5, combat abilities 5, hub loop 2, vertical slice + V4 quest, AR-018 shots)
+
+**Live browser (`localhost:5200`, fresh save):**
+
+| Check | Result |
+|-------|--------|
+| Folk switch vole→tortoise updates center title immediately | ✅ |
+| Look / Outfits / Stats stay at 1 panel (no AR-021 duplicate) | ✅ |
+| Outfit equip Shell cap + Levy mantle + Shell brooch | ✅ summary line |
+| Kit shows Shell Block / Withdraw / Ram | ✅ |
+| Skills 6 refs + live mods | ✅ |
+| Story neighbor motivation note refreshes | ✅ |
+| Settings skip narration → Review checklist "skipped" | ✅ |
+| Enter → Causeway, HUD `FullCheck · Tortoise`, **0** dialogue panels | ✅ |
+| Quest tracker + district exits visible | ✅ |
+
+**Screenshots:**
+
+- `docs/playtests/screenshots/AR022_creator_review.png`
+- `docs/playtests/screenshots/AR022_creator_enter_causeway.png`
+- `docs/playtests/screenshots/AR022_creator_walk_mid.png`
+
+**Still BORDERLINE / Nick:**
+
+- Creator chrome still dense (Everden title + 9 tabs + preview + panel + summary)
+- Folk cards need scroll to see Turtle/Tortoise/Vole
+- In-world wardrobe overlay on species PNG is subtler than creator procedural preview (not a blocker this run)
+- T6 / Nick 16:9 eye test still required — agent PASS ≠ Nick PASS
+
+**Nick eye test:** pending
+
+---
+
+### AR-021 detail (Character creator visual walk — Kit/Skills/Settings groundwork)
+
+**Scope:** Live browser walk of full 9-tab creator on `localhost:5200` (not Playwright-only).
+
+**Bugs found visually (fixed same session):**
+
+1. Folk select updated summary/canvas but center title stayed "Frog" until tab change → `onSpeciesChange` now full `render()`
+2. Look / Outfits / Stats re-render appended a second panel instead of replacing → callbacks use `renderPanel()` (clears first)
+3. Story motivation guide note stayed on investigator after picking messenger → motivation click now `renderPanel()`
+
+**Verified working:**
+
+- Kit tab — Shell Block / Withdraw / Ram with type + gameHint
+- Skills tab — live mods + Insight/History/Persuasion reference
+- Settings — skip narration checkbox → causeway with **no** dialogue panel
+- Enter → HUD `Shellen Eye · Tortoise` · Reedwater Causeway · quest tracker on
+
+**Screenshot:** `docs/playtests/screenshots/AR_creator_enter_causeway.png`
+
+**Still open / Nick eye:**
+
+- Creator chrome is dense (title + 9 tabs + preview + panel + summary). Needs 16:9 human composition pass.
+- Wardrobe procedural hats show on preview; full in-world PNG wardrobe not re-checked this run.
+- Folk card list on Folk tab only shows ~2 cards without scroll (panel max-height).
+
+**Nick eye test:** pending — agent visual BORDERLINE, not a T6 PASS.
+
+---
 
 ### AR-007 detail (Visual Cohesion Pass — all 5 districts captured)
 
