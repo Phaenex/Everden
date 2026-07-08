@@ -465,11 +465,18 @@ body {
 .hud-clock,
 .quest-tracker,
 .hud-weather,
-.hud-district {
+.hud-district,
+.hud-player {
   background: rgba(26, 60, 52, 0.85);
   border: 1px solid var(--river);
   padding: 0.4rem 0.8rem;
   font-size: 0.9rem;
+}
+
+.hud-player {
+  color: var(--lily);
+  font-family: 'Crimson Pro', serif;
+  font-weight: 600;
 }
 
 .hud-district {

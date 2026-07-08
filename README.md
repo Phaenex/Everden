@@ -73,6 +73,15 @@ npm run build    # Production bundle
 npm run deploy:preview  # Build + deploy to Vercel (everden-chi.vercel.app)
 ```
 
+### Nick playtest checklist (local)
+
+```bash
+npm run playtest:nick   # interactive checklist; Save writes docs/playtests/NICK_RESPONSES.json
+npm run nick:summary    # print Yes/No summary after Nick saves
+```
+
+On production, use **Download JSON** in the checklist page and drop the file into `docs/playtests/NICK_RESPONSES.json` — repo save only works under `npm run dev`.
+
 ## Status
 
 **Systems ~72% · Experience ~42% · Overall ~52%** — V1 scout AR-002 PASS. Play at [everden-chi.vercel.app](https://everden-chi.vercel.app). See [Master Build Plan](docs/MASTER_BUILD_PLAN.md).

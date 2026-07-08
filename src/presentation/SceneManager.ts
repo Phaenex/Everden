@@ -171,6 +171,10 @@ export class SceneManager implements IGameModule {
     this.npcLabels.delete(id);
   }
 
+  getNPCGroup(id: string): THREE.Group | null {
+    return this.actorGroups.get(id) ?? null;
+  }
+
   /** World (x,z) of a spawned NPC actor, for QA/regression tooling. */
   getActorWorldPosition(id: string): { x: number; z: number } | null {
     const g = this.actorGroups.get(id);

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { getState, loadScene, runCombatUntilEnd, waitForDiceDuel, waitForEverden } from './helpers';
+import { getState, loadScene, runCombatUntilEnd, waitForDiceDuel, waitForEverden, waitForNpcWalkers } from './helpers';
 
 test.describe('Vertical slice — mechanical gates', () => {
   test.beforeEach(async ({ page }) => {
@@ -35,7 +35,7 @@ test.describe('Vertical slice — mechanical gates', () => {
     await loadScene(page, 'lilymarket');
     const before = await getState(page);
     await page.evaluate(() => window.__everden!.advanceHours(6));
-    await page.waitForTimeout(500);
+    await waitForNpcWalkers(page);
     const after = await getState(page);
     expect(after.npcIds.length).toBeLessThanOrEqual(8);
     expect(after.hour).not.toBe(before.hour);
@@ -163,32 +163,5 @@ test.describe('Vertical slice — V4 quest runner (mechanical)', () => {
     const state = await getState(page);
     expect(state.completedQuests).toContain('what_water_remembers');
     expect(state.flags).toContain('kess_stopped');
-  });
-});
-
-test.describe('Vertical slice — V4 combat tester (mechanical)', () => {
-  test.beforeEach(async ({ page }) => {
-    await waitForEverden(page);
-  });
-
-  test('player turn exposes frog species ability buttons', async ({ page }) => {
-    await loadScene(page, 'mudwall');
-    await page.evaluate(() => window.__everden!.startCombat('blackfen_poachers'));
-    await expect(page.locator('.combat-panel:not(.hidden)')).toBeVisible({ timeout: 5000 });
-
-    await expect
-      .poll(async () => {
-        const labels = await page.locator('.combat-actions button').allTextContents();
-        return labels.some((l) => /leap|tongue/i.test(l));
-      })
-      .toBe(true);
-
-    const used = await page.evaluate(() => {
-      const qa = window.__everden!;
-      if (!qa.isCombatActive()) return false;
-      qa.combatUseAbility('leap');
-      return true;
-    });
-    expect(used).toBe(true);
   });
 });

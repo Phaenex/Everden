@@ -20,7 +20,7 @@ Read and update [docs/PROGRESS.md](docs/PROGRESS.md) every session:
 ## At session start
 
 1. Read `docs/PROGRESS.md`
-2. If `docs/playtests/NICK_RESPONSES.json` has `updatedAt` set, **read Nick's playtest responses** and summarize pass/fail/comments before planning work
+2. If `docs/playtests/NICK_RESPONSES.json` has `updatedAt` set, **read Nick's playtest responses** and summarize pass/fail/comments before planning work (`npm run nick:summary` for a quick digest)
 3. **Paste the full "Session report" block** from PROGRESS.md into chat (all workstream bars, gated V1–V5, build phases, open steps, next)
 4. Add 1–2 sentences on what this session will tackle
 

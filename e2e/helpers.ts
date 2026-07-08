@@ -1,8 +1,11 @@
 import type { Page } from '@playwright/test';
 import type { EverdenQaState } from '../src/core/QaHarness';
 
-export async function waitForEverden(page: Page): Promise<void> {
-  await page.goto('/?qa=1&nodev=1');
+export async function waitForEverden(page: Page, options?: { species?: string }): Promise<void> {
+  const species = options?.species;
+  const path =
+    species && species !== 'frog' ? `/?qa=1&nodev=1&species=${encodeURIComponent(species)}` : '/?qa=1&nodev=1';
+  await page.goto(path);
   await page.waitForSelector('#game-canvas.visible', { timeout: 30_000 });
   await page.waitForFunction(() => window.__everden?.ready !== undefined, undefined, { timeout: 30_000 });
   await page.evaluate(async () => {
@@ -25,6 +28,12 @@ export async function waitForDiceDuel(page: Page, timeout = 8000): Promise<void>
   const duel = page.locator('.dice-duel:not(.hidden)');
   await duel.waitFor({ state: 'visible', timeout });
   await duel.waitFor({ state: 'hidden', timeout });
+}
+
+export async function waitForNpcWalkers(page: Page, timeoutMs = 8000): Promise<void> {
+  await page.waitForFunction(() => window.__everden?.npcWalkersIdle?.() === true, undefined, {
+    timeout: timeoutMs,
+  });
 }
 
 export async function runCombatUntilEnd(page: Page, maxTurns = 40): Promise<'ended' | 'timeout'> {

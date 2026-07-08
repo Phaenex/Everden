@@ -32,6 +32,7 @@ export class UIManager {
   private journalList!: HTMLElement;
   private weatherEl!: HTMLElement;
   private audioBtn!: HTMLElement;
+  private playerEl!: HTMLElement;
   private journalOpen = false;
   private getJournalEntries: (() => import('@/gameplay/JournalManager').JournalEntry[]) | null = null;
   private diceOverlay: DiceDuelOverlay;
@@ -64,7 +65,8 @@ export class UIManager {
     this.journalPanel.innerHTML = '<h2>Field Journal</h2><p class="journal-hint">[J] to close</p>';
     this.journalList = this.el('div', 'journal-list');
 
-    this.hud.append(this.clockEl, this.districtEl, this.weatherEl, this.audioBtn, this.questEl);
+    this.playerEl = this.el('div', 'hud-player', '');
+    this.hud.append(this.playerEl, this.clockEl, this.districtEl, this.weatherEl, this.audioBtn, this.questEl);
     this.dialoguePanel.append(this.dialogueText, this.dialogueChoices);
     // `.interaction-prompt` is `position: absolute; bottom: 2rem` meant to anchor to the
     // viewport. `.hud` is also `position: absolute`, so nesting the prompt inside it made
@@ -470,6 +472,13 @@ export class UIManager {
 
   setDistrictName(name: string): void {
     this.districtEl.textContent = name;
+  }
+
+  setPlayerLabel(name: string, speciesId: string): void {
+    const species =
+      speciesId.charAt(0).toUpperCase() + speciesId.slice(1).replace(/_/g, ' ');
+    const display = name.trim() && name !== 'Traveler' ? `${name} · ${species}` : species;
+    this.playerEl.textContent = display;
   }
 
   setPaused(p: boolean): void {

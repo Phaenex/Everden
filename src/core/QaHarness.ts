@@ -49,6 +49,7 @@ export interface EverdenQa {
   isCombatActive(): boolean;
   getDialogueText(): string;
   completeQuestOutcome(questId: string, outcomeId: string): boolean;
+  npcWalkersIdle(): boolean;
 }
 
 declare global {
@@ -86,6 +87,7 @@ export function installQaHarness(bootstrap: GameBootstrap, ready: Promise<void>)
     isCombatActive: () => bootstrap.qaIsCombatActive(),
     getDialogueText: () => bootstrap.qaGetDialogueText(),
     completeQuestOutcome: (q, o) => bootstrap.qaCompleteQuestOutcome(q, o),
+    npcWalkersIdle: () => bootstrap.qaNpcWalkersIdle(),
   };
   window.__everden = api;
   return api;

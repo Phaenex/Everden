@@ -1,0 +1,16 @@
+[
+  {
+    "id": "pip_marshwick",
+    "name": "Pip Marshwick (Demo Mod)",
+    "species": "frog",
+    "faction": "lilymarket_traders",
+    "home": "lilymarket",
+    "workplace": "lilymarket",
+    "title": "Stall Clerk",
+    "dialogueId": "pip_marshwick",
+    "schedule": [
+      { "startHour": 6, "endHour": 22, "activity": "work", "location": "lilymarket" }
+    ],
+    "position": { "x": 0, "y": 0, "z": 0 }
+  }
+]

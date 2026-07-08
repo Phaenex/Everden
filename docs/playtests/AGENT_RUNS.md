@@ -29,6 +29,7 @@ Use [`docs/systems/VISUAL_QA_AGENTS.md`](../systems/VISUAL_QA_AGENTS.md) for age
 | AR-017 | 2026-07-08 | Character creation wizard + save v2 + D&D mechanics fixes | localhost (unit + e2e) | **PASS** | mechanical | 120 unit tests + 8/8 e2e; full wizard tortoise path Nick eye pending — see detail |
 | AR-018 | 2026-07-08 | Wizard eye — tortoise / messenger non-QA path | preview + screenshots | **PASS** | mechanical | Playwright wizard flow + screenshots; Nick human eye still pending |
 | AR-019 | 2026-07-08 | V4 quest-runner + combat-tester expansion | preview e2e | **PASS** | mechanical | Main quest stage chain, Kess INT + species line, council expose, frog ability smoke — 16/16 e2e |
+| AR-020 | 2026-07-08 | Parallel sprint — NPC walk, hub e2e, species combat | preview e2e | **PASS** | mechanical | NpcPathFollower (exit→slot walk); 5-species ability e2e; V3 hub loop; 129 unit + 23/23 Playwright |
 
 ### AR-007 detail (Visual Cohesion Pass — all 5 districts captured)
 

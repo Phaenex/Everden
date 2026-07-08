@@ -1,0 +1,6 @@
+{
+  "id": "demo_pack",
+  "name": "Everden Demo Mod Pack",
+  "version": 1,
+  "dataFiles": ["npcs.json"]
+}

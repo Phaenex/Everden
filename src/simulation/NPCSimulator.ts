@@ -1,6 +1,7 @@
 import type { EventBus } from '@/core/EventBus';
 import type { ISaveable } from '@/core/IGameModule';
 import type { DataRegistry } from '@/data/DataRegistry';
+import { getScheduleEntry } from '@/gameplay/NpcPresence';
 
 export interface NPCRuntimeState {
   id: string;
@@ -49,7 +50,7 @@ export class NPCSimulator implements ISaveable {
 
   private onHour(hour: number): void {
     for (const npc of this.data.get('npcs')) {
-      const entry = npc.schedule.find((s) => hour >= s.startHour && hour < s.endHour);
+      const entry = getScheduleEntry(npc, hour);
       const state = this.states.get(npc.id);
       if (!state || !entry) continue;
 

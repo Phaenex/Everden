@@ -39,4 +39,32 @@ describe('NPCSimulator soak', () => {
     expect(state).toBeDefined();
     expect(state!.location).toMatch(/lilymarket|mudwall/);
   });
+
+  it('matches overnight schedule windows the same way NpcPresence does', () => {
+    const bus = new EventBus();
+    const data = new DataRegistry();
+    data.loadFromObject({
+      npcs: [
+        {
+          id: 'night_npc',
+          name: 'Night',
+          species: 'frog',
+          faction: 'test',
+          home: 'home',
+          workplace: 'work',
+          schedule: [{ startHour: 18, endHour: 8, activity: 'sleep', location: 'ferry_rest' }],
+          dialogueId: 'test',
+          position: { x: 0, y: 0, z: 0 },
+        },
+      ] as never,
+    });
+    const sim = new NPCSimulator(bus, data);
+    sim.init();
+
+    bus.emit('time:hour', { hour: 20, day: 1 });
+    expect(sim.getState('night_npc')!.location).toBe('ferry_rest');
+
+    bus.emit('time:hour', { hour: 10, day: 2 });
+    expect(sim.getState('night_npc')!.location).toBe('ferry_rest');
+  });
 });

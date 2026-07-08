@@ -2,6 +2,24 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { EventBus } from '@/core/EventBus';
 import { UIManager } from '@/ui/UIManager';
 
+describe('UIManager HUD player label', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="ui-root"></div>';
+  });
+
+  it('shows name and species when the player has a custom name', () => {
+    const ui = new UIManager(new EventBus());
+    ui.setPlayerLabel('Pip', 'frog');
+    expect(document.querySelector('.hud-player')!.textContent).toBe('Pip · Frog');
+  });
+
+  it('shows species only for the default Traveler name', () => {
+    const ui = new UIManager(new EventBus());
+    ui.setPlayerLabel('Traveler', 'tortoise');
+    expect(document.querySelector('.hud-player')!.textContent).toBe('Tortoise');
+  });
+});
+
 describe('UIManager.showConfirm (regression: combat used to start instantly with no confirmation)', () => {
   beforeEach(() => {
     document.body.innerHTML = '<div id="ui-root"></div>';

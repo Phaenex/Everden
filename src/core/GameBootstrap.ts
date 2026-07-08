@@ -10,6 +10,8 @@ import { EconomySimulator } from '@/simulation/EconomySimulator';
 import { WeatherSimulator } from '@/simulation/WeatherSimulator';
 import { PlayerController, type InteractableTarget } from '@/gameplay/PlayerController';
 import { NavigationController } from '@/engine/NavigationController';
+import { NpcPathFollower } from '@/engine/NpcPathFollower';
+import type { NavMesh } from '@/engine/NavMesh';
 import { QuestManager } from '@/gameplay/QuestManager';
 import { Inventory } from '@/gameplay/Inventory';
 import { CombatManager } from '@/gameplay/CombatManager';
@@ -59,6 +61,10 @@ export class GameBootstrap {
   private started = false;
   private npcMap = new Map<string, NPCDefinition>();
   private currentSpec: SceneDefinition | null = null;
+  private currentNav: NavMesh | null = null;
+  private npcWalker = new NpcPathFollower();
+  private npcArriving = new Set<string>();
+  private npcDeparting = new Set<string>();
 
   async start(canvas: HTMLCanvasElement, request: GameStartRequest = { mode: 'new', species: 'frog', name: 'Traveler', motivation: 'investigator' }): Promise<void> {
     if (this.started) return;
@@ -135,6 +141,7 @@ export class GameBootstrap {
 
     this.ui = new UIManager(this.eventBus);
     this.ui.init();
+    this.ui.setPlayerLabel(this.playerProfile.name, playerSpecies);
     this.ui.bindJournal(() => this.journal.getEntries());
     this.ui.bindAudioToggle(
       () => this.audio.isMuted(),
@@ -197,6 +204,7 @@ export class GameBootstrap {
 
     this.loop.addModule(this.worldClock);
     this.loop.addModule(this.navigation);
+    this.loop.addModule(this.npcWalker);
     this.loop.addModule(this.player);
     this.loop.addModule(this.sceneManager);
     this.loop.addModule(this.rainVfx);
@@ -298,6 +306,10 @@ export class GameBootstrap {
   qaAdvanceHours(hours: number): void {
     this.worldClock.advanceHours(hours);
     void this.refreshNpcPresence();
+  }
+
+  qaNpcWalkersIdle(): boolean {
+    return !this.npcWalker.hasActiveWalkers();
   }
 
   qaSetQuestStage(questId: string, stage: string): void {
@@ -435,7 +447,12 @@ export class GameBootstrap {
 
     this.sceneManager.clearSceneContent();
     const nav = buildSceneGraphics(spec, this.sceneManager.kernel, this.data.get('objects') as WorldObjectDefinition[]);
+    this.currentNav = nav;
     this.navigation.setNavMesh(nav);
+    this.npcWalker.setNavMesh(nav);
+    this.npcWalker.cancelAll();
+    this.npcArriving.clear();
+    this.npcDeparting.clear();
     this.sceneManager.lockCameraTo(spec.ground?.x ?? 0, spec.ground?.z ?? 0);
 
     this.spawnSceneNpcs(spec);
@@ -475,38 +492,98 @@ export class GameBootstrap {
     );
 
     for (const id of [...this.npcMap.keys()]) {
-      if (!shouldBe.has(id)) {
+      if (shouldBe.has(id) || this.npcDeparting.has(id) || this.npcWalker.isWalking(id)) continue;
+      const group = this.sceneManager.getNPCGroup(id);
+      const slot = spec.npcs.find((s) => s.id === id);
+      if (group && slot && this.currentNav) {
+        const entry = this.pickNpcEntryPoint(spec, slot);
+        this.npcDeparting.add(id);
+        const started = this.npcWalker.walkTo(id, group, entry.x, entry.z, () => {
+          this.sceneManager.removeNPCActor(id);
+          this.npcMap.delete(id);
+          this.npcDeparting.delete(id);
+        });
+        if (!started) {
+          this.sceneManager.removeNPCActor(id);
+          this.npcMap.delete(id);
+          this.npcDeparting.delete(id);
+        }
+      } else {
         this.sceneManager.removeNPCActor(id);
         this.npcMap.delete(id);
       }
     }
 
     for (const slot of spec.npcs) {
-      if (!shouldBe.has(slot.id) || this.npcMap.has(slot.id)) continue;
+      if (!shouldBe.has(slot.id) || this.npcMap.has(slot.id) || this.npcArriving.has(slot.id)) continue;
       const npc = this.data.getById<NPCDefinition>('npcs', slot.id);
       if (!npc) continue;
       this.npcMap.set(npc.id, npc);
       const actor = createCharacterActor(npc.species, npc.name, npc.variant ?? 0, npc.id);
-      actor.group.position.set(slot.x, 0, slot.z);
+      const entry = this.pickNpcEntryPoint(spec, slot);
+      const dist = Math.hypot(entry.x - slot.x, entry.z - slot.z);
+      actor.group.position.set(entry.x, 0, entry.z);
       this.sceneManager.addNPCActor(npc.id, actor.group, actor.label);
+
+      if (dist > 0.35 && this.currentNav) {
+        this.npcArriving.add(npc.id);
+        const started = this.npcWalker.walkTo(npc.id, actor.group, slot.x, slot.z, () => {
+          this.npcArriving.delete(npc.id);
+          this.registerNpcInteractable(npc, slot);
+        });
+        if (!started) {
+          actor.group.position.set(slot.x, 0, slot.z);
+          this.npcArriving.delete(npc.id);
+        }
+      } else {
+        actor.group.position.set(slot.x, 0, slot.z);
+      }
     }
 
     this.player.clearInteractables();
     this.registerSceneInteractables(spec);
   }
 
+  private pickNpcEntryPoint(
+    spec: SceneDefinition,
+    slot: { x: number; z: number },
+  ): { x: number; z: number } {
+    if (spec.exits.length === 0) return { x: slot.x, z: slot.z };
+    let best = spec.exits[0]!;
+    let bestDist = Infinity;
+    for (const exit of spec.exits) {
+      const d = Math.hypot(exit.x - slot.x, exit.z - slot.z);
+      if (d < bestDist) {
+        bestDist = d;
+        best = exit;
+      }
+    }
+    return { x: best.x, z: best.z };
+  }
+
+  private registerNpcInteractable(npc: NPCDefinition, slot: { x: number; z: number }): void {
+    this.player.registerInteractable({
+      id: npc.id,
+      label: `Talk to ${npc.name}`,
+      type: 'npc',
+      position: new THREE.Vector3(slot.x, 0, slot.z),
+      radius: 1.1,
+      payload: { dialogueId: npc.dialogueId, species: npc.species, title: npc.title, npcId: npc.id },
+    });
+  }
+
   private registerSceneInteractables(spec: SceneDefinition): void {
     for (const npc of this.npcMap.values()) {
+      if (
+        this.npcArriving.has(npc.id) ||
+        this.npcDeparting.has(npc.id) ||
+        this.npcWalker.isWalking(npc.id)
+      ) {
+        continue;
+      }
       const slot = spec.npcs.find((s) => s.id === npc.id);
       if (!slot) continue;
-      this.player.registerInteractable({
-        id: npc.id,
-        label: `Talk to ${npc.name}`,
-        type: 'npc',
-        position: new THREE.Vector3(slot.x, 0, slot.z),
-        radius: 1.1,
-        payload: { dialogueId: npc.dialogueId, species: npc.species, title: npc.title, npcId: npc.id },
-      });
+      this.registerNpcInteractable(npc, slot);
     }
 
     const objectDefs = this.data.get('objects') as WorldObjectDefinition[];

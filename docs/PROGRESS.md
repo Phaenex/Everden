@@ -1,6 +1,6 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-036)  
+**Last updated:** 2026-07-08 (CHECKIN-039)  
 **Play online:** https://everden-chi.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
@@ -11,15 +11,15 @@
 
 | # | Track | Bar | % | Blocks % when |
 |---|-------|-----|---|---------------|
-| T1 | **Mechanics & CI** | `██████████████████░░` | **88%** | e2e or CI red |
+| T1 | **Mechanics & CI** | `███████████████████░` | **92%** | e2e or CI red |
 | T2 | **First 5 minutes** | `████████████████░░░░` | **78%** | wizard broken; Nick eye pending |
-| T3 | **Districts & nav** | `████████████████░░░░` | **80%** | scene load fail; nav off-art |
+| T3 | **Districts & nav** | `█████████████████░░░` | **85%** | scene load fail; nav off-art |
 | T4 | **Quests & dialogue** | `████████████████░░░░` | **82%** | quest hard-block; missing fail-forward |
 | T5 | **Combat & D&D** | `█████████████████░░░` | **88%** | soft-lock; RAW doc gaps |
 | T6 | **Look & feel** | `████████░░░░░░░░░░░░` | **42%** | scout FAIL; Nick eye no |
 | T7 | **Art & audio** | `█████░░░░░░░░░░░░░░░` | **25%** | T6b blocked on Nick sketches |
 | T8 | **Gated build V1–V5** | `█████████░░░░░░░░░░░` | **48%** | any V-row FAIL |
-| T9 | **Groundwork** | `██████░░░░░░░░░░░░░░` | **32%** | (future; does not move headline %) |
+| T9 | **Groundwork** | `████████░░░░░░░░░░░░` | **45%** | (future; does not move headline %) |
 
 **Current milestone:** V4 mechanical PASS (AR-019) — **V2 Nick eye** on wizard + Lilymarket  
 **Next gate:** Nick MANUAL_CHECKLIST V2 sign-off  
@@ -33,20 +33,20 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://everden-chi.vercel.app · CHECKIN-036
+Play: https://everden-chi.vercel.app · CHECKIN-039
 
 OVERALL  [█████████░░░░░░░░░░░]  56%
 
 WORKSTREAMS (T1–T9)
-  T1 Mechanics & CI     [██████████████████░░]  88%
+  T1 Mechanics & CI     [███████████████████░]  92%
   T2 First 5 minutes    [████████████████░░░░]  78%
-  T3 Districts & nav    [████████████████░░░░]  80%
+  T3 Districts & nav    [█████████████████░░░]  85%
   T4 Quests & dialogue  [████████████████░░░░]  82%
   T5 Combat & D&D       [█████████████████░░░]  88%
   T6 Look & feel        [████████░░░░░░░░░░░░]  42%  ← gates Experience %
   T7 Art & audio        [█████░░░░░░░░░░░░░░░]  25%
   T8 Gated build V1–V5  [█████████░░░░░░░░░░░]  48%
-  T9 Groundwork         [██████░░░░░░░░░░░░░░]  32%  (not in overall %)
+  T9 Groundwork         [████████░░░░░░░░░░░░]  45%  (not in overall %)
 
 GATED BUILD
   V1 composition+exits  ✅ PASS (AR-002)
@@ -72,19 +72,18 @@ OPEN STEPS (⬜ / 🟡 only)
   ⬜ Nick — Lilymarket / all-district composition (T3, T6, V2)
   ⬜ Nick — MANUAL_CHECKLIST.md V2 sign-off
   ⬜ T8 — 5 human playtest sessions (after V2)
-  🟡 git push — blocked on GitHub workflow OAuth scope
-  ⬜ NPC walk-not-teleport (gated on Nick V2)
+  🟡 git push — Phaenex account needs `workflow` scope; pushed via Damatnic (c8abec6)
+  ⬜ NPC walk-not-teleport — 🟡 mechanical walk shipped; Nick eye on feel
   ⬜ T6b hand-drawn art (blocked — Nick sketches)
-  ⬜ Leveling / proficiency placeholder docs (T9)
   ⬜ Second combat encounter (post-V5)
 
 DONE RECENTLY
-  · Multi-track dashboard · AR-018 wizard · AR-019 V4 e2e (17/17)
-  · 122 unit tests · tortoise.md · QUEST_TEMPLATE · ModLoader test
+  · NPC walk from exit on schedule change · V3 hub-loop e2e · demo mod pack
+  · 5-species combat e2e (23/23) · HUD name · nick:summary · AR-020
 
 NEXT (pick 1–3)
-  1. Nick — MANUAL_CHECKLIST.md (wizard + Lilymarket)
-  2. git push with workflow scope
+  1. Nick — MANUAL_CHECKLIST.md (wizard + Lilymarket) → Save or Download JSON
+  2. Agent reads NICK_RESPONSES.json + `npm run nick:summary` after save
   3. T6 eye test → unlock Experience % bump
 ```
 
@@ -92,12 +91,12 @@ After any session work, update the bars/rows above in this file, then paste the 
 
 ---
 
-### T1 — Mechanics & CI (88%)
+### T1 — Mechanics & CI (92%)
 
 | Item | Status | Owner |
 |------|--------|-------|
-| 122 unit tests green | ✅ | Agent |
-| 16/17 Playwright e2e | ✅ | Agent |
+| 129 unit tests green | ✅ | Agent |
+| 23/23 Playwright e2e | ✅ | Agent |
 | typecheck + build + CI workflow | ✅ | Agent |
 | Save v2 (name, motivation, v1 migrate) | ✅ | Agent |
 | QA harness (`__everden`) | ✅ | Agent |
@@ -116,7 +115,7 @@ After any session work, update the bars/rows above in this file, then paste the 
 | AR-018 non-QA tortoise playthrough | ✅ | Agent — AR-018 |
 | Nick wizard eye test | ⬜ | Nick |
 
-### T3 — Districts & nav (80%)
+### T3 — Districts & nav (85%)
 
 | Item | Status | Owner |
 |------|--------|-------|
@@ -125,8 +124,9 @@ After any session work, update the bars/rows above in this file, then paste the 
 | Exit portals + save restores scene | ✅ | Agent |
 | NPC schedule-aware presence | ✅ | Agent |
 | Causeway hub landmarks (AR-015) | ✅ | Agent |
+| V3 hub-loop e2e (5-district round trip) | ✅ | Agent — AR-020 |
 | Nick composition eye (all districts) | ⬜ | Nick |
-| NPC walk-not-teleport animation | ⬜ | Agent — gated on Nick V2 |
+| NPC walk-not-teleport animation | 🟡 | Agent — exit→slot walk; Nick eye on feel |
 
 ### T4 — Quests & dialogue (82%)
 
@@ -138,6 +138,7 @@ After any session work, update the bars/rows above in this file, then paste the 
 | Fail-forward skill checks (Domet, Grizz, Kess) | ✅ | Agent |
 | Readable quest tracker (title + stage) | ✅ | Agent |
 | V4 automated main-quest chain (rows 7–11) | ✅ | Agent — AR-019 |
+| V4 all-species combat ability smoke | ✅ | Agent — AR-020 |
 | Second quest with full check/branch pattern | ⬜ | Agent — post-V5 |
 
 ### T5 — Combat & D&D (88%)
@@ -151,6 +152,7 @@ After any session work, update the bars/rows above in this file, then paste the 
 | Crit doubles dice only; flat DC checks | ✅ | Agent |
 | COMBAT.md deliberate simplifications | ✅ | Agent — T26 |
 | V4 combat ability smoke (frog leap) | ✅ | Agent — AR-019 |
+| V4 all-species ability smoke | ✅ | Agent — AR-020 |
 | Second combat encounter | ⬜ | Agent — post-V5 |
 
 ### T6 — Look & feel (42%)
@@ -187,7 +189,7 @@ After any session work, update the bars/rows above in this file, then paste the 
 | V4 quest + combat | ✅ PASS (mechanical) | AR-019 |
 | V5 human alpha (T8) | ⬜ | 3/5 sessions required |
 
-### T9 — Groundwork (32%)
+### T9 — Groundwork (45%)
 
 | Item | Status | Owner |
 |------|--------|-------|
@@ -196,7 +198,9 @@ After any session work, update the bars/rows above in this file, then paste the 
 | `docs/world/species/tortoise.md` | ✅ | Agent — T28 |
 | `docs/narrative/QUEST_TEMPLATE.md` | ✅ | Agent — T29 |
 | ModLoader smoke test | ✅ | Agent — T29 |
-| Leveling / proficiency placeholder docs | ⬜ | Agent |
+| Leveling / proficiency placeholder docs | ✅ | Agent — `docs/systems/LEVELING.md` |
+| NetworkModule unit smoke | ✅ | Agent — `NetworkModule.test.ts` |
+| Demo mod pack (`public/mods/demo_pack/`) | ✅ | Agent |
 | Mod packs (`ModLoader.ts`) | ⬜ | Post-V5 |
 | Multiplayer stub (`NetworkModule.ts`) | ⬜ | [MULTIPLAYER_FUTURE.md](systems/MULTIPLAYER_FUTURE.md) |
 
@@ -207,7 +211,7 @@ After any session work, update the bars/rows above in this file, then paste the 
 | Priority | Item | Status |
 |----------|------|--------|
 | ✅ | Multi-track dashboard (T23) | Done — CHECKIN-036 |
-| 🟡 | git push to GitHub (T24) | Vercel redeployed; push blocked on workflow OAuth scope |
+| ✅ | git push to GitHub (T24) | main through c8abec6 (Damatnic); Phaenex needs workflow scope for future pushes |
 | ✅ | AR-018 + AR-019 | Done |
 | 🟡 | Gated visual QA V2–V3 | Nick eye on Lilymarket + wizard |
 | ⬜ | Alpha phase gate (T8 humans) | After Nick V2 sign-off |
@@ -307,6 +311,63 @@ After any session work, update the bars/rows above in this file, then paste the 
 ---
 
 ## Check-in Log
+
+### CHECKIN-039 — 2026-07-08
+
+**Type:** Full parallel sprint while Nick playtests (no T6 bump)  
+**Agent:** Cursor
+
+**Shipped:**
+
+1. **NPC walk-not-teleport** — `NpcPathFollower`: schedule spawns walk from nearest exit to slot; departures walk to exit before despawn.
+2. **NPCSimulator** — overnight schedule fix via shared `getScheduleEntry`.
+3. **V3 hub-loop e2e** — 5-district round trip + Jenna noon walk-in test.
+4. **5-species combat e2e** + QA `?species=` param.
+5. **HUD player name**, `LEVELING.md`, `nick:summary`, demo mod pack, NetworkModule tests.
+6. **AR-020** logged.
+
+**Tests:** 129 unit + 23/23 Playwright + build green. **Deployed** to Vercel after commit.
+
+**Still waiting:** Nick `NICK_RESPONSES.json` save.
+
+---
+
+### CHECKIN-038 — 2026-07-08
+
+**Type:** Parallel mechanical coverage while Nick playtests (no T6 bump)  
+**Agent:** Cursor
+
+**Shipped (includes CHECKIN-037 uncommitted stack):**
+
+1. **HUD player label** — `Name · Species` in top HUD.
+2. **`LEVELING.md`** + **`npm run nick:summary`** + README playtest notes.
+3. **All-species combat e2e** — `e2e/combat-abilities.spec.ts` (frog/toad/turtle/tortoise/vole); QA `?species=` URL param.
+4. **`NetworkModule.test.ts`** — WebSocket stub smoke (T9).
+5. **UIManager** — `setPlayerLabel` unit tests.
+
+**Tests:** 126 unit + 22/22 Playwright e2e + build green. **Nick `NICK_RESPONSES.json` still empty.**
+
+**Next:** Commit + push + Vercel when Nick wants live HUD; triage checklist when saved.
+
+---
+
+### CHECKIN-037 — 2026-07-08
+
+**Type:** Parallel polish while Nick playtests (no Experience % bump)  
+**Agent:** Cursor
+
+**Shipped:**
+
+1. **HUD player label** — `UIManager.setPlayerLabel` shows `Name · Species` (species only if default Traveler).
+2. **`docs/systems/LEVELING.md`** — future proficiency/XP stub (T9).
+3. **`npm run nick:summary`** — `scripts/summarize-nick-playtest.mjs` prints Yes/No/P0 from `NICK_RESPONSES.json`.
+4. **README** — playtest:nick + nick:summary instructions.
+
+**Tests:** 122 unit + build green. **T6 unchanged** — waiting on Nick eye.
+
+**Next:** Read `NICK_RESPONSES.json` when Nick saves; triage NO answers into fixes.
+
+---
 
 ### CHECKIN-036 — 2026-07-08
 

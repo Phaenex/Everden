@@ -14,6 +14,14 @@ function enterGame(request: GameStartRequest): void {
   void bootstrap.start(canvas, request);
 }
 
+const PLAYABLE_SPECIES = ['frog', 'toad', 'turtle', 'tortoise', 'vole'] as const;
+type PlayableSpecies = (typeof PLAYABLE_SPECIES)[number];
+
+function qaSpeciesFromParams(params: URLSearchParams): PlayableSpecies {
+  const raw = params.get('species');
+  return PLAYABLE_SPECIES.includes(raw as PlayableSpecies) ? (raw as PlayableSpecies) : 'frog';
+}
+
 if (qaMode) {
   const params = new URLSearchParams(window.location.search);
   if (!params.has('keep')) {
@@ -22,7 +30,8 @@ if (qaMode) {
   if (params.has('keep') && SaveSystem.hasExistingSave()) {
     enterGame({ mode: 'continue' });
   } else {
-    enterGame({ mode: 'new', species: 'frog', name: 'Traveler', motivation: 'investigator' });
+    const species = qaSpeciesFromParams(params);
+    enterGame({ mode: 'new', species, name: 'Traveler', motivation: 'investigator' });
   }
 } else {
   const titleScreen = new TitleScreen(enterGame);
