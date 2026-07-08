@@ -302,6 +302,7 @@ body {
   gap: 0.35rem;
   flex: 1;
   align-content: start;
+  overflow: hidden;
 }
 
 .species-card {
@@ -939,7 +940,8 @@ body {
     line-height: 1.1;
   }
 
-  .wardrobe-card .style-card-hint {
+  .wardrobe-card .style-card-hint,
+  .species-blurb {
     display: none;
   }
 

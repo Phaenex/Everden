@@ -212,7 +212,7 @@ export class CharacterCreator {
       card.append(thumb);
       card.append(el('span', 'style-card-label', def.name.replace(' Folk', '')));
       card.append(el('span', 'species-card-role', def.selectRole ?? def.role));
-      card.append(el('span', 'style-card-hint', def.selectBlurb ?? ''));
+      card.append(el('span', 'style-card-hint species-blurb', def.selectBlurb ?? ''));
       card.addEventListener('click', () => this.onSpeciesChange(id));
       grid.append(card);
     }

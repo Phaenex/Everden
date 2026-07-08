@@ -298,87 +298,223 @@ export function applyAppearanceToArtCanvas(
 }
 
 function drawFrog(v: number): Pixel[] {
-  const bodies = ['#5c7a52', '#3a8a70', '#7a9a40', '#2a6a50'];
-  const bellies = ['#8ab070', '#a0d090', '#c0e070', '#70b098'];
+  const bodies = ['#4c7842', '#2e8a68', '#6a8832', '#207858'];
+  const bellies = ['#78b258', '#88c282', '#aed058', '#68a87e'];
   const body = bodies[v % 4]!;
   const belly = bellies[v % 4]!;
-  const eye = '#1a1a1a';
-  const highlight = '#e8ffe0';
+  const dark = '#1a2c16';
+
   return [
-    ...rect(10, 8, 12, 10, body),
-    ...rect(12, 14, 8, 8, belly),
-    ...rect(8, 20, 5, 6, body),
-    ...rect(19, 20, 5, 6, body),
-    ...rect(11, 9, 3, 3, highlight),
-    ...rect(18, 9, 3, 3, highlight),
-    ...rect(12, 10, 2, 2, eye),
-    ...rect(18, 10, 2, 2, eye),
-    ...rect(14, 12, 4, 1, '#3d3228'),
+    // eye sclera (bulging above head)
+    ...rect(9, 7, 4, 3, '#c8e8c0'),
+    ...rect(20, 7, 4, 3, '#c8e8c0'),
+    // pupils
+    ...rect(10, 8, 2, 2, '#0a1408'),
+    ...rect(21, 8, 2, 2, '#0a1408'),
+    // eye shines
+    { x: 9, y: 7, c: '#ffffff' }, { x: 22, y: 7, c: '#ffffff' },
+    // eye outlines
+    ...rect(8, 6, 6, 1, dark), { x: 8, y: 7, c: dark }, { x: 8, y: 8, c: dark }, { x: 8, y: 9, c: dark }, { x: 13, y: 7, c: dark }, { x: 13, y: 8, c: dark }, { x: 13, y: 9, c: dark },
+    ...rect(19, 6, 6, 1, dark), { x: 19, y: 7, c: dark }, { x: 19, y: 8, c: dark }, { x: 19, y: 9, c: dark }, { x: 24, y: 7, c: dark }, { x: 24, y: 8, c: dark }, { x: 24, y: 9, c: dark },
+    // head fill
+    ...rect(9, 9, 14, 7, body),
+    { x: 9, y: 9, c: dark }, { x: 22, y: 9, c: dark },
+    // lower face + chin outlines
+    { x: 9, y: 10, c: dark }, { x: 9, y: 11, c: dark }, { x: 9, y: 12, c: dark }, { x: 9, y: 13, c: dark }, { x: 9, y: 14, c: dark }, { x: 9, y: 15, c: dark },
+    { x: 22, y: 10, c: dark }, { x: 22, y: 11, c: dark }, { x: 22, y: 12, c: dark }, { x: 22, y: 13, c: dark }, { x: 22, y: 14, c: dark }, { x: 22, y: 15, c: dark },
+    // belly patch on face
+    ...rect(12, 11, 8, 4, belly),
+    // mouth
+    { x: 10, y: 15, c: dark }, ...rect(11, 15, 10, 1, '#38200e'), { x: 21, y: 15, c: dark },
+    { x: 10, y: 16, c: dark }, { x: 11, y: 16, c: dark }, { x: 20, y: 16, c: dark }, { x: 21, y: 16, c: dark },
+    // body fill + belly
+    ...rect(10, 17, 12, 8, body),
+    ...rect(12, 17, 8, 8, belly),
+    // body side outlines
+    { x: 9, y: 17, c: dark }, { x: 9, y: 18, c: dark }, { x: 9, y: 19, c: dark }, { x: 9, y: 20, c: dark }, { x: 9, y: 21, c: dark }, { x: 9, y: 22, c: dark }, { x: 9, y: 23, c: dark }, { x: 9, y: 24, c: dark },
+    { x: 22, y: 17, c: dark }, { x: 22, y: 18, c: dark }, { x: 22, y: 19, c: dark }, { x: 22, y: 20, c: dark }, { x: 22, y: 21, c: dark }, { x: 22, y: 22, c: dark }, { x: 22, y: 23, c: dark }, { x: 22, y: 24, c: dark },
+    // arms
+    ...rect(6, 18, 4, 4, body), { x: 5, y: 18, c: dark }, { x: 5, y: 19, c: dark }, { x: 5, y: 20, c: dark }, { x: 5, y: 21, c: dark }, ...rect(6, 22, 4, 1, dark),
+    ...rect(22, 18, 4, 4, body), { x: 26, y: 18, c: dark }, { x: 26, y: 19, c: dark }, { x: 26, y: 20, c: dark }, { x: 26, y: 21, c: dark }, ...rect(22, 22, 4, 1, dark),
+    // legs
+    ...rect(10, 25, 5, 4, body), { x: 9, y: 25, c: dark }, { x: 9, y: 26, c: dark }, { x: 9, y: 27, c: dark }, { x: 9, y: 28, c: dark },
+    ...rect(17, 25, 5, 4, body), { x: 22, y: 25, c: dark }, { x: 22, y: 26, c: dark }, { x: 22, y: 27, c: dark }, { x: 22, y: 28, c: dark },
+    // webbed feet
+    ...rect(8, 28, 7, 2, body), ...rect(17, 28, 7, 2, body),
+    ...rect(7, 30, 9, 1, dark), ...rect(16, 30, 9, 1, dark),
+    { x: 6, y: 28, c: dark }, { x: 6, y: 29, c: dark }, { x: 25, y: 28, c: dark }, { x: 25, y: 29, c: dark },
   ];
 }
 
 function drawToad(v: number): Pixel[] {
-  const bodies = ['#6a5540', '#4a3728', '#8a6040', '#3a2820'];
+  const bodies = ['#5c4830', '#6a5a38', '#48381e', '#7a5a3a'];
+  const bellies = ['#786048', '#887858', '#5c4832', '#8a7050'];
   const body = bodies[v % 4]!;
-  const wart = '#3d2e20';
-  const eye = '#c4a000';
+  const belly = bellies[v % 4]!;
+  const dark = '#1e100a';
+  const eyeC = '#c89000';
+
   return [
-    ...rect(9, 10, 14, 12, body),
-    ...rect(8, 22, 6, 5, body),
-    ...rect(18, 22, 6, 5, body),
-    ...rect(10, 8, 5, 4, body),
-    ...rect(17, 8, 5, 4, body),
-    ...rect(11, 9, 2, 2, eye),
-    ...rect(18, 9, 2, 2, eye),
-    ...rect(12, 14, 2, 2, wart),
-    ...rect(17, 16, 2, 2, wart),
-    ...rect(14, 18, 4, 2, '#2a2018'),
+    // head (wider than frog, squat)
+    ...rect(7, 8, 18, 8, body),
+    ...rect(9, 11, 14, 4, belly),
+    // golden side-set eyes
+    ...rect(8, 8, 3, 3, eyeC), { x: 8, y: 8, c: '#ffe060' },
+    ...rect(21, 8, 3, 3, eyeC), { x: 23, y: 8, c: '#ffe060' },
+    // head outline
+    ...rect(7, 8, 18, 1, dark),
+    { x: 6, y: 8, c: dark }, { x: 6, y: 9, c: dark }, { x: 6, y: 10, c: dark }, { x: 6, y: 11, c: dark }, { x: 6, y: 12, c: dark }, { x: 6, y: 13, c: dark }, { x: 6, y: 14, c: dark }, { x: 6, y: 15, c: dark },
+    { x: 25, y: 8, c: dark }, { x: 25, y: 9, c: dark }, { x: 25, y: 10, c: dark }, { x: 25, y: 11, c: dark }, { x: 25, y: 12, c: dark }, { x: 25, y: 13, c: dark }, { x: 25, y: 14, c: dark }, { x: 25, y: 15, c: dark },
+    ...rect(7, 16, 18, 1, dark),
+    // mouth (straight stoic line)
+    ...rect(10, 15, 12, 1, '#38200e'),
+    { x: 10, y: 16, c: dark }, { x: 21, y: 16, c: dark },
+    // body (wider for pear shape)
+    ...rect(8, 17, 16, 9, body),
+    ...rect(10, 17, 12, 9, belly),
+    // body outline
+    { x: 7, y: 17, c: dark }, { x: 7, y: 18, c: dark }, { x: 7, y: 19, c: dark }, { x: 7, y: 20, c: dark }, { x: 7, y: 21, c: dark }, { x: 7, y: 22, c: dark }, { x: 7, y: 23, c: dark }, { x: 7, y: 24, c: dark }, { x: 7, y: 25, c: dark },
+    { x: 24, y: 17, c: dark }, { x: 24, y: 18, c: dark }, { x: 24, y: 19, c: dark }, { x: 24, y: 20, c: dark }, { x: 24, y: 21, c: dark }, { x: 24, y: 22, c: dark }, { x: 24, y: 23, c: dark }, { x: 24, y: 24, c: dark }, { x: 24, y: 25, c: dark },
+    ...rect(8, 26, 16, 1, dark),
+    // warts
+    ...rect(11, 18, 2, 2, dark), ...rect(17, 20, 2, 2, dark), ...rect(13, 23, 2, 2, dark), { x: 20, y: 17, c: dark }, { x: 21, y: 17, c: dark },
+    // arms (short, wide)
+    ...rect(5, 18, 3, 5, body), { x: 4, y: 18, c: dark }, { x: 4, y: 19, c: dark }, { x: 4, y: 20, c: dark }, { x: 4, y: 21, c: dark }, { x: 4, y: 22, c: dark }, ...rect(5, 23, 3, 1, dark),
+    ...rect(24, 18, 3, 5, body), { x: 27, y: 18, c: dark }, { x: 27, y: 19, c: dark }, { x: 27, y: 20, c: dark }, { x: 27, y: 21, c: dark }, { x: 27, y: 22, c: dark }, ...rect(24, 23, 3, 1, dark),
+    // legs
+    ...rect(9, 26, 5, 4, body), { x: 8, y: 26, c: dark }, { x: 8, y: 27, c: dark }, { x: 8, y: 28, c: dark }, { x: 8, y: 29, c: dark },
+    ...rect(18, 26, 5, 4, body), { x: 23, y: 26, c: dark }, { x: 23, y: 27, c: dark }, { x: 23, y: 28, c: dark }, { x: 23, y: 29, c: dark },
+    ...rect(8, 30, 7, 1, dark), ...rect(17, 30, 7, 1, dark),
   ];
 }
 
 function drawTurtle(v: number): Pixel[] {
-  const shell = v === 0 ? '#1a3c34' : '#2a4c44';
-  const rim = '#4a6a5a';
-  const skin = '#5c7a52';
-  const eye = '#1a1a1a';
+  const shells = ['#1a3c34', '#1c3c28'];
+  const pats = ['#2a5448', '#2a5038'];
+  const shell = shells[v % 2]!;
+  const pat = pats[v % 2]!;
+  const skin = '#50786a';
+  const dark = '#0c1a16';
+
   return [
-    ...rect(8, 10, 16, 14, shell),
-    ...rect(10, 12, 12, 10, rim),
-    ...rect(12, 14, 3, 3, '#0f2820'),
-    ...rect(17, 14, 3, 3, '#0f2820'),
-    ...rect(14, 18, 4, 3, '#0f2820'),
-    ...rect(6, 14, 4, 6, skin),
-    ...rect(22, 14, 4, 6, skin),
-    ...rect(12, 8, 3, 3, skin),
-    ...rect(17, 8, 3, 3, skin),
-    ...rect(13, 9, 1, 1, eye),
-    ...rect(18, 9, 1, 1, eye),
-    ...rect(10, 24, 5, 4, skin),
-    ...rect(17, 24, 5, 4, skin),
+    // head (small, peeking above shell)
+    ...rect(12, 6, 8, 8, skin),
+    // eyes
+    { x: 13, y: 7, c: '#b0d8d0' }, { x: 19, y: 7, c: '#b0d8d0' },
+    { x: 13, y: 8, c: '#0a1008' }, { x: 14, y: 8, c: '#0a1008' }, { x: 18, y: 8, c: '#0a1008' }, { x: 19, y: 8, c: '#0a1008' },
+    // head outline
+    ...rect(12, 6, 8, 1, dark),
+    { x: 11, y: 6, c: dark }, { x: 11, y: 7, c: dark }, { x: 11, y: 8, c: dark }, { x: 11, y: 9, c: dark }, { x: 11, y: 10, c: dark }, { x: 11, y: 11, c: dark }, { x: 11, y: 12, c: dark }, { x: 11, y: 13, c: dark },
+    { x: 20, y: 6, c: dark }, { x: 20, y: 7, c: dark }, { x: 20, y: 8, c: dark }, { x: 20, y: 9, c: dark }, { x: 20, y: 10, c: dark }, { x: 20, y: 11, c: dark }, { x: 20, y: 12, c: dark }, { x: 20, y: 13, c: dark },
+    // neck join
+    ...rect(13, 13, 6, 2, skin),
+    // shell dome
+    ...rect(6, 12, 20, 14, shell),
+    // shell outline
+    ...rect(6, 12, 20, 1, dark),
+    { x: 5, y: 12, c: dark }, { x: 5, y: 13, c: dark }, { x: 5, y: 14, c: dark }, { x: 5, y: 15, c: dark }, { x: 5, y: 16, c: dark }, { x: 5, y: 17, c: dark }, { x: 5, y: 18, c: dark }, { x: 5, y: 19, c: dark }, { x: 5, y: 20, c: dark }, { x: 5, y: 21, c: dark }, { x: 5, y: 22, c: dark }, { x: 5, y: 23, c: dark }, { x: 5, y: 24, c: dark }, { x: 5, y: 25, c: dark },
+    { x: 26, y: 12, c: dark }, { x: 26, y: 13, c: dark }, { x: 26, y: 14, c: dark }, { x: 26, y: 15, c: dark }, { x: 26, y: 16, c: dark }, { x: 26, y: 17, c: dark }, { x: 26, y: 18, c: dark }, { x: 26, y: 19, c: dark }, { x: 26, y: 20, c: dark }, { x: 26, y: 21, c: dark }, { x: 26, y: 22, c: dark }, { x: 26, y: 23, c: dark }, { x: 26, y: 24, c: dark }, { x: 26, y: 25, c: dark },
+    ...rect(6, 26, 20, 1, dark),
+    // shell pattern (hex-like grid)
+    ...rect(9, 14, 14, 1, pat), ...rect(8, 18, 16, 1, pat), ...rect(9, 22, 14, 1, pat),
+    { x: 12, y: 14, c: pat }, { x: 12, y: 15, c: pat }, { x: 12, y: 16, c: pat }, { x: 12, y: 17, c: pat },
+    { x: 16, y: 13, c: pat }, { x: 16, y: 14, c: pat }, { x: 16, y: 15, c: pat }, { x: 16, y: 16, c: pat }, { x: 16, y: 17, c: pat }, { x: 16, y: 18, c: pat },
+    { x: 20, y: 14, c: pat }, { x: 20, y: 15, c: pat }, { x: 20, y: 16, c: pat }, { x: 20, y: 17, c: pat },
+    // arm nubs
+    ...rect(3, 16, 4, 5, skin), { x: 2, y: 16, c: dark }, { x: 2, y: 17, c: dark }, { x: 2, y: 18, c: dark }, { x: 2, y: 19, c: dark }, { x: 2, y: 20, c: dark }, ...rect(3, 21, 4, 1, dark),
+    ...rect(25, 16, 4, 5, skin), { x: 29, y: 16, c: dark }, { x: 29, y: 17, c: dark }, { x: 29, y: 18, c: dark }, { x: 29, y: 19, c: dark }, { x: 29, y: 20, c: dark }, ...rect(25, 21, 4, 1, dark),
+    // feet below shell
+    ...rect(8, 26, 5, 3, skin), { x: 7, y: 26, c: dark }, { x: 7, y: 27, c: dark }, { x: 7, y: 28, c: dark }, ...rect(8, 29, 5, 1, dark),
+    ...rect(19, 26, 5, 3, skin), { x: 24, y: 26, c: dark }, { x: 24, y: 27, c: dark }, { x: 24, y: 28, c: dark }, ...rect(19, 29, 5, 1, dark),
   ];
 }
 
 function drawTortoise(v: number): Pixel[] {
-  const base = drawTurtle(v);
-  return [...base, ...rect(7, 9, 18, 2, '#6a5a48')];
+  const shell = v <= 1 ? '#2a3c2a' : '#323828';
+  const pat = v <= 1 ? '#3a5038' : '#445042';
+  const skin = '#7a6848';
+  const dark = '#0e1a0e';
+
+  return [
+    // head
+    ...rect(12, 7, 8, 8, skin),
+    // ancient eyes (half-lidded look)
+    { x: 13, y: 9, c: '#0a1008' }, { x: 14, y: 9, c: '#0a1008' }, { x: 18, y: 9, c: '#0a1008' }, { x: 19, y: 9, c: '#0a1008' },
+    { x: 13, y: 8, c: '#9ab890' }, { x: 19, y: 8, c: '#9ab890' },
+    // head outline
+    ...rect(12, 7, 8, 1, dark),
+    { x: 11, y: 7, c: dark }, { x: 11, y: 8, c: dark }, { x: 11, y: 9, c: dark }, { x: 11, y: 10, c: dark }, { x: 11, y: 11, c: dark }, { x: 11, y: 12, c: dark }, { x: 11, y: 13, c: dark }, { x: 11, y: 14, c: dark },
+    { x: 20, y: 7, c: dark }, { x: 20, y: 8, c: dark }, { x: 20, y: 9, c: dark }, { x: 20, y: 10, c: dark }, { x: 20, y: 11, c: dark }, { x: 20, y: 12, c: dark }, { x: 20, y: 13, c: dark }, { x: 20, y: 14, c: dark },
+    // scaly neck (alternating)
+    { x: 13, y: 14, c: skin }, { x: 14, y: 14, c: '#5a5038' }, { x: 15, y: 14, c: skin }, { x: 16, y: 14, c: '#5a5038' }, { x: 17, y: 14, c: skin }, { x: 18, y: 14, c: '#5a5038' }, { x: 19, y: 14, c: skin },
+    { x: 13, y: 15, c: '#5a5038' }, { x: 14, y: 15, c: skin }, { x: 15, y: 15, c: '#5a5038' }, { x: 16, y: 15, c: skin }, { x: 17, y: 15, c: '#5a5038' }, { x: 18, y: 15, c: skin }, { x: 19, y: 15, c: '#5a5038' },
+    // wider shell dome
+    ...rect(5, 13, 22, 13, shell),
+    // shell outline
+    ...rect(5, 13, 22, 1, dark),
+    { x: 4, y: 13, c: dark }, { x: 4, y: 14, c: dark }, { x: 4, y: 15, c: dark }, { x: 4, y: 16, c: dark }, { x: 4, y: 17, c: dark }, { x: 4, y: 18, c: dark }, { x: 4, y: 19, c: dark }, { x: 4, y: 20, c: dark }, { x: 4, y: 21, c: dark }, { x: 4, y: 22, c: dark }, { x: 4, y: 23, c: dark }, { x: 4, y: 24, c: dark }, { x: 4, y: 25, c: dark },
+    { x: 27, y: 13, c: dark }, { x: 27, y: 14, c: dark }, { x: 27, y: 15, c: dark }, { x: 27, y: 16, c: dark }, { x: 27, y: 17, c: dark }, { x: 27, y: 18, c: dark }, { x: 27, y: 19, c: dark }, { x: 27, y: 20, c: dark }, { x: 27, y: 21, c: dark }, { x: 27, y: 22, c: dark }, { x: 27, y: 23, c: dark }, { x: 27, y: 24, c: dark }, { x: 27, y: 25, c: dark },
+    ...rect(5, 26, 22, 1, dark),
+    // concentric ring pattern
+    ...rect(8, 15, 16, 1, pat), ...rect(7, 19, 18, 1, pat), ...rect(8, 23, 16, 1, pat),
+    { x: 11, y: 15, c: pat }, { x: 11, y: 16, c: pat }, { x: 11, y: 17, c: pat }, { x: 11, y: 18, c: pat },
+    { x: 16, y: 14, c: pat }, { x: 16, y: 15, c: pat }, { x: 16, y: 16, c: pat }, { x: 16, y: 17, c: pat }, { x: 16, y: 18, c: pat }, { x: 16, y: 19, c: pat },
+    { x: 21, y: 15, c: pat }, { x: 21, y: 16, c: pat }, { x: 21, y: 17, c: pat }, { x: 21, y: 18, c: pat },
+    // arm nubs
+    ...rect(2, 17, 4, 5, skin), { x: 1, y: 17, c: dark }, { x: 1, y: 18, c: dark }, { x: 1, y: 19, c: dark }, { x: 1, y: 20, c: dark }, { x: 1, y: 21, c: dark }, ...rect(2, 22, 4, 1, dark),
+    ...rect(26, 17, 4, 5, skin), { x: 30, y: 17, c: dark }, { x: 30, y: 18, c: dark }, { x: 30, y: 19, c: dark }, { x: 30, y: 20, c: dark }, { x: 30, y: 21, c: dark }, ...rect(26, 22, 4, 1, dark),
+    // feet
+    ...rect(7, 26, 5, 3, skin), { x: 6, y: 26, c: dark }, { x: 6, y: 27, c: dark }, { x: 6, y: 28, c: dark }, ...rect(7, 29, 5, 1, dark),
+    ...rect(20, 26, 5, 3, skin), { x: 25, y: 26, c: dark }, { x: 25, y: 27, c: dark }, { x: 25, y: 28, c: dark }, ...rect(20, 29, 5, 1, dark),
+  ];
 }
 
 function drawVole(_v: number): Pixel[] {
-  const fur = '#8a7a6a';
-  const belly = '#c4b8a8';
-  const eye = '#1a1a1a';
-  const nose = '#e8a0a0';
+  const fur = '#8a7258';
+  const belly = '#c0b098';
+  const earOut = '#6a5440';
+  const earIn = '#e090a0';
+  const nose = '#e07070';
+  const dark = '#2e1e10';
+  const whisker = '#b0a090';
+
   return [
-    ...rect(11, 12, 10, 8, fur),
-    ...rect(12, 16, 8, 6, belly),
-    ...rect(8, 10, 4, 4, fur),
-    ...rect(20, 10, 4, 4, fur),
-    ...rect(13, 11, 2, 2, eye),
-    ...rect(17, 11, 2, 2, eye),
-    ...rect(15, 14, 2, 2, nose),
-    ...rect(10, 22, 4, 3, fur),
-    ...rect(18, 22, 4, 3, fur),
-    ...rect(14, 8, 4, 2, fur),
+    // ears
+    ...rect(8, 4, 5, 6, earOut), ...rect(9, 5, 3, 4, earIn),
+    { x: 7, y: 4, c: dark }, { x: 7, y: 5, c: dark }, { x: 7, y: 6, c: dark }, { x: 7, y: 7, c: dark }, { x: 7, y: 8, c: dark }, { x: 7, y: 9, c: dark },
+    ...rect(8, 4, 5, 1, dark), { x: 13, y: 4, c: dark }, { x: 13, y: 5, c: dark }, { x: 13, y: 6, c: dark }, { x: 13, y: 7, c: dark }, { x: 13, y: 8, c: dark }, { x: 13, y: 9, c: dark },
+    ...rect(8, 10, 5, 1, dark),
+    ...rect(19, 4, 5, 6, earOut), ...rect(20, 5, 3, 4, earIn),
+    { x: 24, y: 4, c: dark }, { x: 24, y: 5, c: dark }, { x: 24, y: 6, c: dark }, { x: 24, y: 7, c: dark }, { x: 24, y: 8, c: dark }, { x: 24, y: 9, c: dark },
+    ...rect(19, 4, 5, 1, dark), { x: 18, y: 4, c: dark }, { x: 18, y: 5, c: dark }, { x: 18, y: 6, c: dark }, { x: 18, y: 7, c: dark }, { x: 18, y: 8, c: dark }, { x: 18, y: 9, c: dark },
+    ...rect(19, 10, 5, 1, dark),
+    // head (round)
+    ...rect(10, 9, 12, 9, fur),
+    ...rect(12, 12, 8, 5, belly),
+    // eyes
+    { x: 12, y: 11, c: '#0a0808' }, { x: 13, y: 11, c: '#0a0808' }, { x: 19, y: 11, c: '#0a0808' }, { x: 20, y: 11, c: '#0a0808' },
+    { x: 12, y: 10, c: '#ffffff' }, { x: 20, y: 10, c: '#ffffff' },
+    // head outline
+    ...rect(10, 9, 12, 1, dark),
+    { x: 9, y: 9, c: dark }, { x: 9, y: 10, c: dark }, { x: 9, y: 11, c: dark }, { x: 9, y: 12, c: dark }, { x: 9, y: 13, c: dark }, { x: 9, y: 14, c: dark }, { x: 9, y: 15, c: dark }, { x: 9, y: 16, c: dark }, { x: 9, y: 17, c: dark },
+    { x: 22, y: 9, c: dark }, { x: 22, y: 10, c: dark }, { x: 22, y: 11, c: dark }, { x: 22, y: 12, c: dark }, { x: 22, y: 13, c: dark }, { x: 22, y: 14, c: dark }, { x: 22, y: 15, c: dark }, { x: 22, y: 16, c: dark }, { x: 22, y: 17, c: dark },
+    ...rect(10, 18, 12, 1, dark),
+    // nose + whiskers
+    ...rect(14, 14, 4, 2, nose), { x: 13, y: 14, c: dark }, { x: 18, y: 14, c: dark }, ...rect(14, 16, 4, 1, dark),
+    { x: 6, y: 14, c: whisker }, { x: 7, y: 14, c: whisker }, { x: 8, y: 14, c: whisker }, { x: 8, y: 15, c: whisker },
+    { x: 23, y: 14, c: whisker }, { x: 24, y: 14, c: whisker }, { x: 25, y: 14, c: whisker }, { x: 23, y: 15, c: whisker },
+    // body (round)
+    ...rect(10, 18, 12, 9, fur),
+    ...rect(12, 18, 8, 9, belly),
+    { x: 9, y: 18, c: dark }, { x: 9, y: 19, c: dark }, { x: 9, y: 20, c: dark }, { x: 9, y: 21, c: dark }, { x: 9, y: 22, c: dark }, { x: 9, y: 23, c: dark }, { x: 9, y: 24, c: dark }, { x: 9, y: 25, c: dark }, { x: 9, y: 26, c: dark },
+    { x: 22, y: 18, c: dark }, { x: 22, y: 19, c: dark }, { x: 22, y: 20, c: dark }, { x: 22, y: 21, c: dark }, { x: 22, y: 22, c: dark }, { x: 22, y: 23, c: dark }, { x: 22, y: 24, c: dark }, { x: 22, y: 25, c: dark }, { x: 22, y: 26, c: dark },
+    ...rect(10, 27, 12, 1, dark),
+    // arms
+    ...rect(7, 19, 3, 4, fur), { x: 6, y: 19, c: dark }, { x: 6, y: 20, c: dark }, { x: 6, y: 21, c: dark }, { x: 6, y: 22, c: dark }, ...rect(7, 23, 3, 1, dark),
+    ...rect(22, 19, 3, 4, fur), { x: 25, y: 19, c: dark }, { x: 25, y: 20, c: dark }, { x: 25, y: 21, c: dark }, { x: 25, y: 22, c: dark }, ...rect(22, 23, 3, 1, dark),
+    // legs
+    ...rect(11, 27, 4, 3, fur), { x: 10, y: 27, c: dark }, { x: 10, y: 28, c: dark }, { x: 10, y: 29, c: dark }, ...rect(10, 30, 6, 1, dark),
+    ...rect(17, 27, 4, 3, fur), { x: 21, y: 27, c: dark }, { x: 21, y: 28, c: dark }, { x: 21, y: 29, c: dark }, ...rect(16, 30, 6, 1, dark),
   ];
 }
 
