@@ -508,6 +508,48 @@ Save v2 profile asserts `species: tortoise`, `motivation: messenger`. Continue j
 
 ---
 
+### AR-029 — 2026-07-08
+
+| Field | Value |
+|-------|-------|
+| Agent | deep-interactive-audit |
+| Build | localhost:5200 |
+| Fresh save | yes (localStorage cleared) |
+| Verdict | PASS |
+
+**Gates:** G1 ✅ G2 ✅ G3 ✅ G4 ✅ G5 ✅
+
+**Screenshots:**
+- `AR029_01_folk.png` — all 5 species cards, each clicked and title verified
+- `AR029_02_look_spots.png` — pattern variants + markings
+- `AR029_03_look_hue90.png` — hue slider at 50 (max 60)
+- `AR029_04_outfits_kepi.png` — Ferry Kepi equipped
+- `AR029_05_outfits_hat_cloak.png` — hat + cloak together
+- `AR029_06_stats_point_spent.png` — stat +/− tested
+- `AR029_07_kit.png` — 3 ability cards
+- `AR029_08_skills.png` — 6 skill list items
+- `AR029_09_story_filled.png` — name typed, motivation selected
+- `AR029_10_settings_toggled.png` — checkbox toggled + reset
+- `AR029_11_review.png` — full character summary panel
+- `AR029_12_entered_game.png` — entered Reedwater Causeway, HUD + canvas visible
+
+**Buttons tested:**
+- Folk: clicked all 5 species cards, preview title updated correctly for each ✅
+- Look: all 4 pattern variants selectable + .selected class confirmed, Spots/Stripes/None markings, hue slider 0→50→0 ✅
+- Outfits: Ferry Kepi equipped (reflected in summary rail), Basin Cloak equipped, None unequip both ✅
+- Stats: 6 stat + buttons found, +/− cycled on STR ✅
+- Kit: 3 ability cards rendered ✅
+- Skills: 6 skill list items ✅
+- Story: name input typed, motivation button clicked ✅
+- Settings: 2 checkboxes found, toggled + reset ✅
+- Review: "Enter Reedwater Basin" button found and clicked → opened narration → reached game world ✅
+
+**FAIL reasons:** none
+
+**Nick eye test required:** yes — Review for overall look & feel
+
+---
+
 ## Template (copy for new runs)
 
 ```markdown
