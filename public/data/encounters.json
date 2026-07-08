@@ -1,0 +1,12 @@
+[
+  {
+    "id": "blackfen_poachers",
+    "name": "Blackfen Poachers",
+    "gridSize": 8,
+    "diplomacyAllowed": true,
+    "combatants": [
+      { "species": "toad", "name": "Skadge the Poacher", "team": "enemy", "hp": 18 },
+      { "species": "turtle", "name": "Bulk", "team": "enemy", "hp": 26 }
+    ]
+  }
+]

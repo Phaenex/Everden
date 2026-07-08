@@ -1,0 +1,124 @@
+[
+  {
+    "id": "flooded_cellar",
+    "name": "Flooded Cellar",
+    "type": "examine",
+    "position": { "x": 2.2, "z": 0.8 },
+    "radius": 1.3,
+    "payload": { "target": "flooded_cellar" }
+  },
+  {
+    "id": "levy_plans",
+    "name": "Levy Construction Site",
+    "type": "examine",
+    "position": { "x": 4.5, "z": -2 },
+    "radius": 1.4,
+    "payload": { "target": "levy_plans" }
+  },
+  {
+    "id": "chapel_mural",
+    "name": "Sunken Chapel Murals",
+    "type": "examine",
+    "position": { "x": 6, "z": 4 },
+    "radius": 1.5,
+    "payload": { "target": "chapel_mural" }
+  },
+  {
+    "id": "ferry_depth",
+    "name": "Ferry Depth Post",
+    "type": "examine",
+    "position": { "x": -4.2, "z": -2.8 },
+    "radius": 1.3,
+    "payload": { "target": "ferry_depth" }
+  },
+  {
+    "id": "blackfen_poachers",
+    "name": "Blackfen Poachers",
+    "type": "combat",
+    "position": { "x": 8, "z": -4 },
+    "radius": 1.5,
+    "payload": { "encounterId": "blackfen_poachers" }
+  },
+  {
+    "id": "causeway_waystone",
+    "name": "Crossroads Waystone",
+    "type": "examine",
+    "position": { "x": 4.2, "z": -1.2 },
+    "radius": 1.0,
+    "payload": { "target": "causeway_waystone" },
+    "visualProp": "waystone"
+  },
+  {
+    "id": "causeway_lantern",
+    "name": "Old Ferry Lantern",
+    "type": "examine",
+    "position": { "x": -4.2, "z": 0.9 },
+    "radius": 0.9,
+    "payload": { "target": "causeway_lantern" },
+    "visualProp": "lantern"
+  },
+  {
+    "id": "market_board",
+    "name": "Market Price Board",
+    "type": "examine",
+    "position": { "x": 1.5, "z": 1 },
+    "radius": 1.0,
+    "payload": { "target": "market_board" }
+  },
+  {
+    "id": "nursery_pool",
+    "name": "Communal Tadpole Pool",
+    "type": "examine",
+    "position": { "x": -0.5, "z": 2.2 },
+    "radius": 1.2,
+    "payload": { "target": "nursery_pool" }
+  },
+  {
+    "id": "council_rostrum",
+    "name": "Council Rostrum",
+    "type": "examine",
+    "position": { "x": -2, "z": 1 },
+    "radius": 1.3,
+    "payload": { "target": "council_rostrum", "councilVote": true }
+  },
+  {
+    "id": "marta_shop",
+    "name": "Marta's Clay Shop",
+    "type": "merchant",
+    "position": { "x": -1.5, "z": -2.5 },
+    "radius": 1.1,
+    "payload": { "merchantId": "marta_clayhollow", "items": ["clay_phial", "shell_fragment"] }
+  },
+  {
+    "id": "pip_stall",
+    "name": "Pip's Fish Stall",
+    "type": "merchant",
+    "position": { "x": 2, "z": 0.5 },
+    "radius": 1.0,
+    "payload": { "merchantId": "pip_marshwick", "items": ["reed_hop_charm"] }
+  },
+  {
+    "id": "marta_label_shelf",
+    "name": "Marta's Label Shelf",
+    "type": "examine",
+    "position": { "x": -1.8, "z": -2.2 },
+    "radius": 1.1,
+    "payload": { "target": "marta_label_shelf" }
+  },
+  {
+    "id": "ferry_dock_lilypond",
+    "name": "Board Ferry to Ferryman's Rest",
+    "type": "travel",
+    "position": { "x": -3.8, "z": -3.2 },
+    "radius": 1.4,
+    "payload": { "destination": "ferry_rest" }
+  },
+  {
+    "id": "ferry_dock_return",
+    "name": "Return Ferry to Lilypond",
+    "type": "travel",
+    "position": { "x": -5.2, "z": -4.8 },
+    "radius": 1.4,
+    "payload": { "destination": "lilypond" }
+  }
+]

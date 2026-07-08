@@ -1,0 +1,18 @@
+[
+  {
+    "id": "reedwater_basin",
+    "name": "Reedwater Basin",
+    "biome": "river_basin",
+    "travelTimes": {
+      "lilypond": 0,
+      "ferry_rest": 1.5,
+      "sunken_chapel": 2,
+      "blackfen": 4
+    },
+    "weatherTable": {
+      "rain": 0.35,
+      "fog": 0.2,
+      "clear": 0.45
+    }
+  }
+]

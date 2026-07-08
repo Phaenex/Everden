@@ -1,0 +1,67 @@
+[
+  {
+    "id": "disc_flooded_cellar",
+    "title": "Cellar Waterlines",
+    "body": "Flood marks in Pip's cellar run higher than last season's rain would explain. The surge comes from the north.",
+    "category": "discovery",
+    "trigger": { "type": "examine", "target": "flooded_cellar" }
+  },
+  {
+    "id": "disc_levy_plans",
+    "title": "Levy Engineering",
+    "body": "Kess's diagrams redirect thirty percent more flow south than the Charter allows.",
+    "category": "discovery",
+    "trigger": { "type": "examine", "target": "levy_plans" }
+  },
+  {
+    "id": "disc_chapel_mural",
+    "title": "Sunken Chapel Mural",
+    "body": "Three species kneel at one river. A fourth figure is scratched out — Elder Thatch won't say who.",
+    "category": "lore",
+    "image": "/assets/locations/sunken_chapel.webp",
+    "trigger": { "type": "examine", "target": "chapel_mural" }
+  },
+  {
+    "id": "disc_ferry_depth",
+    "title": "Ferry Depth Marks",
+    "body": "Grizz's notches show water rising faster upstream since levy stone hauls began.",
+    "category": "discovery",
+    "image": "/assets/locations/ferrymans_rest.webp",
+    "trigger": { "type": "examine", "target": "ferry_depth" }
+  },
+  {
+    "id": "disc_marta_labels",
+    "title": "Marta's Label Chart",
+    "body": "Red clay band = tonic. Green band = toxin. Pondwort swapped the bands on today's batch.",
+    "category": "discovery",
+    "trigger": { "type": "examine", "target": "marta_label_shelf" }
+  },
+  {
+    "id": "quest_water_council",
+    "title": "Council Vote",
+    "body": "The Council of Shells heard your evidence on the north levy. Lilypond's fate is decided.",
+    "category": "quest",
+    "trigger": { "type": "quest_stage", "target": "what_water_remembers:council" }
+  },
+  {
+    "id": "quest_ferry_done",
+    "title": "Ferry Toll Petition",
+    "body": "Grizz will petition the council to separate levy haul fees from crossing tolls.",
+    "category": "quest",
+    "trigger": { "type": "quest_complete", "target": "ferry_toll_dispute" }
+  },
+  {
+    "id": "quest_tonic_done",
+    "title": "Tonic Mix Fixed",
+    "body": "Pondwort relabeled the batch. Marta says check twice, croak once.",
+    "category": "quest",
+    "trigger": { "type": "quest_complete", "target": "pondwort_wrong_tonic" }
+  },
+  {
+    "id": "flag_evidence",
+    "title": "Evidence Gathered",
+    "body": "Four sites examined. The flooding pattern doesn't match natural rain alone.",
+    "category": "discovery",
+    "trigger": { "type": "flag", "target": "evidence_gathered" }
+  }
+]

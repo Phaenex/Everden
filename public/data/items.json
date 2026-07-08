@@ -1,0 +1,29 @@
+[
+  {
+    "id": "reed_hop_charm",
+    "name": "Reed Hop Charm",
+    "type": "trinket",
+    "description": "Frog-market lucky charm. Makes your leaps feel lighter.",
+    "rollModifiers": [
+      { "rollType": "attack", "bonus": 1 },
+      { "rollType": "initiative", "extraDice": "1d4" }
+    ],
+    "price": 25
+  },
+  {
+    "id": "clay_phial",
+    "name": "Clay Phial of Tonic",
+    "type": "consumable",
+    "description": "Croakend remedy. Diluted bufotoxin — heals if you're careful.",
+    "rollModifiers": [{ "rollType": "save", "bonus": 2 }],
+    "price": 15
+  },
+  {
+    "id": "shell_fragment",
+    "name": "Shell Fragment Amulet",
+    "type": "trinket",
+    "description": "Chip from an old flood wall.",
+    "rollModifiers": [{ "rollType": "defense", "bonus": 2 }],
+    "price": 40
+  }
+]

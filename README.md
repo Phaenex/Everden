@@ -1,48 +1,82 @@
 # Everden
 
-A living, believable animal-folk fantasy RPG built in Unity 6.
+**A game by [Nanabozho](docs/studio/NANABOZHO.md)** · *nah-nah-BOH-zhoh*
 
-Everden is a semi-3D, 2.5D isometric world where pixel-art characters inhabit modern-rendered environments. Civilizations grow from biology, geography, and history — not from the player's convenience. The world existed long before you arrived and will continue long after you leave.
+A living, believable animal-folk fantasy RPG — playable in the browser.
+
+Everden is a 2.5D isometric world where pixel-art characters inhabit Three.js-rendered wetlands, river towns, and layered wilds. Civilizations grow from biology, geography, and history. The world existed long before you arrived.
 
 ## Vision
 
-Inspired by the feeling of cozy social worlds, classic tabletop fantasy, MMORPGs, and living simulations — without copying any of them. Everden is original IP designed for long-term commercial quality and years of expansion.
+Cozy social worlds · classic tabletop fantasy · MMORPG persistence · living simulation — original IP, not a clone.
+
+**Launch species:** frogs, toads, turtles. Biology drives culture and combat.
 
 ## Technical Stack
 
 | Layer | Choice |
 |-------|--------|
-| Engine | Unity 6 (latest stable) |
-| Language | C# |
-| Rendering | Universal Render Pipeline (URP) |
-| Architecture | Data-driven, modular, event-driven, feature-based |
-| Version Control | Git |
+| Runtime | Browser (WebGL) |
+| Build | Vite + TypeScript |
+| Rendering | Three.js (2.5D isometric) |
+| Data | JSON definitions |
+| Architecture | Modular, event-driven, feature-based |
+| Tests | Vitest + Playwright |
 
 ## Design Pillars
 
-1. **Believability before fun** — logical worlds create natural immersion
-2. **Biology shapes culture** — no humans-in-costume races; species build, fight, worship, and govern as their nature demands
-3. **Geography first** — terrain, weather, seasons, and travel time shape civilization
-4. **Living world** — NPCs have routines, economies fluctuate, politics shift without the player
-5. **Internal consistency** — expand lore; never contradict it
+1. **Believability before fun**
+2. **Biology shapes culture**
+3. **Geography first**
+4. **Living world** — NPCs, markets, politics run without the player
+5. **Internal consistency** — expand lore, never contradict
 
 ## Project Structure
 
 ```
 Everden/
-├── docs/                  # Design docs, constitution, world bible
-├── Assets/                # Unity project (created when engine project is initialized)
-└── README.md
+├── docs/           # Constitution, world bible, studio branding
+├── public/data/    # JSON game definitions
+├── src/            # TypeScript source
+│   ├── core/       # Bootstrap, events, save
+│   ├── data/       # Registries
+│   ├── presentation/
+│   ├── simulation/
+│   ├── gameplay/
+│   └── ui/
+├── index.html
+└── package.json
 ```
 
 ## Documentation
 
-- [Project Constitution](docs/PROJECT_CONSTITUTION.md) — master design and development rules
+| Doc | Description |
+|-----|-------------|
+| **[Master Build Plan](docs/MASTER_BUILD_PLAN.md)** | **Gated phases V1–V5 + visual QA agents** |
+| **[Progress Tracker](docs/PROGRESS.md)** | **Start here — % complete, tasks, check-ins** |
+| [Project Constitution](docs/PROJECT_CONSTITUTION.md) | Master design rules |
+| [Nanabozho](docs/studio/NANABOZHO.md) | Studio identity |
+| [Branding](docs/studio/BRANDING.md) | Visual and tone guide |
+| [Ideas Log](docs/IDEAS.md) | Shared brainstorming |
+| [Characters](docs/CHARACTERS.md) | Full cast roster |
+| [Playtest Protocol](docs/PLAYTEST.md) | Vertical slice QA |
+| [Setup](docs/systems/SETUP.md) | Dev environment |
+
+## Development
+
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm test         # Vitest
+npm run lint     # ESLint
+npm run build    # Production bundle
+npm run deploy:preview  # Build + deploy to Vercel (everden-chi.vercel.app)
+```
 
 ## Status
 
-**Pre-production.** Repository and design foundation established. Unity project initialization pending.
+**Systems ~72% · Experience ~42% · Overall ~52%** — V1 scout AR-002 PASS. Play at [everden-chi.vercel.app](https://everden-chi.vercel.app). See [Master Build Plan](docs/MASTER_BUILD_PLAN.md).
 
 ## License
 
-All rights reserved. © Phaenex
+All rights reserved. © Nanabozho

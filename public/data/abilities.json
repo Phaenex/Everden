@@ -1,0 +1,94 @@
+[
+  {
+    "id": "leap",
+    "name": "Leap",
+    "species": "frog",
+    "type": "utility",
+    "description": "Reposition up to 3 tiles, ignoring obstacles."
+  },
+  {
+    "id": "tongue_lash",
+    "name": "Tongue Lash",
+    "species": "frog",
+    "type": "attack",
+    "description": "Short range attack.",
+    "damage": "1d6"
+  },
+  {
+    "id": "amphibious_rush",
+    "name": "Amphibious Rush",
+    "species": "frog",
+    "type": "utility",
+    "description": "+2 movement in water or rain."
+  },
+  {
+    "id": "bufotoxin_spit",
+    "name": "Bufotoxin Spit",
+    "species": "toad",
+    "type": "attack",
+    "description": "Poison attack.",
+    "damage": "1d4"
+  },
+  {
+    "id": "fear_croak",
+    "name": "Fear Croak",
+    "species": "toad",
+    "type": "debuff",
+    "description": "WIS save or flee.",
+    "saveDc": 12,
+    "saveStat": "wis"
+  },
+  {
+    "id": "burrow",
+    "name": "Burrow",
+    "species": "toad",
+    "type": "utility",
+    "description": "Hide with advantage on stealth."
+  },
+  {
+    "id": "shell_block",
+    "name": "Shell Block",
+    "species": "turtle",
+    "type": "defense",
+    "description": "Reduce damage by 1d6."
+  },
+  {
+    "id": "withdraw",
+    "name": "Withdraw",
+    "species": "turtle",
+    "type": "defense",
+    "description": "Immobile, attacks at disadvantage against you."
+  },
+  {
+    "id": "ram",
+    "name": "Ram",
+    "species": "turtle",
+    "type": "attack",
+    "description": "Knockback attack.",
+    "damage": "1d8"
+  },
+  {
+    "id": "burrow_hide",
+    "name": "Burrow Hide",
+    "species": "vole",
+    "type": "utility",
+    "description": "Flatten into the undergrowth; attacks against you have disadvantage this round."
+  },
+  {
+    "id": "cheek_poultice",
+    "name": "Cheek Poultice",
+    "species": "vole",
+    "type": "heal",
+    "description": "Restore 1d8+1 HP to whichever ally needs it most.",
+    "damage": "1d8"
+  },
+  {
+    "id": "nibble_distraction",
+    "name": "Nibble Distraction",
+    "species": "vole",
+    "type": "debuff",
+    "description": "WIS save or the target loses its next turn.",
+    "saveDc": 12,
+    "saveStat": "wis"
+  }
+]

@@ -1,0 +1,126 @@
+[
+  {
+    "id": "what_water_remembers",
+    "title": "What the Water Remembers",
+    "description": "Investigate flooding in Lilypond before the council votes on the north levy.",
+    "stages": [
+      {
+        "id": "cellar",
+        "description": "Examine the flooded cellar in Lilymarket.",
+        "objectives": [{ "type": "examine", "target": "flooded_cellar" }],
+        "next": "mason_measure"
+      },
+      {
+        "id": "mason_measure",
+        "description": "Investigate the levy site plans.",
+        "objectives": [{ "type": "examine", "target": "levy_plans" }],
+        "next": "chapel"
+      },
+      {
+        "id": "chapel",
+        "description": "Study the murals at the Sunken Chapel.",
+        "objectives": [{ "type": "examine", "target": "chapel_mural" }],
+        "next": "ferry"
+      },
+      {
+        "id": "ferry",
+        "description": "Check ferry depth marks at the ferry post.",
+        "objectives": [{ "type": "examine", "target": "ferry_depth" }],
+        "next": "council"
+      },
+      {
+        "id": "council",
+        "description": "Present findings at the Council rostrum.",
+        "objectives": [{ "type": "council_choice", "target": "vote" }],
+        "next": null
+      }
+    ],
+    "rewards": { "gold": 0 },
+    "outcomes": {
+      "expose": {
+        "description": "You exposed Kess publicly. Lilymarket is spared; masons fume.",
+        "flags": { "kess_stopped": true, "council_vote_done": true },
+        "reputation": { "lilymarket_traders": 15, "mudwall_masons": -12 },
+        "gold": 30
+      },
+      "support": {
+        "description": "You backed the levy. Stone trade booms; frog cellars will flood come spring.",
+        "flags": { "levy_supported": true, "kess_completed": true, "council_vote_done": true },
+        "reputation": { "mudwall_masons": 15, "lilymarket_traders": -15 },
+        "gold": 20
+      },
+      "compromise": {
+        "description": "A modified levy and new frog flood platforms. Nobody fully wins.",
+        "flags": { "kess_compromise": true, "council_vote_done": true, "ferry_deal_brokered": true },
+        "reputation": { "lilymarket_traders": 8, "mudwall_masons": 8, "croakend_artisans": 5 },
+        "gold": 50
+      },
+      "sell": {
+        "description": "You sold the evidence. Gold now; trust never.",
+        "flags": { "evidence_sold": true, "council_vote_done": true },
+        "reputation": { "lilymarket_traders": -10, "mudwall_masons": -10, "croakend_artisans": -10 },
+        "gold": 100
+      },
+      "nothing": {
+        "description": "You stayed silent. Kess finished the levy unchecked.",
+        "flags": { "vote_default": true, "kess_completed": true, "council_vote_done": true },
+        "reputation": { "lilymarket_traders": -5, "mudwall_masons": 3 },
+        "gold": 10
+      }
+    }
+  },
+  {
+    "id": "ferry_toll_dispute",
+    "title": "Ferryman's Toll",
+    "description": "Grizz says ferry tolls doubled. Find out why and help if you can.",
+    "stages": [
+      {
+        "id": "ask_around",
+        "description": "Ask Jenna the courier about the new toll.",
+        "objectives": [{ "type": "talk", "target": "jenna_leapwell" }],
+        "next": "report"
+      },
+      {
+        "id": "report",
+        "description": "Tell Grizz what Jenna learned.",
+        "objectives": [{ "type": "talk", "target": "grizz_burrowman" }],
+        "next": null
+      }
+    ],
+    "rewards": {
+      "gold": 15,
+      "reputation": { "croakend_artisans": 8 },
+      "flags": { "ferry_toll_reduced": true }
+    }
+  },
+  {
+    "id": "pondwort_wrong_tonic",
+    "title": "Wrong Label",
+    "description": "Pondwort mixed tonic and toxin. Sort it out before someone croaks.",
+    "stages": [
+      {
+        "id": "labels",
+        "description": "Examine Marta's label shelf in her clay shop.",
+        "objectives": [{ "type": "examine", "target": "marta_label_shelf" }],
+        "next": "marta"
+      },
+      {
+        "id": "marta",
+        "description": "Tell Marta what you found on the labels.",
+        "objectives": [{ "type": "talk", "target": "marta_clayhollow" }],
+        "next": "pondwort"
+      },
+      {
+        "id": "pondwort",
+        "description": "Tell Pondwort the mix-up is fixed.",
+        "objectives": [{ "type": "talk", "target": "pondwort" }],
+        "next": null
+      }
+    ],
+    "rewards": {
+      "gold": 20,
+      "reputation": { "croakend_artisans": 12 },
+      "flags": { "tonic_mix_fixed": true }
+    }
+  }
+]

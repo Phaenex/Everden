@@ -1,0 +1,35 @@
+---
+description: Everden art pipeline — asset conventions and procedural fallback (prevent regressions)
+alwaysApply: true
+---
+
+# Everden Art Pipeline Guards
+
+Apply when touching `src/presentation/CharacterSprites.ts`, `public/assets/`, or adding new NPCs/items/locations.
+
+## Asset convention
+
+Every generated or hand-drawn asset lives under `public/assets/` at a fixed path derived from its data id:
+
+- `public/assets/sprites/species/{speciesId}.png` — species anchor / in-game body art
+- `public/assets/sprites/npcs/{npcId}.png` — named NPC portrait (`npcId` matches `npcs.json` `id`, not the display name)
+- `public/assets/sprites/enemies/{enemyId}.png` — combat enemy portrait
+- `public/assets/items/{itemId}.png` — item icon (`itemId` matches `items.json` `id`)
+- `public/assets/locations/{locationId}.webp` — world backdrop art
+
+A new NPC/item/location **must** follow this convention (correct id, correct folder) or the loader will silently fall back to procedural art and the new asset will never render. See `docs/art/ASSET_SHEET.md` for the full catalog and generation notes.
+
+## Procedural fallback is permanent
+
+- `drawCharacterCanvas` / `createCharacterMesh` in `CharacterSprites.ts` **must never be deleted** — only supplemented. They are the zero-dependency baseline every character renders with before any art loads.
+- `createCharacterMesh`, `applyArtToImage`, and `applyArtToCanvas` **must** return/render the procedural result synchronously first, then swap in real art asynchronously on success. Never make character rendering depend on an image load succeeding.
+- A missing or failed asset (404, corrupt file, network error) **must** resolve to `null` and leave the procedural render untouched — never throw, never block interaction.
+- If you touch `loadArtCanvas`/`tryLoadImage`, keep the "NPC art → species art → null" fallback chain in that order.
+
+## Chroma-key art
+
+Generated portraits ship as plain-background renders, not true alpha-cut sprites. `chromaKeyCanvas` keys out pixels near the corner color to fake transparency. If you regenerate an asset, keep the background a single flat color (a busy/gradient background will chroma-key incorrectly and must be manually cut instead).
+
+## Before adding new art-dependent UI
+
+Run `npm test`. `src/tests/CharacterSprites.test.ts` is the regression guard for the fallback path — extend it (mock `Image`/canvas context, not real network/file loads) instead of removing coverage when you touch the loader.

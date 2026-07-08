@@ -1,0 +1,10 @@
+{
+  "name": "Everden",
+  "short_name": "Everden",
+  "description": "A living animal-folk fantasy RPG by Nanabozho",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a3c34",
+  "theme_color": "#1a3c34",
+  "icons": []
+}

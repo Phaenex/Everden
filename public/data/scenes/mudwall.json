@@ -1,0 +1,23 @@
+{
+  "id": "mudwall",
+  "name": "Mudwall",
+  "backdrop": "mudwall.webp",
+  "spawn": { "x": 0.5, "z": 1.8 },
+  "navPolygon": [[-4.4, 0.5], [4.6, 0.5], [4.6, 3.5], [-4.4, 3.5]],
+  "ground": { "width": 9.0, "depth": 3.0, "x": 0.1, "z": 2.0 },
+  "npcs": [
+    { "id": "elder_domet", "x": -1.0, "z": 2.6 },
+    { "id": "old_myrtle", "x": -4.0, "z": 1.6 },
+    { "id": "tor_stoneback", "x": 2.6, "z": 1.3 },
+    { "id": "kess_ridge", "x": 4.4, "z": 3.4 }
+  ],
+  "objects": [
+    { "id": "council_rostrum", "x": -0.3, "z": 3.1 },
+    { "id": "levy_plans", "x": 2.2, "z": 2.2 },
+    { "id": "chapel_mural", "x": -3.6, "z": 2.3 },
+    { "id": "blackfen_poachers", "x": 3.8, "z": 1.1 }
+  ],
+  "exits": [
+    { "id": "to_causeway", "targetScene": "causeway", "x": 0, "z": 0.7, "radius": 0.8, "label": "Back to Causeway" }
+  ]
+}

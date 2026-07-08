@@ -1,0 +1,49 @@
+---
+description: Everden gameplay guards — combat, quests, save, dialogue (prevent regressions)
+alwaysApply: true
+---
+
+# Everden Gameplay Guards
+
+Apply when touching `src/gameplay/`, `src/core/GameBootstrap.ts`, `public/data/dialogue.json`, or `public/data/quests.json`.
+
+## Combat
+
+- Enemy turns **must** resolve automatically (`beginTurn` → `runEnemyTurn`). Never emit `combat:turn` for enemies without a follow-up action.
+- Player actions (`attack`, `useAbility`, `flee`) **must** check `isPlayerTurn()` for the player team.
+- Ability handlers **must not** call `endTurn()` twice. Use `resolveAttack()` when an ability embeds an attack.
+- If code adds a **condition** (poisoned, advantage, shell_block, withdraw, burrowed, stunned), it **must** affect rolls/damage in `resolveAttack` OR turn flow in `beginTurn` (like `fleeing`/`stunned` skipping the turn) — never add a condition that does nothing.
+- Heal-type abilities (e.g. `cheek_poultice`) **must not** trust the `targetId` the UI passes — `bindCombatActions` always passes the first enemy id for every ability button. Pick the actual heal target internally: `c.team !== 'enemy'`, not an exact match against the actor's own team string (a `player` and an `ally` are on the same side; matching only `team === actor.team` would wrongly exclude one of them).
+- `endTurn()`'s dead-actor skip loop **must** check the raw combatant at `turnOrder[turnIndex]`, never `getCurrentActor()` (which already filters `hp > 0`, so `getCurrentActor()?.hp === 0` can never be true and silently breaks the skip — this caused a real soft-lock in the only 3-combatant encounter, fixed CHECKIN-013). Any encounter with 2+ enemies is the regression case — test it, not just 1-enemy fights.
+- `runEnemyTurn`'s `attackAbilities` allowlist only recognizes attack-type abilities (`tongue_lash`, `bufotoxin_spit`, `ram`). If an enemy species with utility/heal/debuff abilities (e.g. `vole`) is ever added to an encounter, it will silently never use them — always plain-attacks. Extend the enemy-AI logic deliberately before adding a non-attacker enemy, don't assume it "just works" because the player side does.
+- Combat UI buttons **only** on `combat:turn` with `playerTurn: true` — never on `combat:started` alone.
+- Block world interaction during combat (`PlayerController.interactionLocked` + bootstrap guard).
+
+## Quests & save
+
+- `startQuest()` **must not** reset an already-active quest (`activeStage.has(questId)` → return).
+- New-game-only grants: starter items, initial quest — **never** re-run after `save.load()`.
+- Talk objectives **must** use dialogue `complete_objective` actions, not `onNpcTalk` on open.
+- Council / branching endings **must** use `quest_outcome` + `completeWithOutcome`, not auto-finish on flags.
+- `PlayerProfile` (species) **must** be saved and restored; combat uses saved species on load.
+
+## Dialogue
+
+- Process node `action` **once** on node entry in `showNode` — never again on Continue.
+- Quest-gated choices **must** use `condition.questStage` / `notQuestCompleted` in JSON + `filterDialogueChoices`.
+- Skill-check choices **must** roll via `SkillCheckResolver` and show d20 + mod + DC in UI before advancing.
+- Species-exclusive lines **must** use `condition.species` — different approach, not flavor-only.
+- NPC `altText` callbacks **must** reference player flags after major quest beats (`evidence_gathered`, etc.).
+- Encounters with `diplomacyAllowed: true` **must** expose Persuade/Intimidate before combat via `CombatManager.canDiplomacy()`.
+
+## Weather & journal
+
+- Weather rolls from `locations.json` tables — deterministic per day in tests.
+- Rain must buff amphibian movement AND combat (`amphibious_rush` on encounter start).
+- `RainVFX` + `SceneManager` lighting must listen to `weather:changed`.
+- Journal entries unlock via `public/data/journal.json` triggers — not UI-only.
+- Lore-worthy examines need a matching journal entry.
+
+## Before marking combat/quest work done
+
+Run `npm test`. Add or extend tests for any new flow.

@@ -1,0 +1,21 @@
+{
+  "id": "causeway",
+  "name": "Reedwater Causeway",
+  "backdrop": "causeway.webp",
+  "spawn": { "x": 0, "z": 0.5 },
+  "navPolygon": [[-8.5, -2.8], [8.5, -2.8], [8.5, 3.5], [-8.5, 3.5]],
+  "ground": { "width": 17, "depth": 6.3, "x": 0, "z": 0.35 },
+  "npcs": [
+    { "id": "fennick_farrow", "x": 3.5, "z": 2.2 }
+  ],
+  "objects": [
+    { "id": "causeway_waystone", "x": 4.2, "z": -1.2 },
+    { "id": "causeway_lantern", "x": -4.2, "z": 0.9 }
+  ],
+  "exits": [
+    { "id": "to_lilymarket", "targetScene": "lilymarket", "x": -0.5, "z": 2.8, "radius": 1.4, "label": "Lilymarket" },
+    { "id": "to_croakend", "targetScene": "croakend", "x": -7, "z": 0.2, "radius": 1.4, "label": "Croakend" },
+    { "id": "to_mudwall", "targetScene": "mudwall", "x": 7, "z": 0.2, "radius": 1.4, "label": "Mudwall" },
+    { "id": "to_ferry", "targetScene": "ferry_rest", "x": 0.5, "z": -2.2, "radius": 1.4, "label": "Ferryman's Rest" }
+  ]
+}

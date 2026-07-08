@@ -1,0 +1,20 @@
+{
+  "id": "croakend",
+  "name": "Croakend",
+  "backdrop": "croakend.webp",
+  "spawn": { "x": 0.3, "z": 2.1 },
+  "navPolygon": [[-4.4, 0.4], [4.4, 0.4], [4.4, 3.3], [-4.4, 3.3]],
+  "ground": { "width": 8.8, "depth": 2.9, "x": 0, "z": 1.85 },
+  "npcs": [
+    { "id": "marta_clayhollow", "x": -3.5, "z": 2.4 },
+    { "id": "pondwort", "x": -0.8, "z": 1.4 },
+    { "id": "rivulet", "x": 3.4, "z": 2.2 }
+  ],
+  "objects": [
+    { "id": "marta_shop", "x": -3.6, "z": 1.4 },
+    { "id": "marta_label_shelf", "x": -2.6, "z": 2.4 }
+  ],
+  "exits": [
+    { "id": "to_causeway", "targetScene": "causeway", "x": 0, "z": 0.6, "radius": 0.8, "label": "Back to Causeway" }
+  ]
+}

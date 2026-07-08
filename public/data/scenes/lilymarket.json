@@ -1,0 +1,25 @@
+{
+  "id": "lilymarket",
+  "name": "Lilymarket",
+  "backdrop": "lilymarket.webp",
+  "spawn": { "x": -0.8, "z": 1.4 },
+  "navPolygon": [[-4.1, 0.7], [4.1, 0.7], [4.1, 3.0], [-4.1, 3.0]],
+  "ground": { "width": 8.2, "depth": 2.3, "x": 0, "z": 1.85 },
+  "npcs": [
+    { "id": "bramble_guard", "x": -3.9, "z": 0.75 },
+    { "id": "sable_meadowrun", "x": -2.34, "z": 2.95 },
+    { "id": "jenna_leapwell", "x": -0.78, "z": 0.75 },
+    { "id": "croaker_finn", "x": 0.78, "z": 2.95 },
+    { "id": "fern_reedweaver", "x": 2.34, "z": 0.75 },
+    { "id": "pip_marshwick", "x": 3.9, "z": 2.95 }
+  ],
+  "objects": [
+    { "id": "flooded_cellar", "x": 1.6, "z": 1.1 },
+    { "id": "market_board", "x": 0.3, "z": 2.4 },
+    { "id": "pip_stall", "x": 2.3, "z": 1.5 },
+    { "id": "nursery_pool", "x": -1.0, "z": 2.7 }
+  ],
+  "exits": [
+    { "id": "to_causeway", "targetScene": "causeway", "x": 0, "z": 0.9, "radius": 0.8, "label": "Back to Causeway" }
+  ]
+}

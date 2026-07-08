@@ -1,0 +1,40 @@
+---
+description: Everden visual/play gates — browser screenshots required before Experience % or presentation checkpoints
+globs: src/engine/**,src/presentation/**,src/gameplay/PlayerController.ts,src/core/GameBootstrap.ts,public/data/scenes/**
+alwaysApply: false
+---
+
+# Everden Visual Gate (agents must play, not just test)
+
+Unit tests (`npm test`) guard **mechanics**. They do **not** gate **Experience**.
+
+## Before claiming presentation / input / scene work done
+
+1. Run `npm test && npm run typecheck && npm run build`.
+2. Launch **everden-visual-scout** (Browser MCP + `docs/systems/VISUAL_QA_AGENTS.md`):
+   - Fresh save: `localStorage.removeItem('everden_save_v1')`
+   - Capture gates **G1–G5** (screenshots)
+   - Score rubric PASS / BORDERLINE / FAIL
+3. Run the matching **persona agent** from the routing table (fresh-player, quest-runner, combat-tester, or district-explorer).
+4. Append run to `docs/playtests/AGENT_RUNS.md` with verdict.
+5. Update `docs/PROGRESS.md` CHECKIN — cite run ID and gate results.
+
+## Hard blocks
+
+- **Any scout FAIL** → do not increase Experience %; do not mark R3/R4/R5 visual gates complete.
+- **Nick eye test** (Lilymarket, new district art) → Nick only; agents log "pending Nick."
+- **Agent runs ≠ T8** → never increment human playtest count from `AGENT_RUNS.md`.
+
+## Minimum playable proof (BG3 rebuild)
+
+| Gate | Proof |
+|------|-------|
+| Click move | 3 ground clicks, debug ring, character moves |
+| One district | Lilymarket: ≤6 NPCs, one backdrop |
+| Click interact | Click Pip → walk → dialogue with portrait |
+| Transition | Causeway → district → causeway without console errors |
+| Exit UX | Player can find exit without reading source (visible marker or HUD hint) |
+
+## Skill
+
+Read and follow `.cursor/skills/everden-playtest/SKILL.md` when executing gates.

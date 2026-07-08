@@ -1,0 +1,296 @@
+[
+  {
+    "id": "pip_marshwick",
+    "name": "Pip Marshwick",
+    "title": "Market Factor",
+    "bio": "Runs the busiest fish stall in Lilymarket. Lost a cousin in the Blackfen Drainage.",
+    "species": "frog",
+    "variant": 0,
+    "faction": "lilymarket_traders",
+    "home": "lilymarket_stall_3",
+    "workplace": "lilymarket_stall_3",
+    "schedule": [
+      { "startHour": 8, "endHour": 18, "activity": "work", "location": "lilymarket" },
+      { "startHour": 18, "endHour": 8, "activity": "sleep", "location": "lilypond" }
+    ],
+    "dialogueId": "pip_intro",
+    "position": { "x": 2, "y": 0, "z": 0.5 }
+  },
+  {
+    "id": "elder_domet",
+    "name": "Elder Shellen Domet",
+    "title": "Council Speaker",
+    "bio": "Oldest sitting elder. Survived the Great Spill. Believes walls are mercy.",
+    "species": "turtle",
+    "variant": 0,
+    "faction": "mudwall_masons",
+    "home": "mudwall_hall",
+    "workplace": "council_shell",
+    "schedule": [
+      { "startHour": 10, "endHour": 14, "activity": "work", "location": "council_shell" },
+      { "startHour": 14, "endHour": 18, "activity": "work", "location": "mudwall" },
+      { "startHour": 18, "endHour": 10, "activity": "sleep", "location": "mudwall" }
+    ],
+    "dialogueId": "domet_intro",
+    "position": { "x": -2, "y": 0, "z": 1.5 }
+  },
+  {
+    "id": "kess_ridge",
+    "name": "Kess Ridge",
+    "title": "Levy Foreman",
+    "bio": "Hardback Kess. Builds like the river is personal. It is.",
+    "species": "turtle",
+    "variant": 1,
+    "faction": "mudwall_masons",
+    "home": "levy_camp",
+    "workplace": "levy_site",
+    "schedule": [
+      { "startHour": 6, "endHour": 20, "activity": "work", "location": "levy_site" },
+      { "startHour": 20, "endHour": 6, "activity": "sleep", "location": "levy_site" }
+    ],
+    "dialogueId": "kess_intro",
+    "position": { "x": 4.5, "y": 0, "z": -2 }
+  },
+  {
+    "id": "grizz_burrowman",
+    "name": "Grizz Burrowman",
+    "title": "Ferry Operator",
+    "bio": "Keeps depth marks on a post going back forty years. Knows every rumor on the water.",
+    "species": "toad",
+    "variant": 0,
+    "faction": "croakend_artisans",
+    "home": "ferry_hut",
+    "workplace": "ferry_rest",
+    "schedule": [
+      { "startHour": 0, "endHour": 6, "activity": "work", "location": "ferry_rest" },
+      { "startHour": 18, "endHour": 24, "activity": "work", "location": "ferry_rest" },
+      { "startHour": 6, "endHour": 18, "activity": "rest", "location": "croakend" }
+    ],
+    "dialogueId": "grizz_intro",
+    "position": { "x": -4, "y": 0, "z": -3 }
+  },
+  {
+    "id": "marta_clayhollow",
+    "name": "Marta Clayhollow",
+    "title": "Potion Seller",
+    "bio": "Same clay pot for tonic and toxin. Dose makes the difference.",
+    "species": "toad",
+    "variant": 1,
+    "faction": "croakend_artisans",
+    "home": "croakend_shop",
+    "workplace": "croakend",
+    "schedule": [
+      { "startHour": 16, "endHour": 24, "activity": "work", "location": "croakend" },
+      { "startHour": 0, "endHour": 8, "activity": "work", "location": "croakend" },
+      { "startHour": 8, "endHour": 16, "activity": "sleep", "location": "croakend" }
+    ],
+    "dialogueId": "marta_intro",
+    "position": { "x": -1.5, "y": 0, "z": -2.5 }
+  },
+  {
+    "id": "jenna_leapwell",
+    "name": "Jenna Leapwell",
+    "title": "River Courier",
+    "bio": "Leap-delivers packages faster than any boat. Complains about ferry tolls constantly.",
+    "species": "frog",
+    "variant": 1,
+    "faction": "lilymarket_traders",
+    "home": "reedwalk_4",
+    "workplace": "lilymarket",
+    "schedule": [
+      { "startHour": 7, "endHour": 12, "activity": "travel", "location": "ferry_rest" },
+      { "startHour": 12, "endHour": 17, "activity": "work", "location": "lilymarket" },
+      { "startHour": 17, "endHour": 7, "activity": "sleep", "location": "lilypond" }
+    ],
+    "dialogueId": "jenna_intro",
+    "position": { "x": -1, "y": 0, "z": -1.2 }
+  },
+  {
+    "id": "tor_stoneback",
+    "name": "Tor Stoneback",
+    "title": "Mason Captain",
+    "bio": "Lifts stone like it's habit. Loyal to Kess but won't break the Charter.",
+    "species": "turtle",
+    "variant": 0,
+    "faction": "mudwall_masons",
+    "home": "mudwall_barracks",
+    "workplace": "mudwall",
+    "schedule": [
+      { "startHour": 6, "endHour": 18, "activity": "work", "location": "mudwall" },
+      { "startHour": 18, "endHour": 6, "activity": "sleep", "location": "mudwall" }
+    ],
+    "dialogueId": "tor_intro",
+    "position": { "x": 3.5, "y": 0, "z": 2.5 }
+  },
+  {
+    "id": "fern_reedweaver",
+    "name": "Fern Reedweaver",
+    "title": "Reed Weaver",
+    "bio": "Weaves mats and fish wraps. Youngest stall owner in the market.",
+    "species": "frog",
+    "variant": 0,
+    "faction": "lilymarket_traders",
+    "home": "reedwalk_2",
+    "workplace": "lilymarket",
+    "schedule": [
+      { "startHour": 9, "endHour": 19, "activity": "work", "location": "lilymarket" },
+      { "startHour": 19, "endHour": 9, "activity": "sleep", "location": "lilypond" }
+    ],
+    "dialogueId": "fern_intro",
+    "position": { "x": 1.8, "y": 0, "z": 0.2 }
+  },
+  {
+    "id": "old_myrtle",
+    "name": "Old Myrtle Shellsong",
+    "title": "Chronicle Keeper",
+    "bio": "Tortoise elder who remembers names the council forgot. Sits at the shell dome most days.",
+    "species": "tortoise",
+    "variant": 0,
+    "faction": "mudwall_masons",
+    "home": "council_archives",
+    "workplace": "council_shell",
+    "schedule": [
+      { "startHour": 9, "endHour": 17, "activity": "work", "location": "council_shell" },
+      { "startHour": 17, "endHour": 9, "activity": "sleep", "location": "mudwall" }
+    ],
+    "dialogueId": "myrtle_intro",
+    "position": { "x": -2.5, "y": 0, "z": 0.5 }
+  },
+  {
+    "id": "croaker_finn",
+    "name": "Croaker Finn",
+    "title": "Stall Apprentice",
+    "bio": "Pip's nephew. Learns prices by singing them. Annoying. Useful.",
+    "species": "frog",
+    "variant": 1,
+    "faction": "lilymarket_traders",
+    "home": "reedwalk_5",
+    "workplace": "lilymarket",
+    "schedule": [
+      { "startHour": 10, "endHour": 16, "activity": "work", "location": "lilymarket" },
+      { "startHour": 16, "endHour": 10, "activity": "sleep", "location": "lilypond" }
+    ],
+    "dialogueId": "finn_intro",
+    "position": { "x": 2.8, "y": 0, "z": -0.3 }
+  },
+  {
+    "id": "silt_ferryhand",
+    "name": "Silt",
+    "title": "Ferry Hand",
+    "bio": "Grizz's night hand. Young toad. Fills lanterns and watches for poachers.",
+    "species": "toad",
+    "variant": 0,
+    "faction": "croakend_artisans",
+    "home": "ferry_bunk",
+    "workplace": "ferry_rest",
+    "schedule": [
+      { "startHour": 18, "endHour": 24, "activity": "work", "location": "ferry_rest" },
+      { "startHour": 0, "endHour": 6, "activity": "work", "location": "ferry_rest" },
+      { "startHour": 6, "endHour": 18, "activity": "sleep", "location": "croakend" }
+    ],
+    "dialogueId": "silt_intro",
+    "position": { "x": -3.5, "y": 0, "z": -3.5 }
+  },
+  {
+    "id": "bramble_guard",
+    "name": "Bramble",
+    "title": "Causeway Guard",
+    "bio": "Frog guard on the lilymarket causeway. Leap-trained. Suspicious of mudwall cranes.",
+    "species": "frog",
+    "variant": 0,
+    "faction": "lilymarket_traders",
+    "home": "reedwalk_guardpost",
+    "workplace": "lilymarket",
+    "schedule": [
+      { "startHour": 6, "endHour": 14, "activity": "work", "location": "lilymarket" },
+      { "startHour": 14, "endHour": 22, "activity": "work", "location": "lilypond" },
+      { "startHour": 22, "endHour": 6, "activity": "sleep", "location": "lilypond" }
+    ],
+    "dialogueId": "bramble_intro",
+    "position": { "x": 0.8, "y": 0, "z": 2.4 }
+  },
+  {
+    "id": "pondwort",
+    "name": "Pondwort",
+    "title": "Alchemy Apprentice",
+    "bio": "Marta's student. Still mixes up tonic and toxin twice a week.",
+    "species": "toad",
+    "variant": 1,
+    "faction": "croakend_artisans",
+    "home": "croakend_burrow_2",
+    "workplace": "croakend",
+    "schedule": [
+      { "startHour": 14, "endHour": 22, "activity": "work", "location": "croakend" },
+      { "startHour": 22, "endHour": 14, "activity": "sleep", "location": "croakend" }
+    ],
+    "dialogueId": "pondwort_intro",
+    "position": { "x": -0.8, "y": 0, "z": -1.8 }
+  },
+  {
+    "id": "elder_thatch",
+    "name": "Elder Thatch",
+    "title": "Chapel Warden",
+    "bio": "Turtle who tends the Sunken Chapel. Says the scratched mural weeps at high water.",
+    "species": "turtle",
+    "variant": 1,
+    "faction": "mudwall_masons",
+    "home": "chapel_loft",
+    "workplace": "sunken_chapel",
+    "schedule": [
+      { "startHour": 8, "endHour": 16, "activity": "work", "location": "sunken_chapel" },
+      { "startHour": 16, "endHour": 8, "activity": "sleep", "location": "mudwall" }
+    ],
+    "dialogueId": "thatch_intro",
+    "position": { "x": 6, "y": 0, "z": 3.5 }
+  },
+  {
+    "id": "rivulet",
+    "name": "Rivulet",
+    "title": "Tadpole Teacher",
+    "bio": "Teaches young frogs at the communal nursery pool. Patient. Unusually so for a frog.",
+    "species": "frog",
+    "variant": 0,
+    "faction": "lilymarket_traders",
+    "home": "nursery_pool",
+    "workplace": "lilypond",
+    "schedule": [
+      { "startHour": 7, "endHour": 15, "activity": "work", "location": "lilypond" },
+      { "startHour": 15, "endHour": 7, "activity": "sleep", "location": "reedwalk_1" }
+    ],
+    "dialogueId": "rivulet_intro",
+    "position": { "x": -0.5, "y": 0, "z": 2 }
+  },
+  {
+    "id": "sable_meadowrun",
+    "name": "Sable Meadowrun",
+    "title": "Wandering Healer",
+    "bio": "Vole out of the meadow burrows east of the basin. Trades poultices for gossip and won't pick a side in the levy fight.",
+    "species": "vole",
+    "variant": 0,
+    "faction": "vale_wanderers",
+    "home": "lilypond",
+    "workplace": "lilymarket",
+    "schedule": [
+      { "startHour": 9, "endHour": 19, "activity": "work", "location": "lilymarket" },
+      { "startHour": 19, "endHour": 9, "activity": "sleep", "location": "lilypond" }
+    ],
+    "dialogueId": "sable_intro",
+    "position": { "x": 3, "y": 0, "z": 0.8 }
+  },
+  {
+    "id": "fennick_farrow",
+    "name": "Fennick Farrow",
+    "title": "Vale Peddler",
+    "bio": "Vole out of the meadow burrows east of the basin. Parks his cart at the crossroads because no faction claims neutral ground.",
+    "species": "vole",
+    "variant": 1,
+    "faction": "vale_wanderers",
+    "home": "causeway",
+    "workplace": "causeway",
+    "schedule": [
+      { "startHour": 0, "endHour": 24, "activity": "work", "location": "causeway" }
+    ],
+    "dialogueId": "fennick_intro",
+    "position": { "x": 3.5, "y": 0, "z": 2.2 }
+  }
+]

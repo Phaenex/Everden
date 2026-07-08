@@ -1,0 +1,516 @@
+[
+  {
+    "id": "pip_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Pip Marshwick",
+        "text": "You picked a wet week to visit Lilypond. My cellar's half underwater and the masons swear it's not their levy.",
+        "altText": [
+          {
+            "flag": "evidence_gathered",
+            "append": "You brought proof to the council — Pip nods like you earned it."
+          }
+        ],
+        "choices": [
+          { "text": "I already heard — that's why I'm here.", "next": "already_knew" },
+          { "text": "Not my problem.", "next": "end" }
+        ]
+      },
+      {
+        "id": "already_knew",
+        "speaker": "Pip Marshwick",
+        "text": "Good to meet you, {playerName}. Word travels fast on the causeway, then. Start with the cellar marks — you'll see the waterline yourself. Then see what Kess is building upriver.",
+        "altText": [
+          {
+            "flag": "arrival_investigator",
+            "append": "Sent to dig, were you? Good. The marks don't lie."
+          },
+          {
+            "flag": "arrival_messenger",
+            "append": "Someone upstream wanted this delivered to the right ears. You're here — that's the hard part."
+          },
+          {
+            "flag": "arrival_neighbor",
+            "append": "You live close enough to smell the mold. I know that look."
+          }
+        ]
+      },
+      {
+        "id": "end",
+        "speaker": "Pip Marshwick",
+        "text": "Suit yourself. The water remembers anyway."
+      }
+    ]
+  },
+  {
+    "id": "domet_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Elder Shellen Domet",
+        "text": "The Charter exists because water kills. We build walls so the Great Spill never repeats.",
+        "choices": [
+          { "text": "Pip says the levy makes it worse downstream.", "next": "downstream_win", "failNext": "downstream_fail", "skillCheck": { "stat": "wis", "dc": 12, "label": "Insight" } },
+          { "text": "I need to see the plans.", "next": "plans" }
+        ]
+      },
+      {
+        "id": "downstream_win",
+        "speaker": "Elder Shellen Domet",
+        "text": "Your eyes are sharp. The downstream marks don't lie — examine the site yourself. I won't hide the diagrams."
+      },
+      {
+        "id": "downstream_fail",
+        "speaker": "Elder Shellen Domet",
+        "text": "Frog merchants exaggerate. But... examine the site yourself. I won't hide the diagrams."
+      },
+      {
+        "id": "plans",
+        "speaker": "Elder Shellen Domet",
+        "text": "Kess has the engineering scrolls at the levy camp. Tell him I sent you, if he'll listen."
+      }
+    ]
+  },
+  {
+    "id": "kess_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Kess Ridge",
+        "text": "Another frog sent you? The numbers don't lie. Thirty percent more south flow is a rounding error.",
+        "choices": [
+          { "text": "The Charter allows fifteen percent.", "next": "charter_win", "failNext": "charter_fail", "skillCheck": { "stat": "int", "dc": 13, "label": "History" } },
+          { "text": "What happened during the Great Spill?", "next": "spill" },
+          { "text": "[Frog] I smell upstream silt from here.", "next": "frog_line", "condition": { "species": "frog" } },
+          { "text": "[Toad] Your levy poisons the shallows.", "next": "toad_line", "condition": { "species": "toad" } },
+          { "text": "[Turtle] Slow down. Stone cracks when rushed.", "next": "turtle_line", "condition": { "species": "turtle" } }
+        ]
+      },
+      {
+        "id": "charter_win",
+        "speaker": "Kess Ridge",
+        "text": "Fine. Fifteen percent is the law. I'll... adjust the scrolls. Don't expect me to like it.",
+        "action": { "type": "set_flag", "payload": { "key": "kess_persuaded", "value": true } }
+      },
+      {
+        "id": "charter_fail",
+        "speaker": "Kess Ridge",
+        "text": "Charter was written when the river was different. Math doesn't care about sentiment."
+      },
+      {
+        "id": "frog_line",
+        "speaker": "Kess Ridge",
+        "text": "Your nose works. Silt's from my cut channel — doesn't mean it's wrong."
+      },
+      {
+        "id": "toad_line",
+        "speaker": "Kess Ridge",
+        "text": "Poison? Dramatic. Toads always blame the masons when their ponds shrink."
+      },
+      {
+        "id": "turtle_line",
+        "speaker": "Kess Ridge",
+        "text": "Cracks happen when frogs rush. I'm not rushing. I'm surviving."
+      },
+      {
+        "id": "spill",
+        "speaker": "Kess Ridge",
+        "text": "...I watched the water rise. I was small. I won't be small again.",
+        "action": { "type": "set_flag", "payload": { "key": "kess_backstory_heard", "value": true } }
+      }
+    ]
+  },
+  {
+    "id": "grizz_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Grizz Burrowman",
+        "text": "Ferry's running. Depth marks on the post — I've kept them forty years.",
+        "choices": [
+          { "text": "Can I check the marks?", "next": "marks" },
+          { "text": "Poachers at Blackfen?", "next": "poachers" },
+          {
+            "text": "These ferry tolls are robbery.",
+            "next": "toll_quest",
+            "condition": { "notQuestCompleted": "ferry_toll_dispute" }
+          },
+          {
+            "text": "Jenna says the toll pays for levy stone hauls.",
+            "next": "ferry_report",
+            "condition": { "questStage": { "quest": "ferry_toll_dispute", "stage": "report" } }
+          }
+        ]
+      },
+      {
+        "id": "toll_quest",
+        "speaker": "Grizz Burrowman",
+        "text": "Doubled since the levy work started. Ask Jenna — she pays it every dawn run.",
+        "choices": [
+          { "text": "I'll petition the council with you.", "next": "toll_persuade", "failNext": "toll_fail", "skillCheck": { "stat": "cha", "dc": 12, "label": "Persuasion" } },
+          { "text": "Understood.", "next": "toll_start" }
+        ]
+      },
+      {
+        "id": "toll_persuade",
+        "speaker": "Grizz Burrowman",
+        "text": "You've got the voice for it. I'll draft the petition — you carry it to Mudwall.",
+        "action": { "type": "start_quest", "payload": "ferry_toll_dispute" }
+      },
+      {
+        "id": "toll_fail",
+        "speaker": "Grizz Burrowman",
+        "text": "Council won't listen to strangers. Ask Jenna first — she pays it every dawn run.",
+        "action": { "type": "start_quest", "payload": "ferry_toll_dispute" }
+      },
+      {
+        "id": "toll_start",
+        "speaker": "Grizz Burrowman",
+        "text": "Good. Ask Jenna at the crossing — she knows the numbers.",
+        "action": { "type": "start_quest", "payload": "ferry_toll_dispute" }
+      },
+      {
+        "id": "ferry_report",
+        "speaker": "Grizz Burrowman",
+        "text": "Mudwall's fee, not mine. I'll petition the council — thanks for asking around.",
+        "action": { "type": "complete_objective", "payload": { "type": "talk", "target": "grizz_burrowman" } }
+      },
+      {
+        "id": "marks",
+        "speaker": "Grizz Burrowman",
+        "text": "Best at night when the ferry lamp's lit. Compare to last autumn's notch."
+      },
+      {
+        "id": "poachers",
+        "speaker": "Grizz Burrowman",
+        "text": "Toad and turtle thugs at the outlet. Harassing my nets. Try talking first — they're not worth your blood if they'll listen."
+      }
+    ]
+  },
+  {
+    "id": "marta_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Marta Clayhollow",
+        "text": "Tonics, poisons, same clay pot — dose makes the difference. What do you need?",
+        "choices": [
+          { "text": "Something for poison saves.", "next": "phial" },
+          { "text": "Who benefits from the levy fight?", "next": "gossip" },
+          {
+            "text": "Pondwort's labels — red and green bands?",
+            "next": "label_help",
+            "condition": { "questStage": { "quest": "pondwort_wrong_tonic", "stage": "marta" } }
+          }
+        ]
+      },
+      {
+        "id": "label_help",
+        "speaker": "Marta Clayhollow",
+        "text": "Red band tonic, green toxin. Pondwort swapped them on today's batch. Relabel before dusk — I'll supervise.",
+        "action": { "type": "complete_objective", "payload": { "type": "talk", "target": "marta_clayhollow" } }
+      },
+      {
+        "id": "phial",
+        "speaker": "Marta Clayhollow",
+        "text": "Clay phial, fifteen coin. Don't drink the whole thing."
+      },
+      {
+        "id": "gossip",
+        "speaker": "Marta Clayhollow",
+        "text": "Masons sell stone. Frogs sell fish. I sell to both and sleep in mud."
+      }
+    ]
+  },
+  {
+    "id": "jenna_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Jenna Leapwell",
+        "text": "Courier's life — leap, deliver, repeat. Ferry tolls went up again.",
+        "choices": [
+          {
+            "text": "Grizz sent me about the toll.",
+            "next": "toll_info",
+            "condition": { "questStage": { "quest": "ferry_toll_dispute", "stage": "ask_around" } }
+          },
+          { "text": "Safe travels.", "next": "end" }
+        ]
+      },
+      {
+        "id": "toll_info",
+        "speaker": "Jenna Leapwell",
+        "text": "Council raised the crossing fee to pay for levy stone hauls. Grizz gets nothing extra — it's Mudwall's doing.",
+        "action": { "type": "complete_objective", "payload": { "type": "talk", "target": "jenna_leapwell" } }
+      },
+      { "id": "end", "speaker": "Jenna Leapwell", "text": "You too. Watch the mudwall cranes — they drop stones on frogs." }
+    ]
+  },
+  {
+    "id": "tor_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Tor Stoneback",
+        "text": "Wall won't build itself. Kess works too fast but the stone's sound.",
+        "choices": [{ "text": "Good luck.", "next": "end" }]
+      },
+      { "id": "end", "speaker": "Tor Stoneback", "text": "Luck's for frogs. We have mortar." }
+    ]
+  },
+  {
+    "id": "fern_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Fern Reedweaver",
+        "text": "Reed mats, fish wraps — market's slow when cellars flood.",
+        "choices": [{ "text": "Hope it dries.", "next": "end" }]
+      },
+      { "id": "end", "speaker": "Fern Reedweaver", "text": "Hope doesn't dry cellars. Councils do." }
+    ]
+  },
+  {
+    "id": "myrtle_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Old Myrtle Shellsong",
+        "text": "The council records votes. I record who wished otherwise.",
+        "choices": [
+          { "text": "Tell me about the fourth mural figure.", "next": "fourth" },
+          { "text": "I'll leave you to your scrolls.", "next": "end" }
+        ]
+      },
+      {
+        "id": "fourth",
+        "speaker": "Old Myrtle Shellsong",
+        "text": "Salamander folk. Erased when the Drainage failed. Names still in my ledger."
+      }
+    ]
+  },
+  {
+    "id": "finn_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Croaker Finn",
+        "text": "Fish! Five copper! Six if it's raining! Seven if Pip's watching!",
+        "choices": [{ "text": "You're loud.", "next": "end" }]
+      },
+      { "id": "end", "speaker": "Croaker Finn", "text": "Loud sells fish!" }
+    ]
+  },
+  {
+    "id": "silt_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Silt",
+        "text": "Lantern's lit. Ferry's steady. Poachers at Blackfen if you're brave.",
+        "choices": [{ "text": "Thanks.", "next": "end" }]
+      },
+      { "id": "end", "speaker": "Silt", "text": "Watch the depth post. Third notch from top — that's trouble." }
+    ]
+  },
+  {
+    "id": "bramble_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Bramble",
+        "text": "Causeway's clear. Crane almost dropped stone on a tadpole yesterday.",
+        "choices": [{ "text": "I'll watch the masons.", "next": "end" }]
+      },
+      { "id": "end", "speaker": "Bramble", "text": "Good. Leap fast if you hear cables creak." }
+    ]
+  },
+  {
+    "id": "pondwort_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Pondwort",
+        "text": "This one's tonic. Probably. Marta said check the label twice.",
+        "choices": [
+          {
+            "text": "You look worried. What happened?",
+            "next": "worried",
+            "condition": { "notQuestCompleted": "pondwort_wrong_tonic" }
+          },
+          {
+            "text": "Marta supervised the relabeling.",
+            "next": "fixed",
+            "condition": { "questStage": { "quest": "pondwort_wrong_tonic", "stage": "pondwort" } }
+          },
+          { "text": "Good luck.", "next": "end" }
+        ]
+      },
+      {
+        "id": "worried",
+        "speaker": "Pondwort",
+        "text": "I think I swapped the red and green bands. Someone could drink toxin thinking it's tonic. Marta's shelf has the chart.",
+        "action": { "type": "start_quest", "payload": "pondwort_wrong_tonic" }
+      },
+      {
+        "id": "fixed",
+        "speaker": "Pondwort",
+        "text": "Red tonic, green toxin. I won't forget again. Probably.",
+        "action": { "type": "complete_objective", "payload": { "type": "talk", "target": "pondwort" } }
+      },
+      { "id": "end", "speaker": "Pondwort", "text": "I need it." }
+    ]
+  },
+  {
+    "id": "thatch_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Elder Thatch",
+        "text": "Chapel's half drowned but the murals endure. Examine the scratched figure if you dare.",
+        "choices": [{ "text": "I will.", "next": "end" }]
+      },
+      { "id": "end", "speaker": "Elder Thatch", "text": "Water rises at dusk. So do old memories." }
+    ]
+  },
+  {
+    "id": "rivulet_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Rivulet",
+        "text": "Quiet near the pool, please. Tadpoles startle easy.",
+        "choices": [
+          { "text": "What do you teach them?", "next": "teach" },
+          { "text": "Sorry.", "next": "end" }
+        ]
+      },
+      {
+        "id": "teach",
+        "speaker": "Rivulet",
+        "text": "How to swim. How to share water. How the river remembers."
+      }
+    ]
+  },
+  {
+    "id": "sable_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Sable Meadowrun",
+        "text": "Mind the poultice cart, would you? Baskets tip easy on this causeway.",
+        "choices": [
+          { "text": "What brings a vole to the basin?", "next": "trade" },
+          { "text": "Where do you sleep out here?", "next": "sleep" },
+          { "text": "[Vole] Meadow burrows still flooding this spring?", "next": "vole_line", "condition": { "species": "vole" } },
+          { "text": "Just passing through.", "next": "end" }
+        ]
+      },
+      {
+        "id": "trade",
+        "speaker": "Sable Meadowrun",
+        "text": "Meadow clans don't touch the levy fight — frog, toad, or shell. We just need somewhere dry to sell poultices. Basin's as good as any this side of the upland forest."
+      },
+      {
+        "id": "sleep",
+        "speaker": "Sable Meadowrun",
+        "text": "Lilypond reeds, mostly. Quieter than a burrow with six sisters in it, I'll say that much."
+      },
+      {
+        "id": "vole_line",
+        "speaker": "Sable Meadowrun",
+        "text": "Ankle-deep by the third thaw, same as always. You'd know. Good to see another one of us out this far."
+      },
+      {
+        "id": "end",
+        "speaker": "Sable Meadowrun",
+        "text": "Mind the cart on your way out."
+      }
+    ]
+  },
+  {
+    "id": "fennick_intro",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Fennick Farrow",
+        "text": "Crossroads cart's the safest spot for a vole — equal walking distance from everyone's temper. Reeds and folk north, stone and shell east, smoke and tonics west, ferry water south.",
+        "choices": [
+          { "text": "You're a long way from any burrow.", "next": "wanderer" },
+          { "text": "What are you selling?", "next": "goods" },
+          { "text": "[Vole] Any word from the upland trail?", "next": "vole_line", "condition": { "species": "vole" } },
+          { "text": "Just passing through.", "next": "end" }
+        ]
+      },
+      {
+        "id": "wanderer",
+        "speaker": "Fennick Farrow",
+        "text": "Farther than most. Cart's been down every road between here and the Upland Trade Post twice this year. Basin folk fight over water. I just need somewhere flat to park it."
+      },
+      {
+        "id": "goods",
+        "speaker": "Fennick Farrow",
+        "text": "Bit of everything, none of it much. Ask Marta in Croakend if you want a real potion — I mostly trade string, salt, and rumors."
+      },
+      {
+        "id": "vole_line",
+        "speaker": "Fennick Farrow",
+        "text": "Trail's dry enough for the cart, if that's what you're asking. Meadow clans send word every full moon. Nothing about the levy fight, if that's what you're hoping."
+      },
+      {
+        "id": "end",
+        "speaker": "Fennick Farrow",
+        "text": "Mind the ruts. Cart's tipped twice already this week."
+      }
+    ]
+  },
+  {
+    "id": "council_vote",
+    "nodes": [
+      {
+        "id": "start",
+        "speaker": "Elder Shellen Domet",
+        "text": "The Council of Shells is assembled. You gathered evidence. Lilypond waits for your word.",
+        "choices": [
+          { "text": "Expose Kess — the levy breaks the Charter.", "next": "expose" },
+          { "text": "Back the masons. Flood walls save lives.", "next": "support" },
+          { "text": "Broker a compromise — modified levy + frog platforms.", "next": "compromise" },
+          { "text": "Sell the evidence to whoever pays most.", "next": "sell" },
+          { "text": "Say nothing. Let them vote without you.", "next": "nothing" }
+        ]
+      },
+      {
+        "id": "expose",
+        "speaker": "Council",
+        "text": "Kess is halted. Masons glare. Pip weeps relief. The levy will be redrawn.",
+        "action": { "type": "quest_outcome", "payload": { "quest": "what_water_remembers", "outcome": "expose" } }
+      },
+      {
+        "id": "support",
+        "speaker": "Council",
+        "text": "The vote passes. Stone flows north. Lilymarket merchants exchange looks that promise a wet spring.",
+        "action": { "type": "quest_outcome", "payload": { "quest": "what_water_remembers", "outcome": "support" } }
+      },
+      {
+        "id": "compromise",
+        "speaker": "Council",
+        "text": "Groans, then nods. A smaller levy. Floating platforms for the market. Myrtle writes your name in the ledger.",
+        "action": { "type": "quest_outcome", "payload": { "quest": "what_water_remembers", "outcome": "compromise" } }
+      },
+      {
+        "id": "sell",
+        "speaker": "Council",
+        "text": "You leave richer. Everyone knows. The river feels colder when you pass.",
+        "action": { "type": "quest_outcome", "payload": { "quest": "what_water_remembers", "outcome": "sell" } }
+      },
+      {
+        "id": "nothing",
+        "speaker": "Council",
+        "text": "Silence counts as consent here. Kess resumes work. The water will decide the rest.",
+        "action": { "type": "quest_outcome", "payload": { "quest": "what_water_remembers", "outcome": "nothing" } }
+      }
+    ]
+  }
+]
