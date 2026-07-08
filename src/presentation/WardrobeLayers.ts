@@ -1,6 +1,8 @@
 import type { WardrobeDefinition } from '@/data/types';
 import type { CharacterAppearance, CharacterWardrobe } from '@/gameplay/CharacterAppearance';
 
+import { spriteSheetFrameCount, spriteFrameWidth, cropOpaqueBounds } from './CharacterSprites';
+
 const CANVAS_SIZE = 32;
 const WARDROBE_ART_BASE = '/assets/sprites/wardrobe';
 const BUILD_SLUGS = ['slim', 'medium', 'heavy'] as const;
@@ -13,6 +15,8 @@ const CLOAK_IDS = new Set([
   'elder_robe',
 ]);
 const BUILD_AWARE_ITEMS = new Set(['ferry_kepi', 'basin_cloak', 'marsh_hood']);
+/** AI brooch PNG is a full scallop — procedural pin until asset is regenerated. */
+const PROCEDURAL_ONLY_ITEMS = new Set(['shell_brooch']);
 
 /** Lightweight chromakey: removes near-corner-color pixels from a white-bg item PNG. */
 function chromaKeyItem(img: HTMLImageElement): HTMLCanvasElement {
@@ -30,7 +34,8 @@ function chromaKeyItem(img: HTMLImageElement): HTMLCanvasElement {
   const soft = 46;
   for (let i = 0; i < d.length; i += 4) {
     const dist = Math.max(Math.abs(d[i]! - r0), Math.abs(d[i + 1]! - g0), Math.abs(d[i + 2]! - b0));
-    if (dist < hard) d[i + 3] = 0;
+    const nearWhite = d[i]! > 235 && d[i + 1]! > 235 && d[i + 2]! > 235;
+    if (dist < hard || nearWhite) d[i + 3] = 0;
     else if (dist < soft) d[i + 3] = Math.round(d[i + 3]! * (dist - hard) / (soft - hard));
   }
   ctx.putImageData(frame, 0, 0);
@@ -40,15 +45,16 @@ function chromaKeyItem(img: HTMLImageElement): HTMLCanvasElement {
 const _wardrobeItemCache = new Map<string, Promise<HTMLCanvasElement | null>>();
 
 function extractWardrobeFrame(sheet: HTMLCanvasElement, frameIndex: number): HTMLCanvasElement {
-  const fw = sheet.height;
-  const count = Math.max(1, Math.round(sheet.width / fw));
+  const count = spriteSheetFrameCount(sheet, true);
+  const fw = spriteFrameWidth(sheet, count);
+  const fh = sheet.height;
   const idx = Math.min(Math.max(0, frameIndex), count - 1);
   const out = document.createElement('canvas');
   out.width = fw;
-  out.height = fw;
+  out.height = fh;
   const ctx = out.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(sheet, idx * fw, 0, fw, fw, 0, 0, fw, fw);
+  ctx.drawImage(sheet, idx * fw, 0, fw, fh, 0, 0, fw, fh);
   return out;
 }
 
@@ -74,7 +80,15 @@ function wardrobeLoadPaths(itemId: string, build = 1): string[] {
   return paths;
 }
 
-/** Try loading a wardrobe item overlay PNG. Returns null if not found (404 / error). */
+/** Load a single wardrobe item overlay (item only, chromakeyed). */
+export function loadWardrobeItemCanvas(
+  itemId: string,
+  build = 1,
+  frameIndex = 0,
+): Promise<HTMLCanvasElement | null> {
+  return loadWardrobeItemPng(itemId, build, frameIndex);
+}
+
 function loadWardrobeItemPng(
   itemId: string,
   build = 1,
@@ -84,6 +98,7 @@ function loadWardrobeItemPng(
   const cached = _wardrobeItemCache.get(cacheKey);
   if (cached) return cached;
   const p = (async () => {
+    if (PROCEDURAL_ONLY_ITEMS.has(itemId)) return null;
     for (const path of wardrobeLoadPaths(itemId, build)) {
       const sheet = await tryLoadWardrobeImage(path);
       if (!sheet) continue;
@@ -94,6 +109,27 @@ function loadWardrobeItemPng(
   })();
   _wardrobeItemCache.set(cacheKey, p);
   return p;
+}
+
+const SLOT_BLIT_REGIONS = {
+  hat: { x: 8, y: 2, w: 16, h: 8 },
+  cloak: { x: 2, y: 10, w: 28, h: 22 },
+  accessory: { x: 13, y: 17, w: 6, h: 5 },
+} as const;
+
+function blitWardrobeOverlay(
+  gfx: CanvasRenderingContext2D,
+  png: HTMLCanvasElement,
+  w: number,
+  h: number,
+  slot: keyof typeof SLOT_BLIT_REGIONS,
+): void {
+  const b = cropOpaqueBounds(png);
+  const region = SLOT_BLIT_REGIONS[slot];
+  gfx.save();
+  gfx.scale(w / CANVAS_SIZE, h / CANVAS_SIZE);
+  gfx.drawImage(png, b.x, b.y, b.w, b.h, region.x, region.y, region.w, region.h);
+  gfx.restore();
 }
 
 function speciesAllowed(item: WardrobeDefinition, speciesId: string): boolean {
@@ -328,6 +364,11 @@ export const WARDROBE_ITEM_IDS = [
   ...Object.keys(ACCESSORY_DRAW),
 ] as const;
 
+/** Procedural wardrobe item draw for thumbnails / fallback. */
+export function drawItemByIdProcedural(ctx: CanvasRenderingContext2D, itemId: string): boolean {
+  return drawItemById(ctx, itemId);
+}
+
 function drawItemById(ctx: CanvasRenderingContext2D, itemId: string): boolean {
   const drawer = HAT_DRAW[itemId] ?? CLOAK_DRAW[itemId] ?? ACCESSORY_DRAW[itemId];
   if (!drawer) return false;
@@ -424,7 +465,7 @@ export async function applyWardrobeBackOverlayAsync(
   if (!cloakId) return;
   const png = await loadWardrobeItemPng(cloakId, build, cloakFrameIndex);
   if (png) {
-    gfx.drawImage(png, 0, 0, w, h);
+    blitWardrobeOverlay(gfx, png, w, h, 'cloak');
     return;
   }
   gfx.save();
@@ -450,11 +491,11 @@ export async function applyWardrobeFrontOverlayAsync(
   const build = appearance.build ?? 1;
   gfx.imageSmoothingEnabled = false;
 
-  async function drawItem(itemId: string | undefined): Promise<void> {
+  async function drawItem(itemId: string | undefined, slot: 'hat' | 'accessory'): Promise<void> {
     if (!itemId) return;
     const png = await loadWardrobeItemPng(itemId, build, 0);
     if (png) {
-      gfx.drawImage(png, 0, 0, w, h);
+      blitWardrobeOverlay(gfx, png, w, h, slot);
       return;
     }
     gfx.save();
@@ -465,8 +506,8 @@ export async function applyWardrobeFrontOverlayAsync(
 
   const hatId = resolveItem(appearance.wardrobe, 'hat', wardrobeItems, speciesId);
   const accId = resolveItem(appearance.wardrobe, 'accessory', wardrobeItems, speciesId);
-  await drawItem(hatId);
-  await drawItem(accId);
+  await drawItem(hatId, 'hat');
+  await drawItem(accId, 'accessory');
 }
 
 /**

@@ -40,7 +40,8 @@ Use [`docs/systems/VISUAL_QA_AGENTS.md`](../systems/VISUAL_QA_AGENTS.md) for age
 | AR-028 | 2026-07-08 | Pixel art redesign + full creator audit | localhost:5200 | **PASS** agent visual | creator | All 5 species new pixel art (outlines, faces, silhouettes); all 9 tabs PASS scroll check; hat/cloak overlays verified all 5 species; 1366×768 + 1024×768 compact; 144 unit + 6/6 e2e |
 | AR-031 | 2026-07-08 | Frog pattern PNG gate + p2–p4 sheets | localhost:5200 | **PASS** agent visual | creator | 12 frog body sheets; variant loader wired; Look tab pattern thumbnails |
 | AR-032 | 2026-07-08 | Full Character Art Pipeline | localhost:5200 | **PASS** agent visual | creator | 60 body sheets (5×3×4); 18 wardrobe PNGs + 6 animated cloak sheets + 9 build-aware hero overlays; SpriteAnimator (body bob + cloak flutter + rain); Folk/Look/Outfits PNG compose; 144 unit + 6/6 e2e + typecheck + build — Nick eye pending |
-| AR-033 | 2026-07-08 | Creator full PNG integration pass | localhost:5200 | **PASS** agent visual | creator | Fixed cloak-behind-body layer order; thumbnails carry wardrobe; summary rail shows build/pattern/tint; 7/7 e2e incl. 5-folk outfit matrix screenshots — Nick eye pending |
+| AR-033 | 2026-07-08 | Creator full PNG integration pass | localhost:5200 | **FAIL** (superseded) | creator | Logged PASS without reading screenshots — double preview, full-character outfit thumbs, wrong ferry_kepi asset; superseded by AR-034 |
+| AR-034 | 2026-07-08 | Creator thumbnail + wardrobe compose re-audit | preview:4173 | **BORDERLINE** agent visual | creator | Agent read `AR034_*.png` before handoff. Fixed: square-sheet frame extract, item-only outfit thumbs, vole pose-grid cell, ferry_kepi asset, slot-aware wardrobe blit (hat/chest scale). Remaining: shell_brooch still oversized on chest (asset/region), cloak thumbs procedural blocks, Nick eye pending. 145 unit + AR-034 playwright green |
 
 ### AR-028 detail (Pixel art redesign + full creator audit)
 

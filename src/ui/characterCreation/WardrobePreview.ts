@@ -1,83 +1,100 @@
 import type { WardrobeDefinition } from '@/data/types';
 import type { CharacterAppearance, CharacterWardrobe } from '@/gameplay/CharacterAppearance';
 import { defaultAppearance } from '@/gameplay/CharacterAppearance';
-import { composeCharacterArtCanvas, drawCharacterCanvas } from '@/presentation/CharacterSprites';
+import {
+  composeCharacterArtCanvas,
+  drawCharacterCanvas,
+  drawCroppedSprite,
+} from '@/presentation/CharacterSprites';
+import { drawItemByIdProcedural, loadWardrobeItemCanvas } from '@/presentation/WardrobeLayers';
 
 const THUMB = 48;
+const THUMB_INSET = 4;
+const THUMB_DRAW = THUMB - THUMB_INSET * 2;
 let _thumbSeq = 0;
 
-function paintThumbnail(
-  ctx: CanvasRenderingContext2D,
-  src: HTMLCanvasElement,
-  composed: HTMLCanvasElement | null,
-): void {
-  ctx.fillStyle = '#1a3c34';
-  ctx.fillRect(0, 0, THUMB, THUMB);
-  if (composed) {
-    ctx.drawImage(composed, 4, 4, 40, 40);
-    return;
-  }
-  ctx.drawImage(src, 0, 0, 32, 32, 4, 4, 40, 40);
+function clearThumb(ctx: CanvasRenderingContext2D): void {
+  ctx.clearRect(0, 0, THUMB, THUMB);
 }
 
-function upgradeThumbnail(
+function bodyOnly(appearance: CharacterAppearance): CharacterAppearance {
+  return { ...appearance, wardrobe: {} };
+}
+
+function upgradeBodyThumbnail(
   out: HTMLCanvasElement,
   seq: number,
   species: string,
   appearance: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[],
 ): void {
-  void composeCharacterArtCanvas(species, appearance, wardrobeItems, 0).then((composed) => {
+  void composeCharacterArtCanvas(species, bodyOnly(appearance), wardrobeItems, 0).then((composed) => {
     if (seq !== _thumbSeq || !composed) return;
     const ctx = out.getContext('2d');
     if (!ctx) return;
-    paintThumbnail(ctx, composed, composed);
+    ctx.imageSmoothingEnabled = false;
+    clearThumb(ctx);
+    drawCroppedSprite(ctx, composed, THUMB_INSET, THUMB_INSET, THUMB_DRAW);
   });
 }
 
 export type WardrobeSlot = keyof CharacterWardrobe;
 
-/** Mini portrait for one wardrobe pick — used on outfit cards in the creator. */
+/**
+ * Outfit card icon — shows the ITEM ONLY (hat/cloak/accessory), not a dressed character.
+ * Background is transparent; card CSS supplies the dark tile.
+ */
 export function drawWardrobeThumbnail(
-  species: string,
-  slot: WardrobeSlot,
+  _species: string,
+  _slot: WardrobeSlot,
   itemId: string | null,
   baseAppearance: CharacterAppearance,
-  wardrobeItems: WardrobeDefinition[],
+  _wardrobeItems: WardrobeDefinition[],
   targetCanvas?: HTMLCanvasElement,
 ): HTMLCanvasElement {
-  const wardrobe: CharacterWardrobe = { ...baseAppearance.wardrobe };
-  if (itemId) wardrobe[slot] = itemId;
-  else delete wardrobe[slot];
-
-  const appearance: CharacterAppearance = {
-    variant: baseAppearance.variant,
-    build: baseAppearance.build,
-    hueShift: baseAppearance.hueShift,
-    marking: baseAppearance.marking,
-    wardrobe,
-  };
-
   const seq = ++_thumbSeq;
-  const src = drawCharacterCanvas(species, appearance.variant, appearance, wardrobeItems);
   const out = targetCanvas ?? document.createElement('canvas');
   out.width = THUMB;
   out.height = THUMB;
   const ctx = out.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
-  paintThumbnail(ctx, src, null);
-  upgradeThumbnail(out, seq, species, appearance, wardrobeItems);
+  clearThumb(ctx);
+
+  if (!itemId) {
+    ctx.strokeStyle = 'rgba(240, 193, 75, 0.35)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(THUMB_INSET + 4, THUMB_INSET + 4, THUMB_DRAW - 8, THUMB_DRAW - 8);
+    return out;
+  }
+
+  // Procedural item-only fallback (32×32, transparent bg)
+  const proc = document.createElement('canvas');
+  proc.width = 32;
+  proc.height = 32;
+  const pctx = proc.getContext('2d')!;
+  drawItemByIdProcedural(pctx, itemId);
+  drawCroppedSprite(ctx, proc, THUMB_INSET, THUMB_INSET, THUMB_DRAW);
+
+  void loadWardrobeItemCanvas(itemId, baseAppearance.build ?? 1, 0).then((png) => {
+    if (seq !== _thumbSeq || !png) return;
+    const tctx = out.getContext('2d');
+    if (!tctx) return;
+    tctx.imageSmoothingEnabled = false;
+    clearThumb(tctx);
+    drawCroppedSprite(tctx, png, THUMB_INSET, THUMB_INSET, THUMB_DRAW);
+  });
+
   return out;
 }
 
-/** Body build swatch for the Look tab — slim / medium / stout PNG when available. */
+/** Body build swatch — body only, no outfit pieces. */
 export function drawBuildThumbnail(
   species: string,
   build: 0 | 1 | 2,
   appearance: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[],
 ): HTMLCanvasElement {
-  const app: CharacterAppearance = { ...appearance, build };
+  const app = bodyOnly({ ...appearance, build });
   const seq = ++_thumbSeq;
   const src = drawCharacterCanvas(species, app.variant, app, wardrobeItems);
   const out = document.createElement('canvas');
@@ -85,19 +102,20 @@ export function drawBuildThumbnail(
   out.height = THUMB;
   const ctx = out.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
-  paintThumbnail(ctx, src, null);
-  upgradeThumbnail(out, seq, species, app, wardrobeItems);
+  clearThumb(ctx);
+  drawCroppedSprite(ctx, src, THUMB_INSET, THUMB_INSET, THUMB_DRAW);
+  upgradeBodyThumbnail(out, seq, species, app, wardrobeItems);
   return out;
 }
 
-/** Pattern swatch for the Look tab — body variant only. */
+/** Pattern swatch — body palette only, no outfit. */
 export function drawVariantThumbnail(
   species: string,
   variant: number,
   appearance: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[],
 ): HTMLCanvasElement {
-  const app: CharacterAppearance = { ...appearance, variant };
+  const app = bodyOnly({ ...appearance, variant });
   const seq = ++_thumbSeq;
   const src = drawCharacterCanvas(species, variant, app, wardrobeItems);
   const out = document.createElement('canvas');
@@ -105,8 +123,9 @@ export function drawVariantThumbnail(
   out.height = THUMB;
   const ctx = out.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
-  paintThumbnail(ctx, src, null);
-  upgradeThumbnail(out, seq, species, app, wardrobeItems);
+  clearThumb(ctx);
+  drawCroppedSprite(ctx, src, THUMB_INSET, THUMB_INSET, THUMB_DRAW);
+  upgradeBodyThumbnail(out, seq, species, app, wardrobeItems);
   return out;
 }
 
@@ -118,8 +137,8 @@ export function drawSpeciesCardThumbnail(
   wardrobeItems: WardrobeDefinition[],
 ): HTMLCanvasElement {
   const app: CharacterAppearance = selected
-    ? appearance
-    : { ...defaultAppearance(), build: 1, variant: 0 };
+    ? bodyOnly(appearance)
+    : bodyOnly({ ...defaultAppearance(), build: 1, variant: 0 });
   return drawVariantThumbnail(species, app.variant, app, wardrobeItems);
 }
 

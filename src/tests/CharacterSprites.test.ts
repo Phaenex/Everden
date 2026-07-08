@@ -12,6 +12,7 @@ import {
   loadArtCanvas,
   loadEnemyArtCanvas,
   CHARACTER_MESH_SIZE,
+  spriteSheetFrameCount,
 } from '@/presentation/CharacterSprites';
 import { ISO_CAMERA_OFFSET } from '@/presentation/IsometricCamera';
 
@@ -203,6 +204,13 @@ describe('CharacterSprites art fallback', () => {
     const shadow = createGroundShadow();
     expect(shadow).toBeInstanceOf(THREE.Mesh);
     expect(() => createGroundShadow(CHARACTER_MESH_SIZE)).not.toThrow();
+  });
+
+  it('spriteSheetFrameCount treats square 1024 exports as 2-frame strips', () => {
+    const sheet = document.createElement('canvas');
+    sheet.width = 1024;
+    sheet.height = 1024;
+    expect(spriteSheetFrameCount(sheet)).toBe(2);
   });
 
   it('drawCharacterCanvas accepts appearance options without throwing', () => {

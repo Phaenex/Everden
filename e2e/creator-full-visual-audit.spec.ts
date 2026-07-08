@@ -1,0 +1,153 @@
+import { expect, test } from '@playwright/test';
+import { clearEverdenSave } from './character-helpers';
+import path from 'node:path';
+
+const SHOTS = path.join(process.cwd(), 'docs/playtests/screenshots');
+
+const FOLK = ['frog', 'toad', 'vole', 'turtle', 'tortoise'] as const;
+
+const TABS = [
+  'species',
+  'appearance',
+  'wardrobe',
+  'stats',
+  'kit',
+  'skills',
+  'story',
+  'settings',
+  'review',
+] as const;
+
+/** Every wardrobe label from wardrobe.json — clicks first visible match per species. */
+const OUTFIT_LABELS = [
+  'Reed sun hat',
+  'Shell cap',
+  'Mudwall helm',
+  'Lily bloom',
+  'Ferry kepi',
+  'Marsh hood',
+  'Basin travel cloak',
+  "Ferryman's shawl",
+  'Croakend patchcloak',
+  'Levy mantle',
+  'Rain poncho',
+  'Elder robe',
+  'Reed hop charm',
+  'Clay prayer bead',
+  'Lilymarket scarf',
+  "Levy clerk's pin",
+  'Shell brooch',
+  'Hop whistle',
+] as const;
+
+function slug(label: string): string {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+test.describe('AR-035 Full creator visual audit', () => {
+  test('screenshot every tab, folk, look combo, outfit, and control', async ({ page }) => {
+    test.setTimeout(360_000);
+    await clearEverdenSave(page);
+    await page.reload();
+    await page.waitForSelector('.creator-shell');
+
+    for (const tab of TABS) {
+      await page.locator(`.creator-tab[data-tab="${tab}"]`).click();
+      await page.waitForTimeout(350);
+      await page.screenshot({ path: path.join(SHOTS, `AR035_tab_${tab}.png`) });
+    }
+
+    for (const species of FOLK) {
+      await page.locator('.creator-tab[data-tab="species"]').click();
+      await page.locator(`.species-card[data-species="${species}"]`).click();
+      await page.waitForTimeout(700);
+      await page.screenshot({ path: path.join(SHOTS, `AR035_folk_${species}.png`) });
+    }
+
+    await page.locator('.creator-tab[data-tab="species"]').click();
+    await page.locator('.species-card[data-species="frog"]').click();
+    await page.locator('.creator-tab[data-tab="appearance"]').click();
+
+    for (let b = 0; b < 3; b++) {
+      await page.locator('.build-card').nth(b).click();
+      for (let v = 0; v < 4; v++) {
+        await page.locator('.variant-card').nth(v).click();
+        await page.waitForTimeout(550);
+        await page.screenshot({ path: path.join(SHOTS, `AR035_look_frog_b${b}_p${v + 1}.png`) });
+      }
+    }
+
+    for (const marking of ['Spots', 'Stripes', 'None'] as const) {
+      await page.getByRole('button', { name: marking }).click();
+      await page.waitForTimeout(450);
+      await page.screenshot({ path: path.join(SHOTS, `AR035_marking_${marking.toLowerCase()}.png`) });
+    }
+
+    await page.locator('.hue-slider').evaluate((el) => {
+      const input = el as HTMLInputElement;
+      input.value = '45';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await page.waitForTimeout(450);
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_hue_45.png') });
+
+    await page.getByRole('button', { name: /Randomize look/ }).click();
+    await page.waitForTimeout(650);
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_randomize.png') });
+
+    await page.getByRole('button', { name: /Reset tab/ }).click();
+    await page.waitForTimeout(450);
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_reset_look.png') });
+
+    await page.locator('.build-card').nth(1).click();
+    await page.locator('.creator-tab[data-tab="wardrobe"]').click();
+
+    for (const label of OUTFIT_LABELS) {
+      const btn = page.getByRole('button', { name: new RegExp(label, 'i') });
+      if ((await btn.count()) === 0) continue;
+      await btn.first().click();
+      await page.waitForTimeout(750);
+      await page.locator('.creator-preview-canvas').screenshot({
+        path: path.join(SHOTS, `AR035_outfit_${slug(label)}.png`),
+      });
+    }
+
+    await page.locator('.creator-tab[data-tab="wardrobe"]').click();
+    await page.getByRole('button', { name: /Ferry kepi/i }).click();
+    await page.getByRole('button', { name: /Basin travel cloak/i }).click();
+    await page.getByRole('button', { name: /Shell brooch/i }).click();
+    await page.waitForTimeout(800);
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_outfits_full_equipped.png') });
+
+    await page.locator('.creator-tab[data-tab="stats"]').click();
+    const firstPlus = page.locator('.stat-control-row .stat-btn').nth(1);
+    await firstPlus.click();
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_stats_plus.png') });
+
+    await page.locator('.creator-tab[data-tab="kit"]').click();
+    await expect(page.locator('.kit-ability-list')).toBeVisible();
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_kit.png') });
+
+    await page.locator('.creator-tab[data-tab="skills"]').click();
+    await expect(page.locator('.skills-reference-list')).toBeVisible();
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_skills.png') });
+
+    await page.locator('.creator-tab[data-tab="settings"]').click();
+    await page.locator('.settings-row input').first().check();
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_settings.png') });
+
+    await page.locator('.creator-tab[data-tab="story"]').click();
+    await page.locator('.title-name-input').fill('Audit Traveler');
+    await page.getByRole('button', { name: /Carrying someone else's worry/ }).click();
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_story.png') });
+
+    await page.locator('.creator-tab[data-tab="review"]').click();
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_review.png') });
+
+    await page.screenshot({ path: path.join(SHOTS, 'AR035_all_tabs_fullpage.png'), fullPage: true });
+  });
+});

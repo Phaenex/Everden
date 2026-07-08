@@ -75,7 +75,11 @@ function chromaKeyCanvas(img: HTMLImageElement): HTMLCanvasElement {
     const dg = Math.abs(frame.data[i + 1]! - g0);
     const db = Math.abs(frame.data[i + 2]! - b0);
     const dist = Math.max(dr, dg, db);
-    if (dist < hardThreshold) {
+    const r = frame.data[i]!;
+    const g = frame.data[i + 1]!;
+    const b = frame.data[i + 2]!;
+    const nearWhite = r > 235 && g > 235 && b > 235;
+    if (dist < hardThreshold || nearWhite) {
       frame.data[i + 3] = 0;
     } else if (dist < softThreshold) {
       const t = (dist - hardThreshold) / (softThreshold - hardThreshold);
@@ -87,22 +91,167 @@ function chromaKeyCanvas(img: HTMLImageElement): HTMLCanvasElement {
 }
 
 /** Horizontal sprite sheets use square frames (e.g. 256×128 → 2 frames of 128×128). */
-function spriteFrameCount(sheet: HTMLCanvasElement): number {
-  if (sheet.height <= 0) return 1;
-  return Math.max(1, Math.round(sheet.width / sheet.height));
+type SheetLayout = 'strip' | 'dual' | 'grid4x2' | 'single';
+
+function countRowSegments(ctx: CanvasRenderingContext2D, w: number, h: number, rowY: number): number {
+  const y = Math.floor(h * rowY);
+  let segments = 0;
+  let inSeg = false;
+  for (let x = 0; x < w; x++) {
+    const ink = ctx.getImageData(x, y, 1, 1).data[3]! > 30;
+    if (ink && !inSeg) {
+      segments++;
+      inSeg = true;
+    }
+    if (!ink) inSeg = false;
+  }
+  return segments;
 }
 
-function extractSpriteFrame(sheet: HTMLCanvasElement, frameIndex: number): HTMLCanvasElement {
-  const fw = sheet.height;
-  const count = spriteFrameCount(sheet);
-  const idx = Math.min(Math.max(0, frameIndex), count - 1);
+function cellInk(ctx: CanvasRenderingContext2D, x: number, y: number, cw: number, ch: number): number {
+  const frame = ctx.getImageData(x, y, cw, ch);
+  const d = frame.data;
+  let n = 0;
+  for (let i = 3; i < d.length; i += 4) {
+    if (d[i]! > 30) n++;
+  }
+  return n;
+}
+
+/** Species whose body sheets are 4×2 pose grids (not dual idle strips). */
+const POSE_GRID_SPECIES = new Set(['vole']);
+
+function resolveSheetLayout(sheet: HTMLCanvasElement, species?: string): SheetLayout {
+  if (species && POSE_GRID_SPECIES.has(species)) return 'grid4x2';
+  return detectSheetLayout(sheet);
+}
+
+function detectSheetLayout(sheet: HTMLCanvasElement): SheetLayout {
+  const w = sheet.width;
+  const h = sheet.height;
+  if (h <= 0) return 'single';
+  if (w >= h * 1.75) return 'strip';
+  if (w !== h || w <= 128) return 'single';
+
+  const ctx = sheet.getContext('2d');
+  if (!ctx) return 'dual';
+
+  const cols = 4;
+  const rows = 2;
+  const cw = Math.floor(w / cols);
+  const ch = Math.floor(h / rows);
+  const cellThreshold = cw * ch * 0.04;
+  let activeCells = 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (cellInk(ctx, c * cw, r * ch, cw, ch) > cellThreshold) activeCells++;
+    }
+  }
+
+  const topSegs = countRowSegments(ctx, w, h, 0.28);
+  const midSegs = countRowSegments(ctx, w, h, 0.5);
+  if (activeCells >= 6 && topSegs >= 4 && midSegs >= 4) return 'grid4x2';
+  return 'dual';
+}
+
+export function spriteSheetFrameCount(sheet: HTMLCanvasElement, animatedStrip = false): number {
+  const layout = detectSheetLayout(sheet);
+  if (layout === 'strip') {
+    const h = sheet.height;
+    return h > 0 ? Math.max(1, Math.round(sheet.width / h)) : 1;
+  }
+  if (layout === 'dual') return 2;
+  if (layout === 'grid4x2') return 1;
+  if (animatedStrip && sheet.width >= sheet.height * 1.4) return Math.max(4, Math.round(sheet.width / sheet.height));
+  return 1;
+}
+
+export function spriteFrameWidth(sheet: HTMLCanvasElement, count: number): number {
+  const layout = detectSheetLayout(sheet);
+  if (layout === 'grid4x2') return Math.floor(sheet.width / 4);
+  if (layout === 'dual') return Math.floor(sheet.width / 2);
+  if (count <= 1) return sheet.width;
+  return Math.floor(sheet.width / count);
+}
+
+export function extractSpriteFrame(sheet: HTMLCanvasElement, frameIndex = 0, species?: string): HTMLCanvasElement {
+  const layout = resolveSheetLayout(sheet, species);
   const out = document.createElement('canvas');
-  out.width = fw;
-  out.height = fw;
   const ctx = out.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(sheet, idx * fw, 0, fw, fw, 0, 0, fw, fw);
+
+  if (layout === 'strip') {
+    const count = spriteSheetFrameCount(sheet);
+    const fw = spriteFrameWidth(sheet, count);
+    const idx = Math.min(Math.max(0, frameIndex), count - 1);
+    out.width = fw;
+    out.height = sheet.height;
+    ctx.drawImage(sheet, idx * fw, 0, fw, sheet.height, 0, 0, fw, sheet.height);
+    return out;
+  }
+
+  if (layout === 'grid4x2') {
+    const cw = Math.floor(sheet.width / 4);
+    const ch = Math.floor(sheet.height / 2);
+    const col = 1;
+    const row = 0;
+    out.width = cw;
+    out.height = ch;
+    ctx.drawImage(sheet, col * cw, row * ch, cw, ch, 0, 0, cw, ch);
+    return out;
+  }
+
+  if (layout === 'dual') {
+    const fw = Math.floor(sheet.width / 2);
+    const idx = Math.min(Math.max(0, frameIndex), 1);
+    out.width = fw;
+    out.height = sheet.height;
+    ctx.drawImage(sheet, idx * fw, 0, fw, sheet.height, 0, 0, fw, sheet.height);
+    return out;
+  }
+
+  out.width = sheet.width;
+  out.height = sheet.height;
+  ctx.drawImage(sheet, 0, 0);
   return out;
+}
+
+/** Crop to non-transparent pixels — for thumbnails and preview framing. */
+export function cropOpaqueBounds(src: HTMLCanvasElement, pad = 1): { x: number; y: number; w: number; h: number } {
+  const sctx = src.getContext('2d')!;
+  const { data, width, height } = sctx.getImageData(0, 0, src.width, src.height);
+  let minX = width;
+  let minY = height;
+  let maxX = 0;
+  let maxY = 0;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[(y * width + x) * 4 + 3]! > 10) {
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < minX) return { x: 0, y: 0, w: width, h: height };
+  minX = Math.max(0, minX - pad);
+  minY = Math.max(0, minY - pad);
+  maxX = Math.min(width - 1, maxX + pad);
+  maxY = Math.min(height - 1, maxY + pad);
+  return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+}
+
+export function drawCroppedSprite(
+  ctx: CanvasRenderingContext2D,
+  src: HTMLCanvasElement,
+  destX: number,
+  destY: number,
+  destSize: number,
+): void {
+  const b = cropOpaqueBounds(src);
+  ctx.clearRect(destX, destY, destSize, destSize);
+  ctx.drawImage(src, b.x, b.y, b.w, b.h, destX, destY, destSize, destSize);
 }
 
 function tryLoadImage(path: string): Promise<HTMLCanvasElement | null> {
@@ -167,7 +316,7 @@ export async function composeCharacterArtCanvas(
 ): Promise<HTMLCanvasElement | null> {
   const sheet = await loadArtSheet(species, npcId, appearance.build ?? 1, appearance.variant ?? 0);
   if (!sheet) return null;
-  const bodyFrame = extractSpriteFrame(sheet, frameIndex);
+  const bodyFrame = extractSpriteFrame(sheet, frameIndex, species);
   applyAppearanceToArtCanvas(bodyFrame, species, appearance, wardrobeItems);
 
   const out = document.createElement('canvas');
@@ -183,7 +332,7 @@ export async function composeCharacterArtCanvas(
 }
 
 export function artSheetFrameCount(sheet: HTMLCanvasElement): number {
-  return spriteFrameCount(sheet);
+  return spriteSheetFrameCount(sheet);
 }
 
 /** Swap a 2D `<img>`'s src to real art if/when it loads, keeping its current src otherwise. */

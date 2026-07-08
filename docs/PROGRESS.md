@@ -1,6 +1,6 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-050)
+**Last updated:** 2026-07-08 (CHECKIN-051)
 **Play online:** https://croakend-club.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
@@ -33,13 +33,13 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://croakend-club.vercel.app · CHECKIN-050
+Play: https://croakend-club.vercel.app · CHECKIN-051
 
 OVERALL  [█████████░░░░░░░░░░░]  61%
 
 WORKSTREAMS (T1–T9)
-  T1 Mechanics & CI     [███████████████████░]  92%  (144 unit)
-  T2 First 5 minutes    [██████████████████░░]  88%
+  T1 Mechanics & CI     [███████████████████░]  92%  (145 unit)
+  T2 First 5 minutes    [██████████████████░░]  88%  (AR-034 wardrobe compose fixed; Nick eye)
   T3 Districts & nav    [█████████████████░░░]  85%
   T4 Quests & dialogue  [████████████████░░░░]  82%
   T5 Combat & D&D       [█████████████████░░░]  88%
@@ -341,6 +341,19 @@ After any session work, update the bars/rows above in this file, then paste the 
 **Still open:** Nick creator + Lilymarket composition eye test.
 
 ---
+
+### CHECKIN-051 — 2026-07-08
+
+**Type:** AR-034 creator visual re-audit (screenshot eye-check before handoff)  
+**Agent:** Cursor
+
+**Process fix:** AR-033 marked FAIL/superseded — e2e green ≠ visual PASS; agent must read screenshots before claiming verified.
+
+**Code fixes:** Square 1024 sheet layout detection (dual vs 4×2 grid); vole pose-grid cell extract; item-only outfit thumbnails; slot-aware wardrobe PNG blit (hat/cloak/accessory regions); stronger chromakey (near-white); `ferry_kepi.png` replaced with cap asset; `e2e/creator-visual-audit.spec.ts` for AR-034 capture.
+
+**AR-034 screenshot audit (agent read):** ✅ single character preview; ✅ ferry kepi cap on head; ✅ vole folk thumb single sprite; ✅ outfit thumbs item-only. 🟡 shell_brooch still large on chest (asset scale); 🟡 cloak thumbs procedural color blocks. Nick eye pending.
+
+**Verified:** 145 unit + AR-034 playwright + typecheck + build. Screenshots: `docs/playtests/screenshots/AR034_*.png`.
 
 ### CHECKIN-050 — 2026-07-08
 

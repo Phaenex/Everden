@@ -1,5 +1,5 @@
 import type { AbilityDefinition, SpeciesDefinition, WardrobeDefinition } from '@/data/types';
-import { composeCharacterArtCanvas, drawCharacterCanvas } from '@/presentation/CharacterSprites';
+import { composeCharacterArtCanvas, drawCharacterCanvas, cropOpaqueBounds } from '@/presentation/CharacterSprites';
 import type { CreatorState } from './types';
 import { BODY_BUILD_LABELS } from '@/gameplay/CharacterAppearance';
 import { applyRacial } from '@/gameplay/PointBuy';
@@ -32,8 +32,7 @@ export function renderCreatorPreview(
     ctx.fillStyle = '#0c1814';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     const src = drawCharacterCanvas(state.species, state.appearance.variant, state.appearance, wardrobe);
-    // Zoom into the occupied sprite (procedural art has empty edges in 32×32).
-    const bounds = opaqueBounds(src);
+    const bounds = cropOpaqueBounds(src, 1);
     const pad = Math.max(6, Math.floor(canvas.width * 0.03));
     const dest = canvas.width - pad * 2;
     ctx.drawImage(src, bounds.x, bounds.y, bounds.w, bounds.h, pad, pad, dest, dest);
@@ -45,36 +44,11 @@ export function renderCreatorPreview(
     if (seq !== _seq || !composed) return;
     ctx.fillStyle = '#0c1814';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(composed, 0, 0, canvas.width, canvas.height);
+    const bounds = cropOpaqueBounds(composed, 2);
+    const pad = Math.max(6, Math.floor(canvas.width * 0.03));
+    const dest = canvas.width - pad * 2;
+    ctx.drawImage(composed, bounds.x, bounds.y, bounds.w, bounds.h, pad, pad, dest, dest);
   });
-}
-
-/** Tight box around non-empty pixels so previews fill the frame. */
-function opaqueBounds(src: HTMLCanvasElement): { x: number; y: number; w: number; h: number } {
-  const sctx = src.getContext('2d')!;
-  const { data, width, height } = sctx.getImageData(0, 0, src.width, src.height);
-  let minX = width;
-  let minY = height;
-  let maxX = 0;
-  let maxY = 0;
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      if (data[(y * width + x) * 4 + 3]! > 10) {
-        if (x < minX) minX = x;
-        if (y < minY) minY = y;
-        if (x > maxX) maxX = x;
-        if (y > maxY) maxY = y;
-      }
-    }
-  }
-  if (maxX < minX) return { x: 0, y: 0, w: width, h: height };
-  // A little padding so hats/cloaks aren't clipped.
-  const grow = 1;
-  minX = Math.max(0, minX - grow);
-  minY = Math.max(0, minY - grow);
-  maxX = Math.min(width - 1, maxX + grow);
-  maxY = Math.min(height - 1, maxY + grow);
-  return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
 }
 
 export function renderCreatorSummary(
