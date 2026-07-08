@@ -2,6 +2,46 @@ import type { WardrobeDefinition } from '@/data/types';
 import type { CharacterAppearance, CharacterWardrobe } from '@/gameplay/CharacterAppearance';
 
 const CANVAS_SIZE = 32;
+const WARDROBE_ART_BASE = '/assets/sprites/wardrobe';
+
+/** Lightweight chromakey: removes near-corner-color pixels from a white-bg item PNG. */
+function chromaKeyItem(img: HTMLImageElement): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = img.naturalWidth;
+  c.height = img.naturalHeight;
+  const ctx = c.getContext('2d')!;
+  ctx.drawImage(img, 0, 0);
+  const frame = ctx.getImageData(0, 0, c.width, c.height);
+  const d = frame.data;
+  const r0 = (d[0]! + d[(c.width - 1) * 4]!) / 2;
+  const g0 = (d[1]! + d[(c.width - 1) * 4 + 1]!) / 2;
+  const b0 = (d[2]! + d[(c.width - 1) * 4 + 2]!) / 2;
+  const hard = 30;
+  const soft = 46;
+  for (let i = 0; i < d.length; i += 4) {
+    const dist = Math.max(Math.abs(d[i]! - r0), Math.abs(d[i + 1]! - g0), Math.abs(d[i + 2]! - b0));
+    if (dist < hard) d[i + 3] = 0;
+    else if (dist < soft) d[i + 3] = Math.round(d[i + 3]! * (dist - hard) / (soft - hard));
+  }
+  ctx.putImageData(frame, 0, 0);
+  return c;
+}
+
+const _wardrobeItemCache = new Map<string, Promise<HTMLCanvasElement | null>>();
+
+/** Try loading a wardrobe item overlay PNG. Returns null if not found (404 / error). */
+function loadWardrobeItemPng(itemId: string): Promise<HTMLCanvasElement | null> {
+  const cached = _wardrobeItemCache.get(itemId);
+  if (cached) return cached;
+  const p = new Promise<HTMLCanvasElement | null>((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(chromaKeyItem(img));
+    img.onerror = () => resolve(null);
+    img.src = `${WARDROBE_ART_BASE}/${itemId}.png`;
+  });
+  _wardrobeItemCache.set(itemId, p);
+  return p;
+}
 
 function speciesAllowed(item: WardrobeDefinition, speciesId: string): boolean {
   return item.species.includes('*') || item.species.includes(speciesId);
@@ -307,6 +347,47 @@ export function applyWardrobeOverlay(
   applyWardrobeBackLayers(ctx, appearance, wardrobeItems, speciesId);
   applyWardrobeFrontLayers(ctx, appearance, wardrobeItems, speciesId);
   ctx.restore();
+}
+
+/**
+ * PNG-first wardrobe overlay. Tries to load each equipped item from
+ * /assets/sprites/wardrobe/{itemId}.png (128×128, white background).
+ * Falls back to procedural drawing when the PNG is not found.
+ * Call this after the body sprite PNG has already been drawn onto `target`.
+ */
+export async function applyWardrobeOverlayAsync(
+  target: HTMLCanvasElement,
+  appearance: CharacterAppearance,
+  wardrobeItems: WardrobeDefinition[],
+  speciesId: string,
+): Promise<void> {
+  const ctx = target.getContext('2d');
+  if (!ctx) return;
+  const gfx = ctx;
+  const w = target.width;
+  const h = target.height;
+  gfx.imageSmoothingEnabled = false;
+
+  async function drawItem(itemId: string | undefined, useProcedural: () => void): Promise<void> {
+    if (!itemId) return;
+    const png = await loadWardrobeItemPng(itemId);
+    if (png) {
+      gfx.drawImage(png, 0, 0, w, h);
+    } else {
+      gfx.save();
+      gfx.scale(w / CANVAS_SIZE, h / CANVAS_SIZE);
+      useProcedural();
+      gfx.restore();
+    }
+  }
+
+  const cloakId = resolveItem(appearance.wardrobe, 'cloak', wardrobeItems, speciesId);
+  const hatId = resolveItem(appearance.wardrobe, 'hat', wardrobeItems, speciesId);
+  const accId = resolveItem(appearance.wardrobe, 'accessory', wardrobeItems, speciesId);
+
+  await drawItem(cloakId, () => cloakId && drawItemById(gfx, cloakId));
+  await drawItem(hatId, () => hatId && drawItemById(gfx, hatId));
+  await drawItem(accId, () => accId && drawItemById(gfx, accId));
 }
 
 export function filterWardrobeForSpecies(

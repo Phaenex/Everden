@@ -1,37 +1,55 @@
 import type { AbilityDefinition, SpeciesDefinition, WardrobeDefinition } from '@/data/types';
-import { drawCharacterCanvas } from '@/presentation/CharacterSprites';
+import { drawCharacterCanvas, loadArtCanvas, applyAppearanceToArtCanvas } from '@/presentation/CharacterSprites';
+import { applyWardrobeOverlayAsync } from '@/presentation/WardrobeLayers';
 import type { CreatorState } from './types';
 import { applyRacial } from '@/gameplay/PointBuy';
 import { abilityModifier } from '@/gameplay/OpeningNarration';
 import { el } from './domUtils';
 
-/** Procedural preview only — species PNG would hide outfit layers. */
+/**
+ * Monotonically increasing sequence number so async PNG renders that arrive
+ * after a newer sync render has already started are silently discarded.
+ */
+let _seq = 0;
+
+/**
+ * Renders the character preview canvas. Immediately draws the procedural
+ * sprite (sync), then asynchronously upgrades to the species PNG + PNG
+ * wardrobe overlays if assets are available. Stale async callbacks (triggered
+ * by a render that has already been superseded) are dropped via sequence guard.
+ */
 export function renderCreatorPreview(
   canvas: HTMLCanvasElement,
   state: CreatorState,
   _speciesDef: SpeciesDefinition | undefined,
   wardrobe: WardrobeDefinition[],
 ): void {
+  const seq = ++_seq;
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = '#0c1814';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const src = drawCharacterCanvas(state.species, state.appearance.variant, state.appearance, wardrobe);
-  // Zoom into the occupied sprite (procedural art has empty edges in 32×32).
-  const bounds = opaqueBounds(src);
-  const pad = Math.max(6, Math.floor(canvas.width * 0.03));
-  const dest = canvas.width - pad * 2;
-  ctx.drawImage(
-    src,
-    bounds.x,
-    bounds.y,
-    bounds.w,
-    bounds.h,
-    pad,
-    pad,
-    dest,
-    dest,
-  );
+
+  function drawProcedural(): void {
+    ctx.fillStyle = '#0c1814';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const src = drawCharacterCanvas(state.species, state.appearance.variant, state.appearance, wardrobe);
+    // Zoom into the occupied sprite (procedural art has empty edges in 32×32).
+    const bounds = opaqueBounds(src);
+    const pad = Math.max(6, Math.floor(canvas.width * 0.03));
+    const dest = canvas.width - pad * 2;
+    ctx.drawImage(src, bounds.x, bounds.y, bounds.w, bounds.h, pad, pad, dest, dest);
+  }
+
+  drawProcedural();
+
+  // Async upgrade: swap in real art + PNG wardrobe overlays when available.
+  loadArtCanvas(state.species).then(async (art) => {
+    if (seq !== _seq || !art) return;
+    ctx.fillStyle = '#0c1814';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(art, 0, 0, canvas.width, canvas.height);
+    applyAppearanceToArtCanvas(canvas, state.species, state.appearance, wardrobe);
+    await applyWardrobeOverlayAsync(canvas, state.appearance, wardrobe, state.species);
+  });
 }
 
 /** Tight box around non-empty pixels so previews fill the frame. */

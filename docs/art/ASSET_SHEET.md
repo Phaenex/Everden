@@ -88,9 +88,81 @@ Full-size reference sheets (art-direction only, not loaded by the game): `docs/a
 |---|---|
 | `title_key_art.webp` | Title screen backdrop — wide sunset establishing shot of the river town |
 
+## Wardrobe item overlays — `sprites/wardrobe/{itemId}.png`
+
+Added 2026-07-08. Each file is a **128×128 PNG on a white background** containing only the wardrobe item, positioned to composite correctly on top of the species body sprite. The loader (`WardrobeLayers.ts → loadWardrobeItemPng`) chromakeys the white background and draws the result at full canvas size over the body. Falls back to procedural drawing if the file is absent or 404.
+
+**Positioning guide (for a 128×128 canvas, character body ~centered):**
+
+| Slot | Vertical range | Notes |
+|------|---------------|-------|
+| Hat | top 0–45px | brim of hat sits at ~y 35–45, crown extends to y 5–10 |
+| Cloak | full canvas, body area transparent | make a "hole" where head+arms poke out |
+| Accessory | 55–90px vertically, centered | neck/chest zone |
+
+**Item IDs (file names, white-background PNG):**
+
+Hats: `reed_hat`, `shell_cap`, `mudwall_helm`, `lily_bloom`, `ferry_kepi`, `marsh_hood`
+
+Cloaks: `basin_cloak`, `ferry_shawl`, `croakend_weave`, `levy_mantle`, `rain_poncho`, `elder_robe`
+
+Accessories: `reed_charm`, `clay_bead`, `market_scarf`, `levy_pin`, `shell_brooch`, `hop_whistle`
+
+### AI generation prompts for species sprites (DALL-E 3 / Midjourney)
+
+All share this **base style** (append species-specific detail at the end):
+
+```
+Pixel art game character sprite, [SPECIES DETAIL], single character centered
+on a flat white background, front-facing chibi proportions, large round head
+and short stocky body, thick dark pixel outlines, round expressive eyes with
+[EYE COLOR] iris and small black pupil, no items no clothing no weapons,
+arms slightly out at sides, thick stubby legs, flat-footed stance,
+clean pixel art style, no text no words no signage
+```
+
+| Species | SPECIES DETAIL | EYE COLOR |
+|---------|---------------|-----------|
+| frog | bright lime-green frog, smooth shiny skin, small darker green spots on back, lighter cream belly, wide grin | golden-yellow |
+| toad | golden-brown toad, stockier and wider body than frog, wart texture on skin, cream belly, stoic expression | amber-gold |
+| turtle | forest-green turtle, large domed shell visible from front as hump behind head, short neck, small head, hexagonal shell pattern, tiny arm nubs | dark brown |
+| tortoise | olive-green tortoise, heavier flatter shell than turtle with concentric ring pattern, wrinkled neck and legs, wide flat feet, ancient look | dark amber |
+| vole | warm brown-grey small rodent, round body, very large round ears with pink inner ear, small pink nose, cream off-white belly, whisker lines | black |
+
+### AI generation prompts for wardrobe overlay sprites
+
+Use the hat/cloak/accessory item name + this base:
+
+```
+Pixel art item sprite, [ITEM DESCRIPTION], centered at [POSITION] of a
+128x128 white canvas, item only no character body visible, clean pixel art
+with dark outlines, no text no words
+```
+
+| Item ID | ITEM DESCRIPTION | POSITION |
+|---------|-----------------|----------|
+| reed_hat | wide woven straw hat, natural tan color, frog-market style | top-center |
+| ferry_kepi | dark red military cap with gold trim | top-center |
+| shell_cap | rounded brown shell-shaped cap | top-center |
+| mudwall_helm | grey stone-texture rounded helmet, gold visor stripe | top-center |
+| lily_bloom | pink lily flower hair ornament with yellow center | top-center |
+| marsh_hood | deep indigo hooded cowl covering head | top-center |
+| basin_cloak | rust-brown cloak with lighter edge trim, open at front | center, body-covering, transparent head area |
+| ferry_shawl | warm orange-tan travel shawl, wraps shoulders and body | center, body-covering, transparent head area |
+| croakend_weave | patchwork cloak with red/yellow/blue/pink fabric patches | center, body-covering, transparent head area |
+| levy_mantle | dark navy mantle with gold stripe border top and bottom | center, body-covering, transparent head area |
+| rain_poncho | steel-blue waterproof poncho | center, body-covering, transparent head area |
+| elder_robe | deep purple ceremonial robe with gold collar jewel | center, body-covering, transparent head area |
+| market_scarf | red neck scarf with flowing tail | chest/neck area |
+| clay_bead | orange clay bead necklace | neck area |
+| reed_charm | small gold charm on a stick/reed | hip/hand area |
+
+---
+
 ## Pipeline notes
 
 - All prompts explicitly requested "no text, no words, no signage, no letters" — early generations leaked text/signage before this was added; discard any regenerations that still do.
 - Sprites/NPCs/enemies/species stay as PNG at 256×256 for chroma-key transparency support (`CharacterSprites.ts` samples a corner pixel and keys out matching background color at load time, since these are plain-background renders rather than true alpha-cut sprites).
+- Wardrobe overlays at 128×128 — same chromakey approach, no code change needed per new item.
 - Locations/title art are WebP at ≤1600px wide — backdrops don't need transparency, and WebP cuts the interim-art footprint from ~40MB to ~3MB.
 - **Procedural fallback is permanent.** If any file here is renamed, deleted, or fails to load, `drawCharacterCanvas`/`createCharacterMesh` keep working exactly as before — see `.cursor/rules/everden-art-pipeline.mdc`.

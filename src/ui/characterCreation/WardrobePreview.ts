@@ -1,7 +1,8 @@
 import type { WardrobeDefinition } from '@/data/types';
 import type { CharacterAppearance, CharacterWardrobe } from '@/gameplay/CharacterAppearance';
 import { defaultAppearance } from '@/gameplay/CharacterAppearance';
-import { drawCharacterCanvas } from '@/presentation/CharacterSprites';
+import { drawCharacterCanvas, loadArtCanvas, applyAppearanceToArtCanvas } from '@/presentation/CharacterSprites';
+import { applyWardrobeOverlayAsync } from '@/presentation/WardrobeLayers';
 
 const THUMB = 48;
 
@@ -14,6 +15,7 @@ export function drawWardrobeThumbnail(
   itemId: string | null,
   baseAppearance: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[],
+  targetCanvas?: HTMLCanvasElement,
 ): HTMLCanvasElement {
   const wardrobe: CharacterWardrobe = { ...baseAppearance.wardrobe };
   if (itemId) wardrobe[slot] = itemId;
@@ -27,7 +29,7 @@ export function drawWardrobeThumbnail(
   };
 
   const src = drawCharacterCanvas(species, appearance.variant, appearance, wardrobeItems);
-  const out = document.createElement('canvas');
+  const out = targetCanvas ?? document.createElement('canvas');
   out.width = THUMB;
   out.height = THUMB;
   const ctx = out.getContext('2d')!;
@@ -35,6 +37,17 @@ export function drawWardrobeThumbnail(
   ctx.fillStyle = '#1a3c34';
   ctx.fillRect(0, 0, THUMB, THUMB);
   ctx.drawImage(src, 0, 0, 32, 32, 4, 4, 40, 40);
+
+  // Async upgrade to PNG art + PNG wardrobe overlays when assets are available.
+  loadArtCanvas(species).then(async (art) => {
+    if (!art) return;
+    ctx.fillStyle = '#1a3c34';
+    ctx.fillRect(0, 0, THUMB, THUMB);
+    ctx.drawImage(art, 4, 4, 40, 40);
+    applyAppearanceToArtCanvas(out, species, appearance, wardrobeItems);
+    await applyWardrobeOverlayAsync(out, appearance, wardrobeItems, species);
+  });
+
   return out;
 }
 
