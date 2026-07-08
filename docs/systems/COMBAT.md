@@ -79,6 +79,22 @@ Combat log displays each line. Player sees dice results.
 - Enemy 2: Turtle thug (tank) — represents hired muscle
 - Optional ally: Grizz (toad NPC) if player helped in quest stage 4
 
+## Deliberate simplifications (not RAW 5e)
+
+These are **intentional** for the vertical slice. See also [DND_RULES_AUTHENTICITY.md](../design/DND_RULES_AUTHENTICITY.md).
+
+| Topic | Everden behavior | RAW 5e |
+|-------|------------------|--------|
+| **To-hit vs damage** | DEX mod on attack roll; STR mod on damage | Same ability for both on a given attack |
+| **Tank accuracy** | Turtle/tortoise land hits less often but hit harder when they connect | Finesse/ranged use one stat |
+| **Poisoned** | −2 on attacker's next attack only, then clears | Disadvantage on attacks and ability checks until cured |
+| **Death** | `hp <= 0` removes combatant immediately | Unconscious + death saves |
+| **Rests / daily uses** | One action per turn only; no per-rest ability pools | Short/long rest resource economy |
+| **Intimidate diplomacy** | Uses STR mod | Intimidation is normally CHA-based |
+| **Proficiency** | Flat species combat package; no level scaling yet | Proficiency bonus by character level |
+
+**Future:** When leveling ships, add proficiency-by-level to `species.json` / combat init per the Rules Referee doc.
+
 ## Testing
 
 - EditMode: `DiceRoller`, modifier stacking, initiative sort

@@ -250,6 +250,7 @@ export class CombatManager implements IGameModule {
       if (m.extraDice) extraDamage += this.roller.parseAndRoll(m.extraDice);
     }
 
+    // Simplified poisoned (not full 5e: no disadvantage on checks, clears after one attack).
     if (attacker.conditions.includes('poisoned')) {
       bonus -= 2;
       attacker.conditions = attacker.conditions.filter((c) => c !== 'poisoned');

@@ -7,7 +7,7 @@ Quick reference. Full rubrics: [VISUAL_QA_AGENTS.md](../systems/VISUAL_QA_AGENTS
 | V1 | visual-scout, fresh-player | G1–G5 | AR-002 | any FAIL |
 | V2 | visual-scout, fresh-player, **Nick eye** | G3, G4, composition | AR-003, AR-015, AR-016 | FAIL or Nick no |
 | V3 | district-explorer | 5 districts + return | AR-004, AR-015 | any district FAIL |
-| V4 | quest-runner, combat-tester | PLAYTEST 7–16 | AR-005, AR-006, AR-016 | P0 or row FAIL |
+| V4 | quest-runner, combat-tester | PLAYTEST 7–16 | AR-005, AR-006, AR-016, AR-019 | P0 or row FAIL |
 | V5 | Humans only | PLAYTEST 1–23 | SESSION_LOG | <3/5 pass |
 
 ## Scout gates (G1–G5)

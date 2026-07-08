@@ -107,3 +107,88 @@ test.describe('Vertical slice — mechanical gates', () => {
     expect(state.questStages.ferry_toll_dispute).toBe('ask_around');
   });
 });
+
+test.describe('Vertical slice — V4 quest runner (mechanical)', () => {
+  test.beforeEach(async ({ page }) => {
+    await waitForEverden(page);
+  });
+
+  test('four examines advance main quest to council stage', async ({ page }) => {
+    const stages = ['cellar', 'mason_measure', 'chapel', 'ferry', 'council'] as const;
+    const examines = ['flooded_cellar', 'levy_plans', 'chapel_mural', 'ferry_depth'] as const;
+
+    let state = await getState(page);
+    expect(state.questStages.what_water_remembers).toBe('cellar');
+
+    for (let i = 0; i < examines.length; i++) {
+      await page.evaluate((t) => window.__everden!.completeExamine(t), examines[i]);
+      state = await getState(page);
+      expect(state.questStages.what_water_remembers).toBe(stages[i + 1]);
+    }
+    expect(state.flags).toContain('evidence_gathered');
+  });
+
+  test('Kess INT skill check shows dice duel overlay', async ({ page }) => {
+    await loadScene(page, 'mudwall');
+    await page.evaluate(() => window.__everden!.talkTo('kess_ridge'));
+    await expect(page.locator('.dialogue-panel:not(.hidden)')).toBeVisible();
+    const clicked = await page.evaluate(() =>
+      window.__everden!.clickDialogueChoice('Charter allows fifteen'),
+    );
+    expect(clicked).toBe(true);
+    await waitForDiceDuel(page);
+  });
+
+  test('Kess dialogue exposes frog species-exclusive line', async ({ page }) => {
+    await loadScene(page, 'mudwall');
+    await page.evaluate(() => window.__everden!.talkTo('kess_ridge'));
+    const clicked = await page.evaluate(() =>
+      window.__everden!.clickDialogueChoice('smell upstream silt'),
+    );
+    expect(clicked).toBe(true);
+    const text = await page.evaluate(() => window.__everden!.getDialogueText());
+    expect(text.toLowerCase()).toContain('nose');
+  });
+
+  test('council expose outcome completes main quest', async ({ page }) => {
+    await page.evaluate(() => {
+      const qa = window.__everden!;
+      qa.setQuestStage('what_water_remembers', 'council');
+      qa.setFlag('evidence_gathered');
+    });
+    const ok = await page.evaluate(() =>
+      window.__everden!.completeQuestOutcome('what_water_remembers', 'expose'),
+    );
+    expect(ok).toBe(true);
+    const state = await getState(page);
+    expect(state.completedQuests).toContain('what_water_remembers');
+    expect(state.flags).toContain('kess_stopped');
+  });
+});
+
+test.describe('Vertical slice — V4 combat tester (mechanical)', () => {
+  test.beforeEach(async ({ page }) => {
+    await waitForEverden(page);
+  });
+
+  test('player turn exposes frog species ability buttons', async ({ page }) => {
+    await loadScene(page, 'mudwall');
+    await page.evaluate(() => window.__everden!.startCombat('blackfen_poachers'));
+    await expect(page.locator('.combat-panel:not(.hidden)')).toBeVisible({ timeout: 5000 });
+
+    await expect
+      .poll(async () => {
+        const labels = await page.locator('.combat-actions button').allTextContents();
+        return labels.some((l) => /leap|tongue/i.test(l));
+      })
+      .toBe(true);
+
+    const used = await page.evaluate(() => {
+      const qa = window.__everden!;
+      if (!qa.isCombatActive()) return false;
+      qa.combatUseAbility('leap');
+      return true;
+    });
+    expect(used).toBe(true);
+  });
+});

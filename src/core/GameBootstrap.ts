@@ -245,7 +245,16 @@ export class GameBootstrap {
 
   qaGetState(): EverdenQaState {
     const flags: string[] = [];
-    for (const key of ['evidence_gathered', 'examined_flooded_cellar', 'examined_levy_plans', 'examined_chapel_mural', 'examined_ferry_depth']) {
+    for (const key of [
+      'evidence_gathered',
+      'examined_flooded_cellar',
+      'examined_levy_plans',
+      'examined_chapel_mural',
+      'examined_ferry_depth',
+      'kess_stopped',
+      'levy_supported',
+      'council_vote_done',
+    ]) {
       if (this.worldState.hasFlag(key)) flags.push(key);
     }
     const questStages: Record<string, string> = {};
@@ -354,6 +363,15 @@ export class GameBootstrap {
       }
     }
     return false;
+  }
+
+  qaCombatUseAbility(abilityId: string, targetId?: string): void {
+    const enemy = targetId ?? this.combatManager.getEnemies()[0]?.id;
+    if (enemy) this.combatManager.useAbility(abilityId, enemy);
+  }
+
+  qaCompleteQuestOutcome(questId: string, outcomeId: string): boolean {
+    return this.questManager.completeWithOutcome(questId, outcomeId);
   }
 
   qaCombatAttack(targetId?: string): void {

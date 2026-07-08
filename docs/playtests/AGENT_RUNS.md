@@ -27,6 +27,8 @@ Use [`docs/systems/VISUAL_QA_AGENTS.md`](../systems/VISUAL_QA_AGENTS.md) for age
 | AR-015 | 2026-07-07 | Nail Core Loop Basics — Causeway landmarks + full nav sweep + backdrop-crop bug fix | localhost:5200 | **PASS** | — | Causeway got a waystone, lantern, and Fennick Farrow NPC; found and fixed a real 2x backdrop-oversize bug affecting **all 5 districts**; full 5-district round-trip verified — see detail |
 | AR-016 | 2026-07-07 | Intro arc — opening beat, control hint, title flavor, quest tracker, Pip dialogue fix | localhost:4174 (real click flow, no QA warp) | **PASS** | — | Full non-QA playthrough: title → species pick → opening narration → control hint → click-walked to Lilymarket → talked to Pip (new reaction text confirmed) — see detail |
 | AR-017 | 2026-07-08 | Character creation wizard + save v2 + D&D mechanics fixes | localhost (unit + e2e) | **PASS** | mechanical | 120 unit tests + 8/8 e2e; full wizard tortoise path Nick eye pending — see detail |
+| AR-018 | 2026-07-08 | Wizard eye — tortoise / messenger non-QA path | preview + screenshots | **PASS** | mechanical | Playwright wizard flow + screenshots; Nick human eye still pending |
+| AR-019 | 2026-07-08 | V4 quest-runner + combat-tester expansion | preview e2e | **PASS** | mechanical | Main quest stage chain, Kess INT + species line, council expose, frog ability smoke — 16/16 e2e |
 
 ### AR-007 detail (Visual Cohesion Pass — all 5 districts captured)
 
@@ -238,6 +240,42 @@ User-approved full scope: tortoise as 5th species, name, arrival motivation, con
 **Nick eye test:** wizard UI + tortoise path not yet screenshot-verified in a real non-QA browser session this run (machine load ~200+). Use `docs/design/INTRO_AND_CHARACTER_CREATION.md` + updated MANUAL_CHECKLIST.
 
 **Deployed:** pending this session's commit push.
+
+---
+
+### AR-018 detail (Wizard eye — tortoise / messenger non-QA path)
+
+**Scope:** Non-`?qa=1` character creation: tortoise → name "River Test" → messenger motivation → confirm sheet → opening narration → Causeway.
+
+**Verified:** Playwright `e2e/character-creation.spec.ts` (3 tests) + `e2e/ar018-screenshots.spec.ts` capturing:
+
+- `AR_intro_wizard_tortoise_species.png`
+- `AR_intro_wizard_tortoise_motivation.png`
+- `AR_intro_wizard_tortoise_confirm.png`
+- `AR_intro_wizard_tortoise_opening.png`
+- `AR_intro_wizard_tortoise_causeway.png`
+
+Save v2 profile asserts `species: tortoise`, `motivation: messenger`. Continue journey skips wizard + opening beat.
+
+**Nick eye test:** UI/layout still needs human pass on real 16:9 display — mechanical path green.
+
+---
+
+### AR-019 detail (V4 quest-runner + combat-tester expansion)
+
+**Added e2e coverage (PLAYTEST rows 7–11, 13 partial):**
+
+1. Four examines advance main quest `cellar` → `council` + `evidence_gathered`
+2. Kess INT History check → dice duel DOM
+3. Kess frog species-exclusive line (`smell upstream silt`)
+4. `completeQuestOutcome('expose')` completes main quest + `kess_stopped` flag
+5. Blackfen combat: frog `leap` ability button visible + `combatUseAbility` smoke
+
+**Harness:** `completeQuestOutcome`, `combatUseAbility`; council outcome flags in `qaGetState()`.
+
+**Verified:** 16/16 Playwright e2e green (122 unit tests).
+
+**Still human-only:** council UI walk-up, full PLAYTEST feel rows, Nick V2 composition.
 
 ---
 

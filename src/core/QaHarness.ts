@@ -42,11 +42,13 @@ export interface EverdenQa {
   closeDialogue(): void;
   clickDialogueChoice(textIncludes: string): boolean;
   combatAttack(targetId?: string): void;
+  combatUseAbility(abilityId: string, targetId?: string): void;
   combatFlee(): void;
   combatDiplomacy(mode: 'persuade' | 'intimidate'): void;
   isDialogueOpen(): boolean;
   isCombatActive(): boolean;
   getDialogueText(): string;
+  completeQuestOutcome(questId: string, outcomeId: string): boolean;
 }
 
 declare global {
@@ -77,11 +79,13 @@ export function installQaHarness(bootstrap: GameBootstrap, ready: Promise<void>)
     closeDialogue: () => bootstrap.qaCloseDialogue(),
     clickDialogueChoice: (t) => bootstrap.qaClickDialogueChoice(t),
     combatAttack: (id) => bootstrap.qaCombatAttack(id),
+    combatUseAbility: (a, id) => bootstrap.qaCombatUseAbility(a, id),
     combatFlee: () => bootstrap.qaCombatFlee(),
     combatDiplomacy: (m) => bootstrap.qaCombatDiplomacy(m),
     isDialogueOpen: () => bootstrap.qaIsDialogueOpen(),
     isCombatActive: () => bootstrap.qaIsCombatActive(),
     getDialogueText: () => bootstrap.qaGetDialogueText(),
+    completeQuestOutcome: (q, o) => bootstrap.qaCompleteQuestOutcome(q, o),
   };
   window.__everden = api;
   return api;

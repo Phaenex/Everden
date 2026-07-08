@@ -1,21 +1,137 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-035)  
+**Last updated:** 2026-07-08 (CHECKIN-036)  
 **Play online:** https://everden-chi.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
 
-## Progress (honest dual track)
+## Progress dashboard (9 workstreams)
 
-| Track | Bar | % | Meaning |
-|-------|-----|---|---------|
-| **Systems** | `███████████████░░░░░` | **76%** | Quest/combat/save/dialogue/sim + character creation + Playwright e2e |
-| **Experience** | `███████░░░░░░░░░░░░░` | **42%** | V1 scout AR-002 PASS; V2 Nick eye pending; V4 quest/combat partial |
-| **Overall** | `████████░░░░░░░░░░░░` | **54%** | Gated build V1 done; e2e mechanical gates green |
+**Headline overall:** `█████████░░░░░░░░░░░` **56%** — average of T1–T8 (T9 Future excluded)
 
-**Current milestone:** V1 PASS (AR-002) — V2 Nick eye test + V4 full browser quest/combat  
-**Next gate:** Nick Lilymarket screenshot approval  
-**Playtests (T8):** **Schedulable** — agent pre-check AR-002 PASS; humans required for alpha sign-off
+| # | Track | Bar | % | Blocks % when |
+|---|-------|-----|---|---------------|
+| T1 | **Mechanics & CI** | `██████████████████░░` | **88%** | e2e or CI red |
+| T2 | **First 5 minutes** | `████████████████░░░░` | **78%** | wizard broken; Nick eye pending |
+| T3 | **Districts & nav** | `████████████████░░░░` | **80%** | scene load fail; nav off-art |
+| T4 | **Quests & dialogue** | `████████████████░░░░` | **82%** | quest hard-block; missing fail-forward |
+| T5 | **Combat & D&D** | `█████████████████░░░` | **88%** | soft-lock; RAW doc gaps |
+| T6 | **Look & feel** | `████████░░░░░░░░░░░░` | **42%** | scout FAIL; Nick eye no |
+| T7 | **Art & audio** | `█████░░░░░░░░░░░░░░░` | **25%** | T6b blocked on Nick sketches |
+| T8 | **Gated build V1–V5** | `█████████░░░░░░░░░░░` | **48%** | any V-row FAIL |
+| T9 | **Groundwork** | `██████░░░░░░░░░░░░░░` | **32%** | (future; does not move headline %) |
+
+**Current milestone:** V4 mechanical PASS (AR-019) — **V2 Nick eye** on wizard + Lilymarket  
+**Next gate:** Nick MANUAL_CHECKLIST V2 sign-off  
+**Playtests (T8):** Schedulable — V4 agent pre-check green; humans required for alpha
+
+### T1 — Mechanics & CI (88%)
+
+| Item | Status | Owner |
+|------|--------|-------|
+| 122 unit tests green | ✅ | Agent |
+| 16/16 Playwright e2e | ✅ | Agent |
+| typecheck + build + CI workflow | ✅ | Agent |
+| Save v2 (name, motivation, v1 migrate) | ✅ | Agent |
+| QA harness (`__everden`) | ✅ | Agent |
+| Wizard e2e (non-qa) | ✅ | Agent — T30 |
+| V4 quest rows 7–12 automated | ✅ | Agent — T27 |
+
+### T2 — First 5 minutes (78%)
+
+| Item | Status | Owner |
+|------|--------|-------|
+| Continue / New Game + overwrite confirm | ✅ | Agent |
+| Wizard: species → name → motivation → confirm | ✅ | Agent |
+| Five folk incl. tortoise | ✅ | Agent |
+| Species/motivation opening narration | ✅ | Agent |
+| Pip `{playerName}` + motivation append | ✅ | Agent |
+| AR-018 non-QA tortoise playthrough | ✅ | Agent — AR-018 |
+| Nick wizard eye test | ⬜ | Nick |
+
+### T3 — Districts & nav (80%)
+
+| Item | Status | Owner |
+|------|--------|-------|
+| Five districts load (causeway hub) | ✅ | Agent |
+| Nav mesh calibrated to backdrop art | ✅ | Agent |
+| Exit portals + save restores scene | ✅ | Agent |
+| NPC schedule-aware presence | ✅ | Agent |
+| Causeway hub landmarks (AR-015) | ✅ | Agent |
+| Nick composition eye (all districts) | ⬜ | Nick |
+| NPC walk-not-teleport animation | ⬜ | Agent — gated on Nick V2 |
+
+### T4 — Quests & dialogue (82%)
+
+| Item | Status | Owner |
+|------|--------|-------|
+| Main quest + 5 council endings | ✅ | Agent |
+| Ferryman's Toll side quest | ✅ | Agent |
+| Wrong Label side quest | ✅ | Agent |
+| Fail-forward skill checks (Domet, Grizz, Kess) | ✅ | Agent |
+| Readable quest tracker (title + stage) | ✅ | Agent |
+| V4 automated main-quest chain (rows 7–11) | ✅ | Agent — AR-019 |
+| Second quest with full check/branch pattern | ⬜ | Agent — post-V5 |
+
+### T5 — Combat & D&D (88%)
+
+| Item | Status | Owner |
+|------|--------|-------|
+| Blackfen encounter + enemy AI | ✅ | Agent |
+| Species abilities (5 folk kits) | ✅ | Agent |
+| Diplomacy persuade/intimidate | ✅ | Agent |
+| BG3 dice duel popup | ✅ | Agent |
+| Crit doubles dice only; flat DC checks | ✅ | Agent |
+| COMBAT.md deliberate simplifications | ✅ | Agent — T26 |
+| V4 combat ability smoke (frog leap) | ✅ | Agent — AR-019 |
+| Second combat encounter | ⬜ | Agent — post-V5 |
+
+### T6 — Look & feel (42%)
+
+| Item | Status | Owner |
+|------|--------|-------|
+| V1 scout G1–G5 (AR-002 PASS) | ✅ | Agent |
+| Backdrop crop / nav fixes (AR-009–015) | ✅ | Agent |
+| V2 Lilymarket + Pip (AR-003 BORDERLINE) | 🟡 | Nick eye |
+| V3 district hub loop (AR-004/015) | 🟡 | Nick eye |
+| Title wizard UI polish | 🟡 | AR-018 mechanical PASS; Nick eye pending |
+| T6b hand-drawn art swap | ⬜ | Blocked — Nick sketches |
+
+*Cannot exceed ~50% until Nick eye PASS on Lilymarket + wizard.*
+
+### T7 — Art & audio (25%)
+
+| Item | Status | Owner |
+|------|--------|-------|
+| Interim AI pixel art (31 assets) | ✅ | Agent |
+| Procedural fallback + chroma-key | ✅ | Agent |
+| Synthesized ambient + SFX (Web Audio) | ✅ | Agent |
+| Recorded music / voice | ⬜ | Future |
+| Walk/combat animation atlases | ⬜ | Beta phase |
+| Hand-drawn final sprites (T6b) | ⬜ | Blocked — Nick |
+
+### T8 — Gated build V1–V5 (48%)
+
+| Phase | Status | AR |
+|-------|--------|-----|
+| V1 composition + exits | ✅ PASS | AR-002 |
+| V2 Lilymarket + Nick eye | 🟡 BORDERLINE | AR-003, AR-016; wizard AR-018 mechanical PASS |
+| V3 district hub loop | 🟡 BORDERLINE | AR-004, AR-015 |
+| V4 quest + combat | ✅ PASS (mechanical) | AR-019 |
+| V5 human alpha (T8) | ⬜ | 3/5 sessions required |
+
+### T9 — Groundwork (32%)
+
+| Item | Status | Owner |
+|------|--------|-------|
+| Content pipeline doc | ✅ | Agent |
+| `docs/design/INTRO_AND_CHARACTER_CREATION.md` | ✅ | Agent |
+| `docs/world/species/tortoise.md` | ✅ | Agent — T28 |
+| `docs/narrative/QUEST_TEMPLATE.md` | ✅ | Agent — T29 |
+| ModLoader smoke test | ✅ | Agent — T29 |
+| Leveling / proficiency placeholder docs | ⬜ | Agent |
+| Mod packs (`ModLoader.ts`) | ⬜ | Post-V5 |
+| Multiplayer stub (`NetworkModule.ts`) | ⬜ | [MULTIPLAYER_FUTURE.md](systems/MULTIPLAYER_FUTURE.md) |
 
 ---
 
@@ -23,11 +139,13 @@
 
 | Priority | Item | Status |
 |----------|------|--------|
-| 🟡 | Gated visual QA V1–V5 | 🟡 V1 done | AR-002 PASS; Nick eye + T8 humans next |
-| ✅ | Vole species in-game (T12) | Playable species, 1 NPC, 3-ability combat kit, tests |
-| ⬜ | Alpha phase gate | After playtests pass |
+| ✅ | Multi-track dashboard (T23) | Done — CHECKIN-036 |
+| 🟡 | git push to GitHub (T24) | Vercel redeployed; push blocked on workflow OAuth scope |
+| ✅ | AR-018 + AR-019 | Done |
+| 🟡 | Gated visual QA V2–V3 | Nick eye on Lilymarket + wizard |
+| ⬜ | Alpha phase gate (T8 humans) | After Nick V2 sign-off |
 
-**Done recently:** Full character creation wizard — Continue/New Game, 5 species (incl. tortoise), name, motivation, confirm stat sheet, save v2, species/motivation opening narration, Pip name hooks, D&D crit + skill-check fixes (CHECKIN-035, AR-017, 120 unit + 8/8 e2e) · Intro arc — opening narration beat, first-time control hint, title-screen premise + species flavor, readable quest tracker (real title/description not raw ids), and Pip's dialogue no longer pretends to hand out an already-active quest (CHECKIN-034, AR-016, verified via a real non-QA click playthrough)
+**Done recently:** Multi-track PROGRESS dashboard · V4 e2e expansion (16/16) · wizard e2e · COMBAT.md D&D simplifications · tortoise culture doc · ModLoader test · AR-018/019 (CHECKIN-036)
 
 ---
 
@@ -44,7 +162,7 @@
 | 6 | Narrative | 🟡 In progress | 79% | Main quest, side quests, council, skill checks |
 | 7 | Combat | 🟡 In progress | 88% | Dice combat, abilities, diplomacy, vole kit, BG3-style dice-duel popup |
 | 8 | Vertical slice | 🟡 In progress | **48%** | Systems ~72%, Experience ~35% until V4 agent PASS |
-| 9 | Alpha | 🟡 In progress | **35%** | 30-day weather soak green; 63 unit tests; awaiting human playtests |
+| 9 | Alpha | 🟡 In progress | **35%** | 30-day weather soak green; 120 unit tests; awaiting human playtests |
 | 10 | Beta | ⬜ Not started | 5% | PWA manifest stub |
 | 11 | Launch | 🟡 In progress | 40% | **https://everden-chi.vercel.app** |
 | 12 | Post-launch | ⬜ Not started | 5% | Mod/network stubs |
@@ -61,7 +179,7 @@
 - **Interim AI pixel-art pass** — 31 generated assets (5 species, 15 NPCs, 2 enemies, 3 items, 6 locations, 1 title backdrop) with chroma-key transparency and automatic procedural fallback if any asset 404s (see `docs/art/ASSET_SHEET.md`)
 - **Procedural audio pass** — synthesized ambient marsh loop (reacts to weather) + dice/hit/miss/heal/dialogue-tick/toast SFX, all generated with Web Audio oscillators (no asset files), HUD mute toggle, persisted in `localStorage`
 - Player species select (frog / toad / turtle / tortoise / vole) via title wizard
-- **Vole Folk** — 4th playable species, healer/support role, 3-ability combat kit (Burrow Hide, Cheek Poultice heal, Nibble Distraction stun), 1 NPC (Sable Meadowrun, wandering healer)
+- **Five playable folk** — frog, toad, turtle, tortoise, vole via title wizard; vole healer kit + 1 NPC (Sable Meadowrun)
 - Main quest **What the Water Remembers** — examine objectives + **5 council endings**
 - **Ferryman's Toll** side quest (Grizz → Jenna → Grizz)
 - **Wrong Label** side quest (Pondwort → Marta's shelf → Marta → Pondwort)
@@ -80,8 +198,7 @@
 - **Hand-drawn final art (T6b)** — currently shipping AI-generated placeholder tier, not Nick's sketches
 - **Recorded/composed audio** — current pass is synthesized SFX/ambience, not music or voice
 - **Travel between settlements**, second settlement *(Ferryman's Rest reachable via ferry — same scene, distinct zone)*
-- **Playtest-validated** vertical slice (no external playtests filed — **M10 blocked on Nick**)
-- **Production deploy URL** — https://everden-chi.vercel.app
+- **Playtest-validated** vertical slice (no external playtests filed — **T8 blocked on Nick**)
 
 ---
 
@@ -111,10 +228,40 @@
 | T20 | Causeway hub life + backdrop 2x-oversize crop bug fix + nav sweep | ✅ Done | AR-015 — Nick eye test pending |
 | T21 | Intro arc — opening beat, control hint, title flavor, quest tracker, Pip dialogue fix | ✅ Done | AR-016 — real non-QA playthrough verified |
 | T22 | Full character creation — wizard, tortoise, name, motivation, save v2, flavored intro, D&D fixes | ✅ Done | AR-017 — 120 unit + 8/8 e2e; Nick wizard eye pending |
+| T23 | Multi-track PROGRESS.md dashboard | ✅ Done | CHECKIN-036 |
+| T24 | Push + redeploy post-T22 commit | 🟡 Vercel ✅ | git push blocked (workflow scope) |
+| T25 | AR-018 non-QA wizard playthrough (tortoise) + screenshots | ✅ Done | AR-018 |
+| T26 | D&D authenticity closure (COMBAT.md, poisoned comment) | ✅ Done | — |
+| T27 | V4 quest-runner e2e (PLAYTEST rows 7–12) | ✅ Done | AR-019 |
+| T28 | tortoise culture sheet | ✅ Done | docs/world/species/tortoise.md |
+| T29 | ModLoader smoke test + QUEST_TEMPLATE.md | ✅ Done | 122 unit tests |
+| T30 | e2e character-creation.spec.ts (wizard + Continue) | ✅ Done | 3 tests green |
 
 ---
 
 ## Check-in Log
+
+### CHECKIN-036 — 2026-07-08
+
+**Type:** Multi-track progress dashboard + polish sprint (T23–T30)  
+**Agent:** Cursor
+
+**Shipped:**
+
+1. **9-workstream PROGRESS.md** — T1–T9 bars + per-track checklists; updated `everden-progress.mdc` + `MASTER_BUILD_PLAN.md`.
+2. **Vercel redeploy** — production https://everden-chi.vercel.app updated (git push still blocked: OAuth workflow scope on `.github/workflows/ci.yml`).
+3. **AR-018** — tortoise/messenger wizard path + 5 screenshots; `e2e/character-creation.spec.ts` (3 tests).
+4. **AR-019** — V4 quest-runner + combat-tester: main quest stage chain, Kess INT + species line, council expose, frog leap ability smoke.
+5. **T26** — `COMBAT.md` deliberate simplifications; poisoned comment in `CombatManager.ts`.
+6. **T28/T29** — `tortoise.md`, `QUEST_TEMPLATE.md`, `ModLoader.test.ts` (2 tests).
+
+**Tests:** 122 unit + 16/16 Playwright e2e green.
+
+**T6 unchanged** — Nick eye still required for wizard UI + Lilymarket composition before Experience bump.
+
+**Next:** Nick MANUAL_CHECKLIST V2; fix git push (workflow scope or push without ci.yml change).
+
+---
 
 ### CHECKIN-035 — 2026-07-08
 
