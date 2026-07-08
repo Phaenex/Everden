@@ -66,16 +66,20 @@ export function renderSkillsPanel(panel: HTMLElement, deps: SkillsPanelDeps): vo
 
   if (speciesDef) {
     const final = applyRacial(state.baseStats, speciesDef.racialBonuses);
-    panel.append(el('p', 'skills-mod-line', 'Your modifiers with current stats:'));
+    const modRow = el('div', 'skills-mod-row');
+    modRow.append(el('span', 'skills-mod-line', 'Modifiers:'));
     const modGrid = el('div', 'skills-mod-grid');
     for (const key of ['str', 'dex', 'con', 'int', 'wis', 'cha'] as const) {
       const mod = abilityModifier(final[key]);
       modGrid.append(el('span', 'skills-mod-cell', `${key.toUpperCase()} ${mod >= 0 ? '+' : ''}${mod}`));
     }
-    panel.append(modGrid);
+    modRow.append(modGrid);
+    panel.append(modRow);
   }
 
-  appendSectionTitle(panel, 'Skills in this slice');
+  const body = el('div', 'skills-body');
+  const listCol = el('div', 'skills-col');
+  appendSectionTitle(listCol, 'Skills in this slice');
   const list = el('ul', 'skills-reference-list');
   for (const skill of guide.skills) {
     const li = document.createElement('li');
@@ -84,16 +88,21 @@ export function renderSkillsPanel(panel: HTMLElement, deps: SkillsPanelDeps): vo
     li.append(strong, document.createTextNode(` — ${skill.inGame}`));
     list.append(li);
   }
-  panel.append(list);
+  listCol.append(list);
 
-  appendSectionTitle(panel, 'What each stat affects');
+  const statCol = el('div', 'skills-col');
+  appendSectionTitle(statCol, 'What each stat affects');
+  const statGrid = el('div', 'skills-stat-grid');
   for (const key of ['str', 'dex', 'con', 'int', 'wis', 'cha'] as const) {
     const stat = guide.stats[key];
     const row = el('div', 'skills-stat-blurb');
     row.append(el('span', 'stat-key', stat.label));
     row.append(el('span', 'skills-stat-text', stat.inGame));
-    panel.append(row);
+    statGrid.append(row);
   }
+  statCol.append(statGrid);
+  body.append(listCol, statCol);
+  panel.append(body);
 }
 
 export interface SettingsPanelDeps {

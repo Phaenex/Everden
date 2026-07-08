@@ -369,7 +369,7 @@ export class CharacterCreator {
 
   private renderStatsPanel(): void {
     const def = this.getSpecies(this.state.species)!;
-    const panel = el('div', 'creator-tab-panel');
+    const panel = el('div', 'creator-tab-panel stats-panel');
     if (this.guide) appendInfoBox(panel, this.guide.tabs.stats ?? '');
     const spent = totalPointCost(this.state.baseStats);
     const validation = validatePointBuy(this.state.baseStats);

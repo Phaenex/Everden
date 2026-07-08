@@ -35,6 +35,44 @@ Use [`docs/systems/VISUAL_QA_AGENTS.md`](../systems/VISUAL_QA_AGENTS.md) for age
 | AR-023 | 2026-07-08 | Look / Outfits / tint before-after visual proof | localhost:5200 | **PASS** agent visual | creator | Live clicks + pixel samples; contrast + preview size fixes confirmed; 5/5 char-creation e2e |
 | AR-024 | 2026-07-08 | Full creator pass + in-world appearance fix | localhost:5200 | **PASS** agent visual | creator | All 9 tabs walked; PNG overlay bug fixed; folk 2-col grid; review checklist; 144 unit + 5/5 e2e |
 | AR-025 | 2026-07-08 | Creator polish + appearance save e2e | localhost:5200 | **PASS** | creator | Compact header chrome; look/outfit save round-trip e2e (6/6); 144 unit |
+| AR-026 | 2026-07-08 | Creator fullscreen / no-scroll layout | localhost:5174 | **PASS** agent visual | creator | 1024×576, 1180×664, 1280×720, 1366×768 — no horizontal/vertical overflow all 9 tabs; compact Outfits fix; 144 unit + 6/6 e2e |
+| AR-027 | 2026-07-08 | Creator full-screen clean layout correction | localhost:5174 | **PASS** agent visual | creator | Tight widths use 3 columns (tabs, preview, panel) and hide summary rail instead of shrinking everything; 1024×552 + 1180×664 + 1366×768 verified; 144 unit + 6/6 e2e + typecheck + build |
+
+### AR-027 detail (Full-screen clean layout correction)
+
+**Scope:** Nick feedback — previous compact pass made the creator fit but made it feel smaller, not cleaner.
+
+**Shipped:**
+
+- **Tight viewport layout:** under small laptop/screenshot sizes, creator becomes 3 columns: tabs, preview, active panel.
+- **Summary rail hidden at tight widths:** frees space for the preview and main panel instead of shrinking all content.
+- **Preview restored larger:** 1024×552 preview column is now ~225px wide; active panel gets ~687px.
+- **Wardrobe still fits:** Outfits remains visible without page scroll or clipped lower cards.
+
+**Verified:** Playwright at 1024×552, 1180×664, and 1366×768 across Folk, Outfits, Skills, Stats, Review — no horizontal overflow, no vertical document overflow, no panel clipping. Screenshots: `AR027_creator_folk_*.png`, `AR027_creator_outfits_*.png`.
+
+**Mechanical:** 144 unit + 6/6 char-creation e2e + typecheck + build.
+
+### AR-026 detail (Fullscreen creator, no scroll)
+
+**Scope:** Nick feedback — stop scrolling, use full screen, easier to read.
+
+**Shipped:**
+
+- **Full viewport creator** — `#title-screen:has(.creator-shell)` stretches edge-to-edge; title/premise hidden in creator mode
+- **No panel scroll** — `.creator-tab-panel` `overflow: hidden`; content reflowed instead of scrollbars
+- **Small-screen correction** — compact breakpoint fixes the first pass where Outfits was clipped at screenshot-sized viewports
+- **Folk** — 5 species cards in one row (all visible at 1080p)
+- **Skills** — two-column body (skills list + stat blurbs grid); compact modifier chips
+- **Stats** — 2-column point-buy grid; per-stat hint text hidden (still on Skills tab)
+- **Kit** — 3-column ability cards
+- **Outfits** — hat/cloak/accessory side-by-side
+
+**Verified:** Playwright walk all 9 tabs @ 1024×576, 1180×664, 1280×720, and 1366×768 — no document overflow, no panel clipping, no horizontal scroll. Screenshots: `AR026_creator_*.png`, `AR026_creator_outfits_*.png`, `AR026_creator_folk_*.png`.
+
+**Mechanical:** 144 unit + 6/6 char-creation e2e + typecheck + build.
+
+**Still:** Nick 16:9 eye test; character *art* is procedural until real PNG assets ship (T7).
 
 ### AR-025 detail (Compact chrome + appearance save e2e)
 

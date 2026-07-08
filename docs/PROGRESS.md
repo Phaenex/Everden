@@ -1,6 +1,6 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-046)  
+**Last updated:** 2026-07-08 (CHECKIN-048)
 **Play online:** https://croakend-club.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
@@ -33,7 +33,7 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://croakend-club.vercel.app · CHECKIN-046
+Play: https://croakend-club.vercel.app · CHECKIN-048
 
 OVERALL  [█████████░░░░░░░░░░░]  59%
 
@@ -50,7 +50,7 @@ WORKSTREAMS (T1–T9)
 
 GATED BUILD
   V1 composition+exits  ✅ PASS (AR-002)
-  V2 Lilymarket+wizard  🟡 BORDERLINE — Nick eye (AR-003, AR-018, AR-022/023 agent creator retest)
+  V2 Lilymarket+wizard  🟡 BORDERLINE — Nick eye (AR-003, AR-018, AR-027 creator correction)
   V3 district hub loop  🟡 BORDERLINE (AR-004, AR-015)
   V4 quest+combat       ✅ PASS mechanical (AR-019)
   V5 human alpha T8     ⬜ 3/5 sessions
@@ -339,6 +339,36 @@ After any session work, update the bars/rows above in this file, then paste the 
 **Not bumped:** T6 — Nick 16:9 eye test on full creator still required.
 
 **Still open:** Nick creator + Lilymarket composition eye test.
+
+---
+
+### CHECKIN-048 — 2026-07-08
+
+**Type:** Creator full-screen clean layout correction (AR-027)  
+**Agent:** Cursor
+
+**UI:** Corrected the first compact pass. Tight widths now use 3 columns (tabs, preview, active panel) and hide the right summary rail, so the creator stays full-screen without shrinking everything. At 1024×552 the preview is ~225px wide and the active panel gets ~687px.
+
+**Visual:** Playwright checked 1024×552, 1180×664, and 1366×768 across Folk, Outfits, Skills, Stats, Review — no horizontal overflow, no vertical document overflow, no panel clipping. Screenshots `AR027_creator_folk_*.png`, `AR027_creator_outfits_*.png`.
+
+**Mechanical:** 144 unit + 6/6 char-creation e2e + typecheck + build.
+
+**Nick eye test:** still blocks T6 bump. Public Vercel may still show the old boxed layout until these changes are committed/pushed/deployed.
+
+---
+
+### CHECKIN-047 — 2026-07-08
+
+**Type:** Creator fullscreen / no-scroll layout (AR-026)  
+**Agent:** Cursor
+
+**UI:** Creator fills the viewport (no boxed window). All 9 tabs reflowed to avoid scrollbars at 1024×576, 1180×664, 1280×720, and 1366×768 — folk 5-across, skills 2-column, stats 2-column point-buy, kit 3-column abilities, outfits 3-column slots. Follow-up fix added a compact breakpoint after the first pass clipped Outfits at screenshot-sized viewports.
+
+**Visual:** Playwright measured no document overflow and no panel clipping on every tab. Screenshots `AR026_creator_*.png`, `AR026_creator_outfits_*.png`, `AR026_creator_folk_*.png`.
+
+**Mechanical:** 144 unit + 6/6 char-creation e2e + typecheck + build.
+
+**Nick eye test:** still blocks T6 bump. Character art unchanged (procedural until assets).
 
 ---
 
