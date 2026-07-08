@@ -1,10 +1,10 @@
 # Manual Playtest Checklist (Nick)
 
-**Automated first:** run `npm run test:e2e` — covers boot, districts, NPC time-skip stability, examines/flags, Domet dice duel DOM, Blackfen combat no soft-lock, save round-trip, ferry quest hook.
+**Automated first:** run `npm test` + `npx playwright test` — 129 unit + 23 e2e (boot, 5 districts, hub loop, 5-species combat abilities, NPC schedule walk, save round-trip, quest/combat hooks).
 
 **You own everything below.** Playwright cannot judge composition, feel, or whether the story landed.
 
-**Build:** `npm run dev` or https://everden-chi.vercel.app  
+**Build:** `npm run dev` or https://everden-chi.vercel.app (commit `602d6e7`+ for HUD name + NPC walk)  
 **Fresh save:** clear `localStorage` key `everden_save_v1`, or use title screen (no F1/dev menu for the fresh-player row)
 
 ### Interactive checklist (recommended)
@@ -13,7 +13,7 @@
 npm run playtest:nick
 ```
 
-Opens `/nick-playtest.html` — Yes / No / N/A + comments per row. **Save** writes `docs/playtests/NICK_RESPONSES.json` in the repo (dev server only). Agents read that file on your next Cursor session.
+Opens `/nick-playtest.html` — Yes / No / N/A + comments per row. **Save** writes `docs/playtests/NICK_RESPONSES.json` in the repo (dev server only). After save, `npm run nick:summary` prints a quick digest. Agents read `NICK_RESPONSES.json` on your next Cursor session.
 
 On production URL only: use **Download JSON** and drop the file into `docs/playtests/NICK_RESPONSES.json`, then commit or leave for the agent.
 
@@ -30,6 +30,7 @@ On production URL only: use **Download JSON** and drop the file into `docs/playt
 - [ ] **Control hint** — right after the beat, toast reads "Click to move · [E] to interact · [J] for journal" and stays up long enough to read
 - [ ] **Continue skips wizard + beat** — loading a save goes straight to Causeway, no character creation replay
 - [ ] **Pip uses your name** — motivation-specific append line after "Word travels fast on the causeway"
+- [ ] **HUD player label** — top-left shows `YourName · Species` (species only if you left name blank / Traveler)
 
 ---
 
@@ -41,7 +42,7 @@ Play on a **real 16:9 display** (not a cropped agent viewport).
 - [ ] **Lilymarket** — stalls/domes not cropped off top; NPCs on the ground plane, not floating or buried
 - [ ] **Croakend** — cottage/readable focal art; NPCs not stacked on each other
 - [ ] **Mudwall** — levy/wall art visible; combat trigger area obvious
-- [ ] **Ferryman's Rest** — ferry/lamp readable; Grizz placement feels intentional
+- [ ] **Ferryman's Rest** — ferry/lamp readable; **Grizz/Silt only 18:00–06:00** — empty at midday is correct (they rest in Croakend)
 - [ ] **Sprites** — feet on floor, shadows sensible, no z-fighting through backdrop
 - [ ] **UI** — interaction prompt not clipped; dialogue/combat panels fully readable at 1080p
 - [ ] **Click ring** — appears on walkable ground only; **no** ring on painted domes/water/walls you can't reach
@@ -59,8 +60,9 @@ Play on a **real 16:9 display** (not a cropped agent viewport).
 
 ## NPCs & living world
 
-- [ ] **Schedule logic** — after ~30 in-game minutes (or +6h dev skip), folk who shouldn't be there leave; expected folk appear (e.g. market folk at Lilymarket daytime)
-- [ ] **No hour-teleport glitch** — NPCs don't snap/jump every time the clock ticks
+- [ ] **Schedule logic** — after ~30 in-game minutes (or +6h dev skip), folk who shouldn't be there leave; expected folk appear (e.g. Jenna walks into Lilymarket at noon)
+- [ ] **NPC walk-in** — new arrivals walk from the nearest exit to their spot; leavers walk out (not instant pop)
+- [ ] **No hour-teleport glitch** — no random snap to wrong coords mid-scene on clock tick
 - [ ] **Role clarity** — merchant near goods, elder near council/rostrum, ferry hand at rest
 - [ ] **Overlap** — no ugly stacks of 3+ NPCs on one tile in normal hours
 - [ ] **Vole line** (if playing vole) — Sable Meadowrun at Lilymarket has species-exclusive dialogue
@@ -100,7 +102,7 @@ Play on a **real 16:9 display** (not a cropped agent viewport).
 ## Combat & agency
 
 - [ ] **Blackfen poachers** — Persuade/Intimidate visible **before** first attack
-- [ ] Species **abilities** make sense for your folk (frog leap, turtle shell, toad toxin, vole heal/burrow)
+- [ ] Species **abilities** make sense for your folk (frog leap, toad toxin, turtle/tortoise shell, vole heal/burrow)
 - [ ] **Combat log** matches what happened on screen
 - [ ] **Flee** works; enemy turns always resolve — no frozen turn indicator
 
@@ -111,7 +113,7 @@ Play on a **real 16:9 display** (not a cropped agent viewport).
 - [ ] **[J] Journal** — entries appear after examines and major beats; you opened it voluntarily at least once
 - [ ] **Weather** — icon changes; rain adds VFX and you notice move/combat difference on frog/toad
 - [ ] **Merchants** — Pip/Marta buy flow works when you have gold
-- [ ] **Esc pause → save → reload** — species, scene, quest stage, inventory persist
+- [ ] **Esc pause → save → reload** — species, name, scene, quest stage, inventory persist
 - [ ] **♪ mute** — toggles audio; preference survives reload
 
 ---

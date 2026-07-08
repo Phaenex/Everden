@@ -15,7 +15,8 @@
         { "id": "opening_beat", "label": "Opening beat — 3 flavored narration lines; Continue / Begin" },
         { "id": "control_hint", "label": "Control hint toast readable after beat" },
         { "id": "continue_skips", "label": "Continue skips wizard + opening beat" },
-        { "id": "pip_name", "label": "Pip uses your name + motivation append line" }
+        { "id": "pip_name", "label": "Pip uses your name + motivation append line" },
+        { "id": "hud_player", "label": "HUD top-left shows your name · species (or species only if Traveler)" }
       ]
     },
     {
@@ -26,7 +27,7 @@
         { "id": "lilymarket", "label": "Lilymarket — stalls not cropped; NPCs on ground plane" },
         { "id": "croakend", "label": "Croakend — focal art readable; NPCs not stacked" },
         { "id": "mudwall", "label": "Mudwall — levy/wall visible; combat area obvious" },
-        { "id": "ferry_rest", "label": "Ferryman's Rest — ferry/lamp readable; Grizz placement OK" },
+        { "id": "ferry_rest", "label": "Ferryman's Rest — ferry/lamp readable (Grizz/Silt only 18:00–06:00; empty at midday is OK)" },
         { "id": "sprites", "label": "Sprites — feet on floor, shadows OK, no z-fight" },
         { "id": "ui_readability", "label": "UI — prompts/panels not clipped at 1080p" },
         { "id": "click_ring", "label": "Click ring only on walkable ground, not domes/walls" }
@@ -47,7 +48,8 @@
       "title": "NPCs & living world",
       "items": [
         { "id": "schedule", "label": "Schedule — wrong folk leave; expected folk appear" },
-        { "id": "no_teleport", "label": "No hour-teleport glitch on clock tick" },
+        { "id": "npc_walk", "label": "Schedule arrivals walk in from exit; leavers walk out — no random snap on hour tick" },
+        { "id": "no_teleport", "label": "No old hour-teleport glitch (folk don't jump to wrong coords mid-scene)" },
         { "id": "role_clarity", "label": "Merchants/elders/ferry hand in sensible spots" },
         { "id": "overlap", "label": "No ugly 3+ NPC stacks in normal hours" },
         { "id": "vole_line", "label": "Vole: Sable Meadowrun species dialogue (if playing vole)" }
@@ -89,7 +91,7 @@
       "title": "Combat & agency",
       "items": [
         { "id": "diplomacy", "label": "Blackfen — Persuade/Intimidate before first attack" },
-        { "id": "abilities", "label": "Species abilities make sense for your folk" },
+        { "id": "abilities", "label": "Species abilities make sense (incl. tortoise shell/withdraw if playing tortoise)" },
         { "id": "combat_log", "label": "Combat log matches screen" },
         { "id": "flee_turns", "label": "Flee works; enemy turns resolve — no soft-lock" }
       ]
@@ -101,7 +103,7 @@
         { "id": "journal", "label": "[J] Journal entries unlock; opened voluntarily" },
         { "id": "weather", "label": "Weather icon + rain VFX; amphibian buff noticeable" },
         { "id": "merchants", "label": "Pip/Marta buy flow works" },
-        { "id": "save_reload", "label": "Esc pause → save → reload persists state" },
+        { "id": "save_reload", "label": "Esc pause → save → reload persists species, name, scene, quest" },
         { "id": "mute", "label": "Mute toggle works; survives reload" }
       ]
     }
