@@ -15,13 +15,13 @@ Read and update [docs/PROGRESS.md](docs/PROGRESS.md) every session:
 - **9 workstream bars** (T1–T9) with per-track checklists
 - Phase table with % complete
 - Active task list (T1, T2, …)
-- Check-in log (append CHECKIN-NNN entries)
+- **Visual + click Playwright audit** — [docs/playtests/VISUAL_CLICK_AUDIT.md](docs/playtests/VISUAL_CLICK_AUDIT.md) (CLICK+SHOT / AGENT EYE / NICK EYE bars). Refresh: `npm run audit:creator:progress`; full re-run: `npm run audit:creator:visual`
 
 ## At session start
 
 1. Read `docs/PROGRESS.md`
 2. If `docs/playtests/NICK_RESPONSES.json` has `updatedAt` set, **read Nick's playtest responses** and summarize pass/fail/comments before planning work (`npm run nick:summary` for a quick digest)
-3. **Paste the full "Session report" block** from PROGRESS.md into chat (all workstream bars, gated V1–V5, build phases, open steps, next)
+3. **Paste the full "Session report" block** from PROGRESS.md into chat (VISUAL+CLICK bar, all workstream bars, gated V1–V5, build phases, open steps, next)
 4. Add 1–2 sentences on what this session will tackle
 
 **Do not** reply with only `Progress: [bar] XX%` — Nick asked for **all phases and steps visible**.

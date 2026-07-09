@@ -1,0 +1,465 @@
+{
+  "version": 1,
+  "title": "Creator visual + click Playwright audit",
+  "lastManifest": "docs/playtests/visual-audit-manifest.json",
+  "categories": [
+    {
+      "id": "tabs",
+      "label": "Creator tabs (click + screenshot)",
+      "items": [
+        {
+          "id": "tab_species",
+          "label": "Folk tab",
+          "shot": "docs/playtests/screenshots/AR035_tab_species.png",
+          "visual": "pass"
+        },
+        {
+          "id": "tab_appearance",
+          "label": "Look tab",
+          "shot": "docs/playtests/screenshots/AR035_tab_appearance.png",
+          "visual": "pass"
+        },
+        {
+          "id": "tab_wardrobe",
+          "label": "Outfits tab",
+          "shot": "docs/playtests/screenshots/AR035_tab_wardrobe.png",
+          "visual": "pass"
+        },
+        {
+          "id": "tab_stats",
+          "label": "Stats tab",
+          "shot": "docs/playtests/screenshots/AR035_tab_stats.png",
+          "visual": "pass"
+        },
+        {
+          "id": "tab_kit",
+          "label": "Kit tab",
+          "shot": "docs/playtests/screenshots/AR035_tab_kit.png",
+          "visual": "pass"
+        },
+        {
+          "id": "tab_skills",
+          "label": "Skills tab",
+          "shot": "docs/playtests/screenshots/AR035_tab_skills.png",
+          "visual": "pass"
+        },
+        {
+          "id": "tab_story",
+          "label": "Story tab",
+          "shot": "docs/playtests/screenshots/AR035_tab_story.png",
+          "visual": "pass"
+        },
+        {
+          "id": "tab_settings",
+          "label": "Settings tab",
+          "shot": "docs/playtests/screenshots/AR035_tab_settings.png",
+          "visual": "pass"
+        },
+        {
+          "id": "tab_review",
+          "label": "Review tab",
+          "shot": "docs/playtests/screenshots/AR035_tab_review.png",
+          "visual": "pass"
+        }
+      ]
+    },
+    {
+      "id": "folk",
+      "label": "Folk cards (click + preview)",
+      "items": [
+        {
+          "id": "folk_frog",
+          "label": "Frog",
+          "shot": "docs/playtests/screenshots/AR035_folk_frog.png",
+          "visual": "pass"
+        },
+        {
+          "id": "folk_toad",
+          "label": "Toad",
+          "shot": "docs/playtests/screenshots/AR035_folk_toad.png",
+          "visual": "pass"
+        },
+        {
+          "id": "folk_vole",
+          "label": "Vole",
+          "shot": "docs/playtests/screenshots/AR035_folk_vole.png",
+          "visual": "pass"
+        },
+        {
+          "id": "folk_turtle",
+          "label": "Turtle",
+          "shot": "docs/playtests/screenshots/AR035_folk_turtle.png",
+          "visual": "pass"
+        },
+        {
+          "id": "folk_tortoise",
+          "label": "Tortoise",
+          "shot": "docs/playtests/screenshots/AR035_folk_tortoise.png",
+          "visual": "pass"
+        }
+      ]
+    },
+    {
+      "id": "look_frog",
+      "label": "Look — frog build × pattern matrix",
+      "items": [
+        {
+          "id": "look_b0_p1",
+          "label": "Slim pattern 1",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b0_p1.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b0_p2",
+          "label": "Slim pattern 2",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b0_p2.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b0_p3",
+          "label": "Slim pattern 3",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b0_p3.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b0_p4",
+          "label": "Slim pattern 4",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b0_p4.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b1_p1",
+          "label": "Medium pattern 1",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b1_p1.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b1_p2",
+          "label": "Medium pattern 2",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b1_p2.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b1_p3",
+          "label": "Medium pattern 3",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b1_p3.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b1_p4",
+          "label": "Medium pattern 4",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b1_p4.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b2_p1",
+          "label": "Stout pattern 1",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b2_p1.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b2_p2",
+          "label": "Stout pattern 2",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b2_p2.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b2_p3",
+          "label": "Stout pattern 3",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b2_p3.png",
+          "visual": "pass"
+        },
+        {
+          "id": "look_b2_p4",
+          "label": "Stout pattern 4",
+          "shot": "docs/playtests/screenshots/AR035_look_frog_b2_p4.png",
+          "visual": "pass"
+        }
+      ]
+    },
+    {
+      "id": "look_controls",
+      "label": "Look controls (click + preview)",
+      "items": [
+        {
+          "id": "marking_spots",
+          "label": "Markings — Spots",
+          "shot": "docs/playtests/screenshots/AR035_marking_spots.png",
+          "visual": "pass"
+        },
+        {
+          "id": "marking_stripes",
+          "label": "Markings — Stripes",
+          "shot": "docs/playtests/screenshots/AR035_marking_stripes.png",
+          "visual": "pass"
+        },
+        {
+          "id": "marking_none",
+          "label": "Markings — None",
+          "shot": "docs/playtests/screenshots/AR035_marking_none.png",
+          "visual": "pass"
+        },
+        {
+          "id": "hue_shift",
+          "label": "Hue slider",
+          "shot": "docs/playtests/screenshots/AR035_hue_45.png",
+          "visual": "pass"
+        },
+        {
+          "id": "randomize_look",
+          "label": "Randomize look",
+          "shot": "docs/playtests/screenshots/AR035_randomize.png",
+          "visual": "pass"
+        },
+        {
+          "id": "reset_look",
+          "label": "Reset tab",
+          "shot": "docs/playtests/screenshots/AR035_reset_look.png",
+          "visual": "pass"
+        }
+      ]
+    },
+    {
+      "id": "outfit_frog",
+      "label": "Outfits — frog isolated preview (one slot each)",
+      "items": [
+        {
+          "id": "outfit_reed_sun_hat",
+          "label": "Reed sun hat",
+          "shot": "docs/playtests/screenshots/AR035_outfit_reed_sun_hat.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_lily_bloom",
+          "label": "Lily bloom",
+          "shot": "docs/playtests/screenshots/AR035_outfit_lily_bloom.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_ferry_kepi",
+          "label": "Ferry kepi",
+          "shot": "docs/playtests/screenshots/AR035_outfit_ferry_kepi.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_marsh_hood",
+          "label": "Marsh hood",
+          "shot": "docs/playtests/screenshots/AR035_outfit_marsh_hood.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_basin_cloak",
+          "label": "Basin travel cloak",
+          "shot": "docs/playtests/screenshots/AR035_outfit_basin_travel_cloak.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_ferry_shawl",
+          "label": "Ferryman's shawl",
+          "shot": "docs/playtests/screenshots/AR035_outfit_ferryman_s_shawl.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_croakend",
+          "label": "Croakend patchcloak",
+          "shot": "docs/playtests/screenshots/AR035_outfit_croakend_patchcloak.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_levy_mantle",
+          "label": "Levy mantle",
+          "shot": "docs/playtests/screenshots/AR035_outfit_levy_mantle.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_rain_poncho",
+          "label": "Rain poncho",
+          "shot": "docs/playtests/screenshots/AR035_outfit_rain_poncho.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_elder_robe",
+          "label": "Elder robe",
+          "shot": "docs/playtests/screenshots/AR035_outfit_elder_robe.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_reed_charm",
+          "label": "Reed hop charm",
+          "shot": "docs/playtests/screenshots/AR035_outfit_reed_hop_charm.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_market_scarf",
+          "label": "Lilymarket scarf",
+          "shot": "docs/playtests/screenshots/AR035_outfit_lilymarket_scarf.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_levy_pin",
+          "label": "Levy clerk's pin",
+          "shot": "docs/playtests/screenshots/AR035_outfit_levy_clerk_s_pin.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_shell_brooch",
+          "label": "Shell brooch",
+          "shot": "docs/playtests/screenshots/AR035_outfit_shell_brooch.png",
+          "visual": "borderline",
+          "note": "procedural pin until PNG regen"
+        },
+        {
+          "id": "outfit_hop_whistle",
+          "label": "Hop whistle",
+          "shot": "docs/playtests/screenshots/AR035_outfit_hop_whistle.png",
+          "visual": "pass"
+        }
+      ]
+    },
+    {
+      "id": "outfit_tortoise",
+      "label": "Outfits — tortoise-only items",
+      "items": [
+        {
+          "id": "outfit_shell_cap",
+          "label": "Shell cap",
+          "shot": "docs/playtests/screenshots/AR035_outfit_tortoise_shell_cap.png",
+          "visual": "borderline",
+          "note": "rear-facing frame"
+        },
+        {
+          "id": "outfit_mudwall_helm",
+          "label": "Mudwall helm",
+          "shot": "docs/playtests/screenshots/AR035_outfit_tortoise_mudwall_helm.png",
+          "visual": "pass"
+        },
+        {
+          "id": "outfit_clay_bead",
+          "label": "Clay prayer bead",
+          "shot": "docs/playtests/screenshots/AR035_outfit_tortoise_clay_prayer_bead.png",
+          "visual": "pass"
+        }
+      ]
+    },
+    {
+      "id": "outfit_combo",
+      "label": "Outfit combo loadout",
+      "items": [
+        {
+          "id": "outfits_full",
+          "label": "Kepi + cloak + brooch",
+          "shot": "docs/playtests/screenshots/AR035_outfits_full_equipped.png",
+          "visual": "borderline"
+        }
+      ]
+    },
+    {
+      "id": "other_tabs",
+      "label": "Stats / Kit / Skills / Settings / Story / Review",
+      "items": [
+        {
+          "id": "stats_plus",
+          "label": "Stats + button",
+          "shot": "docs/playtests/screenshots/AR035_stats_plus.png",
+          "visual": "pass"
+        },
+        {
+          "id": "kit_panel",
+          "label": "Kit abilities",
+          "shot": "docs/playtests/screenshots/AR035_kit.png",
+          "visual": "pass"
+        },
+        {
+          "id": "skills_panel",
+          "label": "Skills reference",
+          "shot": "docs/playtests/screenshots/AR035_skills.png",
+          "visual": "pass"
+        },
+        {
+          "id": "settings_toggle",
+          "label": "Settings checkbox",
+          "shot": "docs/playtests/screenshots/AR035_settings.png",
+          "visual": "pass"
+        },
+        {
+          "id": "story_fill",
+          "label": "Story name + motivation",
+          "shot": "docs/playtests/screenshots/AR035_story.png",
+          "visual": "pass"
+        },
+        {
+          "id": "review_panel",
+          "label": "Review summary",
+          "shot": "docs/playtests/screenshots/AR035_review.png",
+          "visual": "pass"
+        },
+        {
+          "id": "fullpage",
+          "label": "Full-page creator",
+          "shot": "docs/playtests/screenshots/AR035_all_tabs_fullpage.png",
+          "visual": "pass"
+        }
+      ]
+    },
+    {
+      "id": "folk_matrix",
+      "label": "5-folk stout+p4+outfit matrix (e2e)",
+      "items": [
+        {
+          "id": "matrix_frog",
+          "label": "Frog outfit matrix",
+          "shot": "docs/playtests/screenshots/AR033_frog_stout_p4_outfit.png",
+          "visual": "pass"
+        },
+        {
+          "id": "matrix_toad",
+          "label": "Toad outfit matrix",
+          "shot": "docs/playtests/screenshots/AR033_toad_stout_p4_outfit.png",
+          "visual": "pass"
+        },
+        {
+          "id": "matrix_vole",
+          "label": "Vole outfit matrix",
+          "shot": "docs/playtests/screenshots/AR033_vole_stout_p4_outfit.png",
+          "visual": "pass"
+        },
+        {
+          "id": "matrix_turtle",
+          "label": "Turtle outfit matrix",
+          "shot": "docs/playtests/screenshots/AR033_turtle_stout_p4_outfit.png",
+          "visual": "pass"
+        },
+        {
+          "id": "matrix_tortoise",
+          "label": "Tortoise outfit matrix",
+          "shot": "docs/playtests/screenshots/AR033_tortoise_stout_p4_outfit.png",
+          "visual": "pass"
+        }
+      ]
+    },
+    {
+      "id": "enter_world",
+      "label": "Enter game click-through",
+      "items": [
+        {
+          "id": "enter_causeway",
+          "label": "Enter Reedwater Basin → HUD",
+          "shot": "docs/playtests/screenshots/AR035_entered_causeway.png",
+          "visual": "borderline"
+        }
+      ]
+    },
+    {
+      "id": "nick_gate",
+      "label": "Human visual gate (not Playwright)",
+      "items": [
+        {
+          "id": "nick_creator_eye",
+          "label": "Nick creator eye test",
+          "shot": null,
+          "optional": true
+        }
+      ]
+    }
+  ]
+}

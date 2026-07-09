@@ -1,6 +1,6 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-052)
+**Last updated:** 2026-07-08 (CHECKIN-053)
 **Play online:** https://croakend-club.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
@@ -33,9 +33,15 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://croakend-club.vercel.app · CHECKIN-052
+Play: https://croakend-club.vercel.app · CHECKIN-053
 
 OVERALL  [█████████░░░░░░░░░░░]  61%
+
+VISUAL + CLICK PLAYWRIGHT (creator) — see docs/playtests/VISUAL_CLICK_AUDIT.md
+  CLICK+SHOT  [████████████████████] 100%  (64/64 screenshots)
+  AGENT EYE   [████████████████████] 100%  (60 pass · 4 borderline · 0 fail)
+  NICK EYE    [░░░░░░░░░░░░░░░░░░░░]   0%  (human gate)
+  Cmd: npm run audit:creator:visual
 
 WORKSTREAMS (T1–T9)
   T1 Mechanics & CI     [███████████████████░]  92%  (145 unit)
@@ -341,6 +347,15 @@ After any session work, update the bars/rows above in this file, then paste the 
 **Still open:** Nick creator + Lilymarket composition eye test.
 
 ---
+
+### CHECKIN-053 — 2026-07-08
+
+**Type:** Dedicated visual + click Playwright progress tracker  
+**Agent:** Cursor
+
+**Added:** `docs/playtests/VISUAL_CLICK_AUDIT.md` (auto-generated bars), `visual-audit-checklist.json` (64 checks), `visual-audit-manifest.json`, `scripts/visual-audit-progress.mjs`, `npm run audit:creator:visual` / `audit:creator:progress`. AR-035 spec now clicks **Enter Reedwater Basin** and writes manifest.
+
+**Bars:** CLICK+SHOT 100% (64/64) · AGENT EYE 100% reviewed (60 pass, 4 borderline: shell brooch, shell cap, full combo, in-world brooch square) · Nick eye 0%.
 
 ### CHECKIN-052 — 2026-07-08
 
