@@ -78,7 +78,7 @@ function chromaKeyCanvas(img: HTMLImageElement): HTMLCanvasElement {
     const r = frame.data[i]!;
     const g = frame.data[i + 1]!;
     const b = frame.data[i + 2]!;
-    const nearWhite = r > 235 && g > 235 && b > 235;
+    const nearWhite = r > 222 && g > 222 && b > 222;
     if (dist < hardThreshold || nearWhite) {
       frame.data[i + 3] = 0;
     } else if (dist < softThreshold) {
@@ -86,8 +86,35 @@ function chromaKeyCanvas(img: HTMLImageElement): HTMLCanvasElement {
       frame.data[i + 3] = Math.round(frame.data[i + 3]! * t);
     }
   }
+  defringeEdges(frame.data, canvas.width, canvas.height);
   ctx.putImageData(frame, 0, 0);
   return canvas;
+}
+
+/**
+ * Kill the white/light halo left when a plain-background render is keyed: any bright,
+ * partially- or fully-opaque pixel that borders transparency is background bleed, not
+ * the sprite, so drop it. One pass is enough for the 1-2px fringe these AI exports leave.
+ */
+function defringeEdges(data: Uint8ClampedArray, w: number, h: number): void {
+  if (w <= 2 || h <= 2) return;
+  const alpha = (x: number, y: number): number => data[(y * w + x) * 4 + 3]!;
+  const clear: number[] = [];
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const idx = (y * w + x) * 4;
+      if (data[idx + 3]! === 0) continue;
+      const touchesTransparent =
+        (x > 0 && alpha(x - 1, y) === 0) ||
+        (x < w - 1 && alpha(x + 1, y) === 0) ||
+        (y > 0 && alpha(x, y - 1) === 0) ||
+        (y < h - 1 && alpha(x, y + 1) === 0);
+      if (!touchesTransparent) continue;
+      const luma = 0.299 * data[idx]! + 0.587 * data[idx + 1]! + 0.114 * data[idx + 2]!;
+      if (luma > 190) clear.push(idx + 3);
+    }
+  }
+  for (const i of clear) data[i] = 0;
 }
 
 /** Horizontal sprite sheets use square frames (e.g. 256×128 → 2 frames of 128×128). */
@@ -118,12 +145,82 @@ function cellInk(ctx: CanvasRenderingContext2D, x: number, y: number, cw: number
   return n;
 }
 
-/** Species whose body sheets are 4×2 pose grids (not dual idle strips). */
-const POSE_GRID_SPECIES = new Set(['vole']);
+/**
+ * Split a 1-D occupancy profile into bands of ink separated by transparent gutters.
+ * Gutters shorter than `minGutter` are treated as internal gaps (legs, ears) and merged,
+ * so only true pose separators split the sheet. Returns `[start,end]` inclusive ranges.
+ */
+function splitBands(profile: Float64Array, len: number): Array<[number, number]> {
+  let max = 0;
+  for (let i = 0; i < len; i++) if (profile[i]! > max) max = profile[i]!;
+  if (max <= 0) return [[0, len - 1]];
+  const occThresh = Math.max(1, max * 0.02);
+  const minGutter = Math.max(4, Math.floor(len * 0.05));
+  const runs: Array<[number, number]> = [];
+  let start = -1;
+  for (let i = 0; i < len; i++) {
+    const occupied = profile[i]! > occThresh;
+    if (occupied && start < 0) start = i;
+    else if (!occupied && start >= 0) {
+      runs.push([start, i - 1]);
+      start = -1;
+    }
+  }
+  if (start >= 0) runs.push([start, len - 1]);
+  if (runs.length === 0) return [[0, len - 1]];
+  const merged: Array<[number, number]> = [[runs[0]![0], runs[0]![1]]];
+  for (let k = 1; k < runs.length; k++) {
+    const prev = merged[merged.length - 1]!;
+    const gap = runs[k]![0] - prev[1] - 1;
+    if (gap < minGutter) prev[1] = runs[k]![1];
+    else merged.push([runs[k]![0], runs[k]![1]]);
+  }
+  return merged;
+}
 
-function resolveSheetLayout(sheet: HTMLCanvasElement, species?: string): SheetLayout {
-  if (species && POSE_GRID_SPECIES.has(species)) return 'grid4x2';
-  return detectSheetLayout(sheet);
+/**
+ * Isolate the single dominant sprite in a square AI sheet. These exports inconsistently
+ * hold 1, 2 (side-by-side) or 4 (2×2) poses per build, so instead of guessing a fixed grid
+ * we segment by transparent gutters and keep the densest cell. Returns null-safe full-frame
+ * when the sheet is a single sprite (no real gutters) so `cropOpaqueBounds` can tighten it.
+ */
+function segmentDominantCell(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+): { x: number; y: number; w: number; h: number } {
+  if (w <= 2 || h <= 2) return { x: 0, y: 0, w, h };
+  const { data } = ctx.getImageData(0, 0, w, h);
+  const col = new Float64Array(w);
+  const row = new Float64Array(h);
+  for (let y = 0; y < h; y++) {
+    const base = y * w;
+    for (let x = 0; x < w; x++) {
+      if (data[(base + x) * 4 + 3]! > 24) {
+        col[x]++;
+        row[y]++;
+      }
+    }
+  }
+  const colBands = splitBands(col, w);
+  const rowBands = splitBands(row, h);
+  if (colBands.length <= 1 && rowBands.length <= 1) return { x: 0, y: 0, w, h };
+  let best = { x: 0, y: 0, w, h };
+  let bestScore = -1;
+  for (const [x0, x1] of colBands) {
+    for (const [y0, y1] of rowBands) {
+      let n = 0;
+      for (let y = y0; y <= y1; y++) {
+        const base = y * w;
+        for (let x = x0; x <= x1; x++) if (data[(base + x) * 4 + 3]! > 24) n++;
+      }
+      if (n > bestScore) {
+        bestScore = n;
+        best = { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+      }
+    }
+  }
+  return best;
 }
 
 function detectSheetLayout(sheet: HTMLCanvasElement): SheetLayout {
@@ -174,44 +271,36 @@ export function spriteFrameWidth(sheet: HTMLCanvasElement, count: number): numbe
   return Math.floor(sheet.width / count);
 }
 
-export function extractSpriteFrame(sheet: HTMLCanvasElement, frameIndex = 0, species?: string): HTMLCanvasElement {
-  const layout = resolveSheetLayout(sheet, species);
+export function extractSpriteFrame(sheet: HTMLCanvasElement, frameIndex = 0, _species?: string): HTMLCanvasElement {
   const out = document.createElement('canvas');
   const ctx = out.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
+  const w = sheet.width;
+  const h = sheet.height;
 
-  if (layout === 'strip') {
+  // Wide sheets are horizontal animation strips — slice by frame index.
+  if (h > 0 && w >= h * 1.4) {
     const count = spriteSheetFrameCount(sheet);
     const fw = spriteFrameWidth(sheet, count);
-    const idx = Math.min(Math.max(0, frameIndex), count - 1);
+    const idx = Math.min(Math.max(0, frameIndex), Math.max(0, count - 1));
     out.width = fw;
-    out.height = sheet.height;
-    ctx.drawImage(sheet, idx * fw, 0, fw, sheet.height, 0, 0, fw, sheet.height);
+    out.height = h;
+    ctx.drawImage(sheet, idx * fw, 0, fw, h, 0, 0, fw, h);
     return out;
   }
 
-  if (layout === 'grid4x2') {
-    const cw = Math.floor(sheet.width / 4);
-    const ch = Math.floor(sheet.height / 2);
-    const col = 1;
-    const row = 0;
-    out.width = cw;
-    out.height = ch;
-    ctx.drawImage(sheet, col * cw, row * ch, cw, ch, 0, 0, cw, ch);
+  // Square AI sheets hold 1/2/4 inconsistent poses — isolate the single dominant sprite.
+  const src = sheet.getContext('2d');
+  if (src) {
+    const cell = segmentDominantCell(src, w, h);
+    out.width = cell.w;
+    out.height = cell.h;
+    ctx.drawImage(sheet, cell.x, cell.y, cell.w, cell.h, 0, 0, cell.w, cell.h);
     return out;
   }
 
-  if (layout === 'dual') {
-    const fw = Math.floor(sheet.width / 2);
-    const idx = Math.min(Math.max(0, frameIndex), 1);
-    out.width = fw;
-    out.height = sheet.height;
-    ctx.drawImage(sheet, idx * fw, 0, fw, sheet.height, 0, 0, fw, sheet.height);
-    return out;
-  }
-
-  out.width = sheet.width;
-  out.height = sheet.height;
+  out.width = w;
+  out.height = h;
   ctx.drawImage(sheet, 0, 0);
   return out;
 }
@@ -270,14 +359,19 @@ function tryLoadImage(path: string): Promise<HTMLCanvasElement | null> {
 async function loadArtSheet(
   species: string,
   npcId?: string,
-  build = 1,
+  _build = 1,
   variant = 0,
 ): Promise<HTMLCanvasElement | null> {
   if (npcId) {
     const npcArt = await tryLoadImage(`${ART_BASE}/sprites/npcs/${npcId}.png`);
     if (npcArt) return npcArt;
   }
-  const slug = ['slim', 'medium', 'heavy'][Math.min(2, Math.max(0, build))] ?? 'medium';
+  // Only the `medium_p{1..4}` sheets are single, correct portraits; the slim/heavy exports
+  // are multi-pose montages (turtle_slim even holds frog art), so they render as a grid of
+  // tiny sprites. Source every build from the medium sheet until slim/heavy are regenerated
+  // as single portraits (see docs/art/ASSET_SHEET.md). Build is still expressed by the
+  // procedural body scale and stats, just not by a separate body sheet.
+  const slug = 'medium';
   const pattern = Math.min(3, Math.max(0, variant)) + 1;
   const patterned = await tryLoadImage(
     `${ART_BASE}/sprites/species/${species}_${slug}_p${pattern}.png`,
@@ -316,18 +410,26 @@ export async function composeCharacterArtCanvas(
 ): Promise<HTMLCanvasElement | null> {
   const sheet = await loadArtSheet(species, npcId, appearance.build ?? 1, appearance.variant ?? 0);
   if (!sheet) return null;
-  const bodyFrame = extractSpriteFrame(sheet, frameIndex, species);
+  const bodyFrameRaw = extractSpriteFrame(sheet, frameIndex, species);
+  const bodyFrame = scaleBodyFrameForBuild(bodyFrameRaw, appearance.build ?? 1);
   applyAppearanceToArtCanvas(bodyFrame, species, appearance, wardrobeItems);
 
+  // When a cloak is equipped, pad the canvas so the drape has room to show around the body
+  // (the body portrait fills its own bounds edge-to-edge). Front items align to the body rect.
+  const hasCloak = !!appearance.wardrobe?.cloak;
+  const padX = hasCloak ? Math.round(bodyFrame.width * 0.26) : 0;
+  const padBottom = hasCloak ? Math.round(bodyFrame.height * 0.1) : 0;
+
   const out = document.createElement('canvas');
-  out.width = bodyFrame.width;
-  out.height = bodyFrame.height;
+  out.width = bodyFrame.width + padX * 2;
+  out.height = bodyFrame.height + padBottom;
   const ctx = out.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
+  const bodyRegion = { x: padX, y: 0, w: bodyFrame.width, h: bodyFrame.height };
 
-  await applyWardrobeBackOverlayAsync(out, appearance, wardrobeItems, species, cloakFrameIndex);
-  ctx.drawImage(bodyFrame, 0, 0);
-  await applyWardrobeFrontOverlayAsync(out, appearance, wardrobeItems, species);
+  await applyWardrobeBackOverlayAsync(out, appearance, wardrobeItems, species, cloakFrameIndex, bodyRegion);
+  ctx.drawImage(bodyFrame, bodyRegion.x, bodyRegion.y);
+  await applyWardrobeFrontOverlayAsync(out, appearance, wardrobeItems, species, bodyRegion);
   return out;
 }
 
@@ -436,22 +538,50 @@ function shiftColor(hex: string, hueShift: number): string {
   return rgbToHex(r2 * 255, g2 * 255, b2 * 255);
 }
 
-function applyMarkings(ctx: CanvasRenderingContext2D, marking: CharacterAppearance['marking']): void {
+function applyMarkings(ctx: CanvasRenderingContext2D, marking: CharacterAppearance['marking'], scale = 1): void {
   if (marking === 'none') return;
   if (marking === 'spots') {
-    ctx.fillStyle = 'rgba(10, 16, 8, 0.75)';
-    const spots = [
-      [12, 14], [18, 16], [14, 20], [20, 12], [10, 18], [16, 13], [13, 17],
+    ctx.fillStyle = 'rgba(10, 16, 8, 0.55)';
+    const spots: Array<[number, number, number]> = [
+      [12, 14, 1.2], [18, 16, 1], [14, 20, 1.4], [20, 12, 1], [10, 18, 1.1], [16, 13, 0.9], [13, 17, 1.3],
+      [22, 18, 1], [11, 22, 1.2], [17, 21, 0.8],
     ];
-    for (const [x, y] of spots) {
-      ctx.fillRect(x, y, 2, 2);
+    for (const [x, y, r] of spots) {
+      ctx.beginPath();
+      ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2);
+      ctx.fill();
     }
   } else {
-    ctx.fillStyle = 'rgba(12, 18, 10, 0.7)';
-    for (let y = 10; y < 26; y += 3) {
-      ctx.fillRect(10, y, 12, 2);
+    ctx.fillStyle = 'rgba(12, 18, 10, 0.45)';
+    for (let y = 10; y < 26; y += 4) {
+      const wobble = ((y * 3) % 5) - 2;
+      ctx.fillRect((10 + wobble) * scale, y * scale, 12 * scale, 1.5 * scale);
     }
   }
+}
+
+/** Horizontal/vertical squash for slim (0) vs stout (2) when PNG art is medium-only. */
+export function buildScaleFactors(build: number): { sx: number; sy: number } {
+  if (build === 0) return { sx: 0.86, sy: 1.1 };
+  if (build === 2) return { sx: 1.16, sy: 0.9 };
+  return { sx: 1, sy: 1 };
+}
+
+/** Scale body art in-place on a same-size canvas (centered) so wardrobe regions stay aligned. */
+export function scaleBodyFrameForBuild(bodyFrame: HTMLCanvasElement, build: number): HTMLCanvasElement {
+  const { sx, sy } = buildScaleFactors(build);
+  if (sx === 1 && sy === 1) return bodyFrame;
+  const out = document.createElement('canvas');
+  out.width = bodyFrame.width;
+  out.height = bodyFrame.height;
+  const ctx = out.getContext('2d')!;
+  ctx.imageSmoothingEnabled = false;
+  const dw = Math.round(bodyFrame.width * sx);
+  const dh = Math.round(bodyFrame.height * sy);
+  const ox = Math.round((bodyFrame.width - dw) / 2);
+  const oy = Math.round((bodyFrame.height - dh) / 2);
+  ctx.drawImage(bodyFrame, 0, 0, bodyFrame.width, bodyFrame.height, ox, oy, dw, dh);
+  return out;
 }
 
 /** 32×32 procedural pixel characters — replace with real art in public/assets/sprites/ */
@@ -520,9 +650,10 @@ export function applyAppearanceToArtCanvas(
 
   if (appearance.marking !== 'none') {
     ctx.save();
-    ctx.imageSmoothingEnabled = false;
-    ctx.scale(w / 32, h / 32);
-    applyMarkings(ctx, appearance.marking);
+    ctx.imageSmoothingEnabled = true;
+    const s = w / 32;
+    ctx.scale(s, s);
+    applyMarkings(ctx, appearance.marking, 1);
     ctx.restore();
   }
 }

@@ -1,7 +1,15 @@
-import * as THREE from 'three';
 import type { EventBus } from '@/core/EventBus';
 import type { IGameModule } from '@/core/IGameModule';
-import { NavMesh, type NavPoint } from './NavMesh';
+import { NavMesh } from './NavMesh';
+import {
+  beginWalk,
+  cancelWalk,
+  createMovementState,
+  DEFAULT_MOVEMENT_CONFIG,
+  stepMovement,
+  type MovementState,
+} from '../../shared/movement/MovementSim';
+import { applySeparation, type Separable } from './Separation';
 
 export interface WalkIntent {
   x: number;
@@ -11,19 +19,30 @@ export interface WalkIntent {
 }
 
 /**
- * BG3-style click-to-move — follows NavMesh path, emits player:moved.
+ * BG3-style click-to-move — follows NavMesh path, emits player:moved with heading.
+ * Uses shared MovementSim so server authority matches client prediction.
  */
 export class NavigationController implements IGameModule {
-  readonly position = new THREE.Vector3();
   private nav: NavMesh | null = null;
-  private path: NavPoint[] = [];
-  private pathIndex = 0;
-  private speed = 5.8;
+  private state: MovementState = createMovementState(0, 0);
   private moveModifier = 1;
   private locked = false;
   private intent: WalkIntent | null = null;
+  private nearbyAgents: Separable[] = [];
 
   constructor(private eventBus: EventBus) {}
+
+  get position(): { x: number; z: number; y: number } {
+    return { x: this.state.x, y: 0, z: this.state.z };
+  }
+
+  get heading(): number {
+    return this.state.heading;
+  }
+
+  get velocity(): { x: number; z: number } {
+    return { x: this.state.vx, z: this.state.vz };
+  }
 
   init(): void {
     this.eventBus.on('combat:started', () => {
@@ -40,6 +59,9 @@ export class NavigationController implements IGameModule {
     this.eventBus.on('dialogue:closed', () => {
       this.locked = false;
     });
+    this.eventBus.on<{ agents: Separable[] }>('crowd:agents', ({ agents }) => {
+      this.nearbyAgents = agents;
+    });
   }
 
   dispose(): void {}
@@ -53,112 +75,90 @@ export class NavigationController implements IGameModule {
   }
 
   setPosition(x: number, z: number): void {
-    this.position.set(x, 0, z);
-    this.cancel();
+    this.state.x = x;
+    this.state.z = z;
+    this.state.vx = 0;
+    this.state.vz = 0;
+    cancelWalk(this.state);
+    this.intent = null;
+    this.emitMoved();
+  }
+
+  /** Server reconciliation — snap to authoritative position. */
+  reconcilePosition(x: number, z: number, heading?: number): void {
+    this.state.x = x;
+    this.state.z = z;
+    if (heading !== undefined) this.state.heading = heading;
     this.emitMoved();
   }
 
   isMoving(): boolean {
-    return this.pathIndex < this.path.length;
+    return this.state.moving;
   }
 
   cancel(): void {
-    this.path = [];
-    this.pathIndex = 0;
+    cancelWalk(this.state);
     this.intent = null;
   }
 
   walkTo(intent: WalkIntent): boolean {
-    if (this.locked) return false;
-    if (!this.nav) return false;
+    if (this.locked || !this.nav) return false;
 
-    let destX = intent.x;
-    let destZ = intent.z;
-    if (!this.nav.isWalkable(destX, destZ)) {
-      const snap = this.nav.nearestWalkable({ x: destX, z: destZ });
-      if (!snap) return false;
-      destX = snap.x;
-      destZ = snap.z;
-    }
+    const ok = beginWalk(
+      this.state,
+      this.nav,
+      intent.x,
+      intent.z,
+      intent.stopRadius ?? 0.25,
+    );
+    if (!ok) return false;
 
-    const stop = intent.stopRadius ?? 0.25;
-    const dx = destX - this.position.x;
-    const dz = destZ - this.position.z;
-    if (Math.hypot(dx, dz) <= stop) {
+    const dx = intent.x - this.state.x;
+    const dz = intent.z - this.state.z;
+    if (Math.hypot(dx, dz) <= (intent.stopRadius ?? 0.25)) {
       intent.onArrive?.();
       return true;
     }
 
-    const path = this.nav.findPath(
-      { x: this.position.x, z: this.position.z },
-      { x: destX, z: destZ },
-    );
-    if (path.length === 0) return false;
-
-    this.path = path;
-    this.pathIndex = path.length > 1 ? 1 : 0;
     this.intent = intent;
+    this.eventBus.emit('player:walk_intent', { x: intent.x, z: intent.z });
     return true;
   }
 
   update(dt: number): void {
-    if (this.locked || this.pathIndex >= this.path.length) return;
+    if (this.locked || !this.nav) return;
 
-    this.shortcutPath();
+    const wasMoving = this.state.moving;
+    stepMovement(this.state, this.nav, dt, DEFAULT_MOVEMENT_CONFIG, this.moveModifier);
 
-    const target = this.path[this.pathIndex]!;
-    const dx = target.x - this.position.x;
-    const dz = target.z - this.position.z;
-    const dist = Math.hypot(dx, dz);
-    const step = this.speed * this.moveModifier * dt;
-
-    if (dist <= step) {
-      this.position.x = target.x;
-      this.position.z = target.z;
-      this.pathIndex++;
-      this.emitMoved();
-      if (this.pathIndex >= this.path.length) {
-        this.finishWalk();
+    if (this.nearbyAgents.length > 0) {
+      const self: Separable = { id: '__local__', x: this.state.x, z: this.state.z };
+      const offsets = applySeparation([self, ...this.nearbyAgents.filter((a) => a.id !== '__local__')]);
+      const off = offsets.get('__local__');
+      if (off) {
+        this.state.x += off.x * dt;
+        this.state.z += off.z * dt;
       }
-      return;
     }
 
-    this.position.x += (dx / dist) * step;
-    this.position.z += (dz / dist) * step;
-    this.emitMoved();
-  }
+    if (wasMoving || this.state.moving) this.emitMoved();
 
-  /** Skip grid corners when a straight run to the next hop (or goal) is clear. */
-  private shortcutPath(): void {
-    if (!this.nav || this.pathIndex >= this.path.length) return;
-
-    const here = { x: this.position.x, z: this.position.z };
-    if (this.intent && this.nav.canWalkDirectly(here, { x: this.intent.x, z: this.intent.z })) {
-      this.path = [here, { x: this.intent.x, z: this.intent.z }];
-      this.pathIndex = 1;
-      return;
+    if (!this.state.moving && this.intent) {
+      const intent = this.intent;
+      this.intent = null;
+      intent.onArrive?.();
     }
-
-    while (this.pathIndex < this.path.length - 1) {
-      const next = this.path[this.pathIndex + 1]!;
-      if (!this.nav.canWalkDirectly(here, next)) break;
-      this.pathIndex++;
-    }
-  }
-
-  private finishWalk(): void {
-    const intent = this.intent;
-    this.intent = null;
-    this.path = [];
-    this.pathIndex = 0;
-    intent?.onArrive?.();
   }
 
   private emitMoved(): void {
     this.eventBus.emit('player:moved', {
-      x: this.position.x,
+      x: this.state.x,
       y: 0,
-      z: this.position.z,
+      z: this.state.z,
+      heading: this.state.heading,
+      moving: this.state.moving,
+      vx: this.state.vx,
+      vz: this.state.vz,
     });
   }
 }

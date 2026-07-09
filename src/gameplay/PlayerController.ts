@@ -75,7 +75,8 @@ export class PlayerController implements IGameModule {
   }
 
   get position(): THREE.Vector3 {
-    return this.deps?.navigation.position ?? new THREE.Vector3();
+    const p = this.deps?.navigation.position;
+    return p ? new THREE.Vector3(p.x, p.y, p.z) : new THREE.Vector3();
   }
 
   setMoveModifier(mod: number): void {
@@ -118,7 +119,7 @@ export class PlayerController implements IGameModule {
     let best: InteractableTarget | null = null;
     let bestScore = Infinity;
     for (const t of this.interactables.values()) {
-      const d = pos.distanceTo(t.position);
+      const d = Math.hypot(t.position.x - pos.x, t.position.z - pos.z);
       if (d > t.radius) continue;
       const score = d + (t.type === 'exit' ? 2 : t.type === 'merchant' ? 1 : t.type === 'npc' ? -0.3 : 0);
       if (score < bestScore) {
@@ -192,6 +193,9 @@ export class PlayerController implements IGameModule {
     if (this.interactionLocked) return;
     if (e.key.toLowerCase() === 'e' && this.nearest) {
       this.eventBus.emit('interaction:use', this.nearest);
+    }
+    if (e.key.toLowerCase() === 'g') {
+      this.eventBus.emit('player:emote', { emote: 'wave' });
     }
   };
 

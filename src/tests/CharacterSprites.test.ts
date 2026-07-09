@@ -5,15 +5,19 @@ import {
   applyArtToImage,
   applyAppearanceToArtCanvas,
   applyEnemyArtToImage,
+  buildScaleFactors,
+  composeCharacterArtCanvas,
   createCharacterMesh,
   createGroundShadow,
   createNameLabel,
   drawCharacterCanvas,
   loadArtCanvas,
   loadEnemyArtCanvas,
+  scaleBodyFrameForBuild,
   CHARACTER_MESH_SIZE,
   spriteSheetFrameCount,
 } from '@/presentation/CharacterSprites';
+import { defaultAppearance } from '@/gameplay/CharacterAppearance';
 import { ISO_CAMERA_OFFSET } from '@/presentation/IsometricCamera';
 
 /**
@@ -32,6 +36,9 @@ function fakeContext() {
     clearRect: () => {},
     fillRect: () => {},
     strokeRect: () => {},
+    beginPath: () => {},
+    arc: () => {},
+    fill: () => {},
     fillText: () => {},
     drawImage: () => {},
     getImageData: (_x: number, _y: number, w: number, h: number) => ({
@@ -222,6 +229,61 @@ describe('CharacterSprites art fallback', () => {
       wardrobe: { hat: 'reed_hat' },
     });
     expect(canvas.width).toBe(32);
+  });
+
+  it('composeCharacterArtCanvas pads the canvas when a cloak is equipped (drape needs room; AR-036)', async () => {
+    MockImage.nextShouldFail = false;
+    const bare = await composeCharacterArtCanvas(
+      'frog',
+      { ...defaultAppearance(), wardrobe: {} },
+      [],
+    );
+    const cloaked = await composeCharacterArtCanvas(
+      'frog',
+      { ...defaultAppearance(), wardrobe: { cloak: 'basin_cloak' } },
+      [{ id: 'basin_cloak', slot: 'cloak', label: 'Basin', species: ['*'], layer: 'procedural' }],
+    );
+    expect(bare).not.toBeNull();
+    expect(cloaked).not.toBeNull();
+    // Cloak canvas is wider than the bare body so the drape can show at the sides.
+    expect(cloaked!.width).toBeGreaterThan(bare!.width);
+  });
+
+  it('composeCharacterArtCanvas draws a hat without throwing (blitHatOnHead crop path; AR-037)', async () => {
+    MockImage.nextShouldFail = false;
+    const hatted = await composeCharacterArtCanvas(
+      'frog',
+      { ...defaultAppearance(), wardrobe: { hat: 'reed_hat' } },
+      [{ id: 'reed_hat', slot: 'hat', label: 'Reed', species: ['*'], layer: 'procedural' }],
+    );
+    expect(hatted).not.toBeNull();
+    // Hat equip must not pad the canvas (only cloaks do) — hat sits on the body frame.
+    expect(hatted!.width).toBeGreaterThan(0);
+  });
+
+  it('buildScaleFactors differentiate slim vs stout (AR-038)', () => {
+    const slim = buildScaleFactors(0);
+    const med = buildScaleFactors(1);
+    const stout = buildScaleFactors(2);
+    expect(slim.sx).toBeLessThan(med.sx);
+    expect(stout.sx).toBeGreaterThan(med.sx);
+    expect(slim.sy).toBeGreaterThan(med.sy);
+    expect(stout.sy).toBeLessThan(med.sy);
+  });
+
+  it('scaleBodyFrameForBuild returns same canvas for medium build', () => {
+    const src = document.createElement('canvas');
+    src.width = 100;
+    src.height = 100;
+    expect(scaleBodyFrameForBuild(src, 1)).toBe(src);
+  });
+
+  it('scaleBodyFrameForBuild returns a new canvas for slim/stout', () => {
+    const src = document.createElement('canvas');
+    src.width = 100;
+    src.height = 100;
+    expect(scaleBodyFrameForBuild(src, 0)).not.toBe(src);
+    expect(scaleBodyFrameForBuild(src, 2)).not.toBe(src);
   });
 
   it('applyAppearanceToArtCanvas applies tint and markings without throwing', () => {

@@ -1,9 +1,28 @@
 import type { WardrobeDefinition } from '@/data/types';
 import type { CharacterAppearance, CharacterWardrobe } from '@/gameplay/CharacterAppearance';
+import { cropOpaqueBounds } from './CharacterSprites';
 
-import { spriteSheetFrameCount, spriteFrameWidth } from './CharacterSprites';
 
 const CANVAS_SIZE = 32;
+// Where a hat's vertical center should land, as a fraction of body height (0 = top). Hat art
+// sits in the middle of its 1024² PNG, so mapping it full-frame drops it on the chest — instead
+// we crop to the hat's opaque bounds and re-center it on the head.
+const HAT_CENTER_Y = 0.16;
+/** Per-hat vertical nudge (fraction of body height) and optional scale tweak. */
+const HAT_TUNE: Record<string, { dy?: number; scale?: number }> = {
+  marsh_hood: { dy: -0.04, scale: 0.92 },
+  mudwall_helm: { dy: 0.05, scale: 0.88 },
+  reed_hat: { dy: 0 },
+  lily_bloom: { dy: -0.02, scale: 0.95 },
+};
+/** Shelled folk have lower visible heads relative to the portrait frame. */
+const SPECIES_HAT_DY: Record<string, number> = {
+  turtle: 0.04,
+  tortoise: 0.05,
+};
+/** Accessories map into a smaller chest/neck band, not the full body rect. */
+const ACCESSORY_REGION_SCALE = 0.42;
+const ACCESSORY_CENTER_Y = 0.58;
 const WARDROBE_ART_BASE = '/assets/sprites/wardrobe';
 const BUILD_SLUGS = ['slim', 'medium', 'heavy'] as const;
 const CLOAK_IDS = new Set([
@@ -44,17 +63,59 @@ function chromaKeyItem(img: HTMLImageElement): HTMLCanvasElement {
 
 const _wardrobeItemCache = new Map<string, Promise<HTMLCanvasElement | null>>();
 
+/**
+ * Extract one garment frame from an animation strip by splitting on transparent gutters.
+ * Cloak sheets are 1536×1024 with 4 portrait frames (384px each), so the old `round(w/h)`
+ * frame-count guess returned 2 and grabbed two cloaks at once. Gutter-splitting finds the
+ * real frame boundaries regardless of count, so a static portrait gets one clean cloak.
+ */
 function extractWardrobeFrame(sheet: HTMLCanvasElement, frameIndex: number): HTMLCanvasElement {
-  const count = spriteSheetFrameCount(sheet, true);
-  const fw = spriteFrameWidth(sheet, count);
-  const fh = sheet.height;
-  const idx = Math.min(Math.max(0, frameIndex), count - 1);
+  const w = sheet.width;
+  const h = sheet.height;
+  const sctx = sheet.getContext('2d');
+  const full = () => {
+    const o = document.createElement('canvas');
+    o.width = w;
+    o.height = h;
+    const c = o.getContext('2d')!;
+    c.imageSmoothingEnabled = false;
+    c.drawImage(sheet, 0, 0);
+    return o;
+  };
+  if (!sctx) return full();
+  const { data } = sctx.getImageData(0, 0, w, h);
+  const col = new Float64Array(w);
+  for (let y = 0; y < h; y++) {
+    const base = y * w;
+    for (let x = 0; x < w; x++) if (data[(base + x) * 4 + 3]! > 24) col[x]++;
+  }
+  const raw: Array<[number, number]> = [];
+  let start = -1;
+  for (let x = 0; x < w; x++) {
+    if (col[x]! > 1 && start < 0) start = x;
+    else if (col[x]! <= 1 && start >= 0) {
+      raw.push([start, x - 1]);
+      start = -1;
+    }
+  }
+  if (start >= 0) raw.push([start, w - 1]);
+  const minGutter = Math.max(4, Math.floor(w * 0.02));
+  const bands: Array<[number, number]> = [];
+  for (const b of raw) {
+    const prev = bands[bands.length - 1];
+    if (prev && b[0] - prev[1] - 1 < minGutter) prev[1] = b[1];
+    else bands.push([b[0], b[1]]);
+  }
+  if (bands.length === 0) return full();
+  const idx = Math.min(Math.max(0, frameIndex), bands.length - 1);
+  const [x0, x1] = bands[idx]!;
+  const fw = x1 - x0 + 1;
   const out = document.createElement('canvas');
   out.width = fw;
-  out.height = fh;
+  out.height = h;
   const ctx = out.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(sheet, idx * fw, 0, fw, fh, 0, 0, fw, fh);
+  ctx.drawImage(sheet, x0, 0, fw, h, 0, 0, fw, h);
   return out;
 }
 
@@ -111,17 +172,89 @@ function loadWardrobeItemPng(
   return p;
 }
 
-function blitWardrobeOverlay(
+export interface WardrobeRegion {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** Blit a full garment PNG into a pixel rectangle (used for cloaks filling the body margin). */
+function blitPngInRegion(gfx: CanvasRenderingContext2D, png: HTMLCanvasElement, r: WardrobeRegion): void {
+  gfx.save();
+  gfx.imageSmoothingEnabled = false;
+  gfx.drawImage(png, 0, 0, png.width, png.height, r.x, r.y, r.w, r.h);
+  gfx.restore();
+}
+
+/** Draw a procedural 32-grid item mapped into a pixel rectangle. */
+function drawItemInRegion(gfx: CanvasRenderingContext2D, itemId: string, r: WardrobeRegion): void {
+  gfx.save();
+  gfx.imageSmoothingEnabled = false;
+  gfx.translate(r.x, r.y);
+  gfx.scale(r.w / CANVAS_SIZE, r.h / CANVAS_SIZE);
+  drawItemById(gfx, itemId);
+  gfx.restore();
+}
+
+/**
+ * Blit a hat PNG onto the head: crop to the hat's opaque bounds, keep the author's size scale
+ * (full PNG → body width), and re-center it at HAT_CENTER_Y so it lands on the crown/brow line
+ * instead of the chest.
+ */
+function blitHatOnHead(
   gfx: CanvasRenderingContext2D,
   png: HTMLCanvasElement,
-  w: number,
-  h: number,
+  r: WardrobeRegion,
+  itemId: string,
+  speciesId: string,
 ): void {
-  // Preserve author layout: map full 1024 PNG into 32×32 procedural grid (do not crop).
+  const b = cropOpaqueBounds(png, 0);
+  const tune = HAT_TUNE[itemId] ?? {};
+  const speciesDy = SPECIES_HAT_DY[speciesId] ?? 0;
+  const itemScale = tune.scale ?? 1;
+  const scale = (r.w / png.width) * itemScale;
+  const dw = b.w * scale;
+  const dh = b.h * scale;
+  const centerY = HAT_CENTER_Y + (tune.dy ?? 0) + speciesDy;
+  const dx = r.x + r.w / 2 - dw / 2;
+  const dy = r.y + r.h * centerY - dh / 2;
   gfx.save();
-  gfx.scale(w / CANVAS_SIZE, h / CANVAS_SIZE);
-  gfx.drawImage(png, 0, 0, png.width, png.height, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+  gfx.imageSmoothingEnabled = false;
+  gfx.drawImage(png, b.x, b.y, b.w, b.h, dx, dy, dw, dh);
   gfx.restore();
+}
+
+/** Blit a small accessory onto the chest/neck band instead of scaling to full body width. */
+function blitAccessoryOnBody(
+  gfx: CanvasRenderingContext2D,
+  png: HTMLCanvasElement,
+  r: WardrobeRegion,
+  itemId: string,
+): void {
+  const b = cropOpaqueBounds(png, 0);
+  const pinScale = itemId === 'levy_pin' ? 0.28 : itemId === 'shell_brooch' ? 0.22 : ACCESSORY_REGION_SCALE;
+  const baseW = r.w * pinScale;
+  const scale = baseW / b.w;
+  const dw = b.w * scale;
+  const dh = b.h * scale;
+  const dx = r.x + r.w / 2 - dw / 2;
+  const dy = r.y + r.h * ACCESSORY_CENTER_Y - dh / 2;
+  gfx.save();
+  gfx.imageSmoothingEnabled = false;
+  gfx.drawImage(png, b.x, b.y, b.w, b.h, dx, dy, dw, dh);
+  gfx.restore();
+}
+
+function accessoryRegion(r: WardrobeRegion): WardrobeRegion {
+  const w = r.w * ACCESSORY_REGION_SCALE;
+  const h = r.h * 0.35;
+  return {
+    x: r.x + (r.w - w) / 2,
+    y: r.y + r.h * (ACCESSORY_CENTER_Y - 0.12),
+    w,
+    h,
+  };
 }
 
 function speciesAllowed(item: WardrobeDefinition, speciesId: string): boolean {
@@ -304,12 +437,17 @@ function drawLevyPin(ctx: CanvasRenderingContext2D): void {
 }
 
 function drawShellBrooch(ctx: CanvasRenderingContext2D): void {
-  ctx.fillStyle = '#fff0d8';
-  px(ctx, 14, 18, 4, 4);
-  ctx.fillStyle = '#c0a080';
-  px(ctx, 15, 19, 2, 2);
-  ctx.fillStyle = '#ffffff';
-  px(ctx, 15, 19, 1, 1);
+  // Small coral scallop pin, not a white block (AR-035: read as a fan shell, not missing art).
+  ctx.fillStyle = '#7a4a30';
+  px(ctx, 14, 20, 5, 1);
+  ctx.fillStyle = '#f2b6a0';
+  px(ctx, 14, 18, 5, 2);
+  px(ctx, 15, 17, 3, 1);
+  ctx.fillStyle = '#d98c74';
+  px(ctx, 15, 18, 1, 2);
+  px(ctx, 17, 18, 1, 2);
+  ctx.fillStyle = '#ffd8c0';
+  px(ctx, 16, 17, 1, 1);
 }
 
 function drawHopWhistle(ctx: CanvasRenderingContext2D): void {
@@ -444,26 +582,25 @@ export async function applyWardrobeBackOverlayAsync(
   wardrobeItems: WardrobeDefinition[],
   speciesId: string,
   cloakFrameIndex = 0,
+  region?: WardrobeRegion,
 ): Promise<void> {
   const ctx = target.getContext('2d');
   if (!ctx) return;
   const gfx = ctx;
-  const w = target.width;
-  const h = target.height;
   const build = appearance.build ?? 1;
   gfx.imageSmoothingEnabled = false;
 
   const cloakId = resolveItem(appearance.wardrobe, 'cloak', wardrobeItems, speciesId);
   if (!cloakId) return;
+  // Cloak fills the whole (padded) canvas so its collar sits at the neck and the drape shows
+  // in the side/bottom margin around the body — the body is drawn on top afterwards.
+  const cloakRect: WardrobeRegion = { x: 0, y: 0, w: target.width, h: target.height };
   const png = await loadWardrobeItemPng(cloakId, build, cloakFrameIndex);
   if (png) {
-    blitWardrobeOverlay(gfx, png, w, h);
+    blitPngInRegion(gfx, png, cloakRect);
     return;
   }
-  gfx.save();
-  gfx.scale(w / CANVAS_SIZE, h / CANVAS_SIZE);
-  drawItemById(gfx, cloakId);
-  gfx.restore();
+  drawItemInRegion(gfx, cloakId, region ?? cloakRect);
 }
 
 /**
@@ -474,32 +611,34 @@ export async function applyWardrobeFrontOverlayAsync(
   appearance: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[],
   speciesId: string,
+  region?: WardrobeRegion,
 ): Promise<void> {
   const ctx = target.getContext('2d');
   if (!ctx) return;
   const gfx = ctx;
-  const w = target.width;
-  const h = target.height;
   const build = appearance.build ?? 1;
   gfx.imageSmoothingEnabled = false;
+  // Front items align to the body rect so hats land on the head even when the canvas has
+  // extra cloak margin around the body.
+  const r: WardrobeRegion = region ?? { x: 0, y: 0, w: target.width, h: target.height };
 
-  async function drawItem(itemId: string | undefined): Promise<void> {
+  async function drawItem(itemId: string | undefined, isHat: boolean, isAccessory: boolean): Promise<void> {
     if (!itemId) return;
     const png = await loadWardrobeItemPng(itemId, build, 0);
     if (png) {
-      blitWardrobeOverlay(gfx, png, w, h);
+      if (isHat) blitHatOnHead(gfx, png, r, itemId, speciesId);
+      else if (isAccessory) blitAccessoryOnBody(gfx, png, r, itemId);
+      else blitPngInRegion(gfx, png, r);
       return;
     }
-    gfx.save();
-    gfx.scale(w / CANVAS_SIZE, h / CANVAS_SIZE);
-    drawItemById(gfx, itemId);
-    gfx.restore();
+    const region = isAccessory ? accessoryRegion(r) : r;
+    drawItemInRegion(gfx, itemId, region);
   }
 
   const hatId = resolveItem(appearance.wardrobe, 'hat', wardrobeItems, speciesId);
   const accId = resolveItem(appearance.wardrobe, 'accessory', wardrobeItems, speciesId);
-  await drawItem(hatId);
-  await drawItem(accId);
+  await drawItem(hatId, true, false);
+  await drawItem(accId, false, true);
 }
 
 /**

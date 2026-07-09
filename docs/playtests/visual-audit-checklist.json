@@ -1,63 +1,62 @@
 {
-  "version": 1,
-  "title": "Creator visual + click Playwright audit",
-  "lastManifest": "docs/playtests/visual-audit-manifest.json",
+  "runId": "AR-037",
+  "updatedAt": "2026-07-09T01:27:39.937Z",
   "categories": [
     {
       "id": "tabs",
-      "label": "Creator tabs (click + screenshot)",
+      "label": "Tabs",
       "items": [
         {
           "id": "tab_species",
-          "label": "Folk tab",
+          "label": "Tab: species",
           "shot": "docs/playtests/screenshots/AR035_tab_species.png",
           "visual": "pass"
         },
         {
           "id": "tab_appearance",
-          "label": "Look tab",
+          "label": "Tab: appearance",
           "shot": "docs/playtests/screenshots/AR035_tab_appearance.png",
           "visual": "pass"
         },
         {
           "id": "tab_wardrobe",
-          "label": "Outfits tab",
+          "label": "Tab: wardrobe",
           "shot": "docs/playtests/screenshots/AR035_tab_wardrobe.png",
           "visual": "pass"
         },
         {
           "id": "tab_stats",
-          "label": "Stats tab",
+          "label": "Tab: stats",
           "shot": "docs/playtests/screenshots/AR035_tab_stats.png",
           "visual": "pass"
         },
         {
           "id": "tab_kit",
-          "label": "Kit tab",
+          "label": "Tab: kit",
           "shot": "docs/playtests/screenshots/AR035_tab_kit.png",
           "visual": "pass"
         },
         {
           "id": "tab_skills",
-          "label": "Skills tab",
+          "label": "Tab: skills",
           "shot": "docs/playtests/screenshots/AR035_tab_skills.png",
           "visual": "pass"
         },
         {
           "id": "tab_story",
-          "label": "Story tab",
+          "label": "Tab: story",
           "shot": "docs/playtests/screenshots/AR035_tab_story.png",
           "visual": "pass"
         },
         {
           "id": "tab_settings",
-          "label": "Settings tab",
+          "label": "Tab: settings",
           "shot": "docs/playtests/screenshots/AR035_tab_settings.png",
           "visual": "pass"
         },
         {
           "id": "tab_review",
-          "label": "Review tab",
+          "label": "Tab: review",
           "shot": "docs/playtests/screenshots/AR035_tab_review.png",
           "visual": "pass"
         }
@@ -65,143 +64,748 @@
     },
     {
       "id": "folk",
-      "label": "Folk cards (click + preview)",
+      "label": "Folk cards",
       "items": [
         {
           "id": "folk_frog",
-          "label": "Frog",
+          "label": "Folk: frog",
           "shot": "docs/playtests/screenshots/AR035_folk_frog.png",
           "visual": "pass"
         },
         {
           "id": "folk_toad",
-          "label": "Toad",
+          "label": "Folk: toad",
           "shot": "docs/playtests/screenshots/AR035_folk_toad.png",
           "visual": "pass"
         },
         {
           "id": "folk_vole",
-          "label": "Vole",
+          "label": "Folk: vole",
           "shot": "docs/playtests/screenshots/AR035_folk_vole.png",
           "visual": "pass"
         },
         {
           "id": "folk_turtle",
-          "label": "Turtle",
+          "label": "Folk: turtle",
           "shot": "docs/playtests/screenshots/AR035_folk_turtle.png",
           "visual": "pass"
         },
         {
           "id": "folk_tortoise",
-          "label": "Tortoise",
+          "label": "Folk: tortoise",
           "shot": "docs/playtests/screenshots/AR035_folk_tortoise.png",
           "visual": "pass"
         }
       ]
     },
     {
-      "id": "look_frog",
-      "label": "Look — frog build × pattern matrix",
+      "id": "species_frog",
+      "label": "Frog",
       "items": [
         {
-          "id": "look_b0_p1",
-          "label": "Slim pattern 1",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b0_p1.png",
+          "id": "build_frog_slim",
+          "label": "frog build slim",
+          "shot": "docs/playtests/screenshots/AR035_build_frog_slim.png",
+          "visual": "borderline",
+          "note": "Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending)."
+        },
+        {
+          "id": "build_frog_medium",
+          "label": "frog build medium",
+          "shot": "docs/playtests/screenshots/AR035_build_frog_medium.png",
           "visual": "pass"
         },
         {
-          "id": "look_b0_p2",
-          "label": "Slim pattern 2",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b0_p2.png",
+          "id": "build_frog_stout",
+          "label": "frog build stout",
+          "shot": "docs/playtests/screenshots/AR035_build_frog_stout.png",
+          "visual": "borderline",
+          "note": "Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending)."
+        },
+        {
+          "id": "pat_frog_p1",
+          "label": "frog pattern 1",
+          "shot": "docs/playtests/screenshots/AR035_pat_frog_p1.png",
           "visual": "pass"
         },
         {
-          "id": "look_b0_p3",
-          "label": "Slim pattern 3",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b0_p3.png",
+          "id": "pat_frog_p2",
+          "label": "frog pattern 2",
+          "shot": "docs/playtests/screenshots/AR035_pat_frog_p2.png",
           "visual": "pass"
         },
         {
-          "id": "look_b0_p4",
-          "label": "Slim pattern 4",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b0_p4.png",
+          "id": "pat_frog_p3",
+          "label": "frog pattern 3",
+          "shot": "docs/playtests/screenshots/AR035_pat_frog_p3.png",
           "visual": "pass"
         },
         {
-          "id": "look_b1_p1",
-          "label": "Medium pattern 1",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b1_p1.png",
+          "id": "pat_frog_p4",
+          "label": "frog pattern 4",
+          "shot": "docs/playtests/screenshots/AR035_pat_frog_p4.png",
           "visual": "pass"
         },
         {
-          "id": "look_b1_p2",
-          "label": "Medium pattern 2",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b1_p2.png",
+          "id": "out_frog_reed_hat",
+          "label": "frog · Reed sun hat (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_reed_hat.png",
           "visual": "pass"
         },
         {
-          "id": "look_b1_p3",
-          "label": "Medium pattern 3",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b1_p3.png",
+          "id": "out_frog_lily_bloom",
+          "label": "frog · Lily bloom (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_lily_bloom.png",
           "visual": "pass"
         },
         {
-          "id": "look_b1_p4",
-          "label": "Medium pattern 4",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b1_p4.png",
+          "id": "out_frog_ferry_kepi",
+          "label": "frog · Ferry kepi (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_ferry_kepi.png",
           "visual": "pass"
         },
         {
-          "id": "look_b2_p1",
-          "label": "Stout pattern 1",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b2_p1.png",
+          "id": "out_frog_marsh_hood",
+          "label": "frog · Marsh hood (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_marsh_hood.png",
+          "visual": "borderline",
+          "note": "Hood sits on the head but perches high/tilted (hood art is asymmetric)."
+        },
+        {
+          "id": "out_frog_basin_cloak",
+          "label": "frog · Basin travel cloak (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_basin_cloak.png",
           "visual": "pass"
         },
         {
-          "id": "look_b2_p2",
-          "label": "Stout pattern 2",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b2_p2.png",
+          "id": "out_frog_ferry_shawl",
+          "label": "frog · Ferryman's shawl (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_ferry_shawl.png",
           "visual": "pass"
         },
         {
-          "id": "look_b2_p3",
-          "label": "Stout pattern 3",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b2_p3.png",
+          "id": "out_frog_croakend_weave",
+          "label": "frog · Croakend patchcloak (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_croakend_weave.png",
           "visual": "pass"
         },
         {
-          "id": "look_b2_p4",
-          "label": "Stout pattern 4",
-          "shot": "docs/playtests/screenshots/AR035_look_frog_b2_p4.png",
+          "id": "out_frog_levy_mantle",
+          "label": "frog · Levy mantle (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_levy_mantle.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_frog_rain_poncho",
+          "label": "frog · Rain poncho (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_rain_poncho.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_frog_elder_robe",
+          "label": "frog · Elder robe (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_elder_robe.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_frog_reed_charm",
+          "label": "frog · Reed hop charm (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_reed_charm.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_frog_market_scarf",
+          "label": "frog · Lilymarket scarf (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_market_scarf.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_frog_levy_pin",
+          "label": "frog · Levy clerk's pin (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_levy_pin.png",
+          "visual": "borderline",
+          "note": "Reads as an oversized gold medallion on the chest."
+        },
+        {
+          "id": "out_frog_shell_brooch",
+          "label": "frog · Shell brooch (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_shell_brooch.png",
+          "visual": "borderline",
+          "note": "Procedural coral pin reads as a small pixel smudge at portrait scale."
+        },
+        {
+          "id": "out_frog_hop_whistle",
+          "label": "frog · Hop whistle (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_frog_hop_whistle.png",
           "visual": "pass"
         }
       ]
     },
     {
-      "id": "look_controls",
-      "label": "Look controls (click + preview)",
+      "id": "species_toad",
+      "label": "Toad",
+      "items": [
+        {
+          "id": "build_toad_slim",
+          "label": "toad build slim",
+          "shot": "docs/playtests/screenshots/AR035_build_toad_slim.png",
+          "visual": "borderline",
+          "note": "Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending)."
+        },
+        {
+          "id": "build_toad_medium",
+          "label": "toad build medium",
+          "shot": "docs/playtests/screenshots/AR035_build_toad_medium.png",
+          "visual": "pass"
+        },
+        {
+          "id": "build_toad_stout",
+          "label": "toad build stout",
+          "shot": "docs/playtests/screenshots/AR035_build_toad_stout.png",
+          "visual": "borderline",
+          "note": "Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending)."
+        },
+        {
+          "id": "pat_toad_p1",
+          "label": "toad pattern 1",
+          "shot": "docs/playtests/screenshots/AR035_pat_toad_p1.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_toad_p2",
+          "label": "toad pattern 2",
+          "shot": "docs/playtests/screenshots/AR035_pat_toad_p2.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_toad_p3",
+          "label": "toad pattern 3",
+          "shot": "docs/playtests/screenshots/AR035_pat_toad_p3.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_toad_p4",
+          "label": "toad pattern 4",
+          "shot": "docs/playtests/screenshots/AR035_pat_toad_p4.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_reed_hat",
+          "label": "toad · Reed sun hat (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_reed_hat.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_lily_bloom",
+          "label": "toad · Lily bloom (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_lily_bloom.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_ferry_kepi",
+          "label": "toad · Ferry kepi (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_ferry_kepi.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_marsh_hood",
+          "label": "toad · Marsh hood (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_marsh_hood.png",
+          "visual": "borderline",
+          "note": "Hood sits on the head but perches high/tilted (hood art is asymmetric)."
+        },
+        {
+          "id": "out_toad_basin_cloak",
+          "label": "toad · Basin travel cloak (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_basin_cloak.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_ferry_shawl",
+          "label": "toad · Ferryman's shawl (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_ferry_shawl.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_croakend_weave",
+          "label": "toad · Croakend patchcloak (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_croakend_weave.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_levy_mantle",
+          "label": "toad · Levy mantle (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_levy_mantle.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_rain_poncho",
+          "label": "toad · Rain poncho (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_rain_poncho.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_reed_charm",
+          "label": "toad · Reed hop charm (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_reed_charm.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_market_scarf",
+          "label": "toad · Lilymarket scarf (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_market_scarf.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_toad_levy_pin",
+          "label": "toad · Levy clerk's pin (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_levy_pin.png",
+          "visual": "borderline",
+          "note": "Reads as an oversized gold medallion on the chest."
+        },
+        {
+          "id": "out_toad_shell_brooch",
+          "label": "toad · Shell brooch (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_shell_brooch.png",
+          "visual": "borderline",
+          "note": "Procedural coral pin reads as a small pixel smudge at portrait scale."
+        },
+        {
+          "id": "out_toad_hop_whistle",
+          "label": "toad · Hop whistle (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_toad_hop_whistle.png",
+          "visual": "pass"
+        }
+      ]
+    },
+    {
+      "id": "species_vole",
+      "label": "Vole",
+      "items": [
+        {
+          "id": "build_vole_slim",
+          "label": "vole build slim",
+          "shot": "docs/playtests/screenshots/AR035_build_vole_slim.png",
+          "visual": "borderline",
+          "note": "Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending)."
+        },
+        {
+          "id": "build_vole_medium",
+          "label": "vole build medium",
+          "shot": "docs/playtests/screenshots/AR035_build_vole_medium.png",
+          "visual": "pass"
+        },
+        {
+          "id": "build_vole_stout",
+          "label": "vole build stout",
+          "shot": "docs/playtests/screenshots/AR035_build_vole_stout.png",
+          "visual": "borderline",
+          "note": "Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending)."
+        },
+        {
+          "id": "pat_vole_p1",
+          "label": "vole pattern 1",
+          "shot": "docs/playtests/screenshots/AR035_pat_vole_p1.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_vole_p2",
+          "label": "vole pattern 2",
+          "shot": "docs/playtests/screenshots/AR035_pat_vole_p2.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_vole_p3",
+          "label": "vole pattern 3",
+          "shot": "docs/playtests/screenshots/AR035_pat_vole_p3.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_vole_p4",
+          "label": "vole pattern 4",
+          "shot": "docs/playtests/screenshots/AR035_pat_vole_p4.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_reed_hat",
+          "label": "vole · Reed sun hat (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_reed_hat.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_lily_bloom",
+          "label": "vole · Lily bloom (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_lily_bloom.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_ferry_kepi",
+          "label": "vole · Ferry kepi (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_ferry_kepi.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_marsh_hood",
+          "label": "vole · Marsh hood (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_marsh_hood.png",
+          "visual": "borderline",
+          "note": "Hood sits on the head but perches high/tilted (hood art is asymmetric)."
+        },
+        {
+          "id": "out_vole_basin_cloak",
+          "label": "vole · Basin travel cloak (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_basin_cloak.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_ferry_shawl",
+          "label": "vole · Ferryman's shawl (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_ferry_shawl.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_croakend_weave",
+          "label": "vole · Croakend patchcloak (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_croakend_weave.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_levy_mantle",
+          "label": "vole · Levy mantle (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_levy_mantle.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_rain_poncho",
+          "label": "vole · Rain poncho (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_rain_poncho.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_reed_charm",
+          "label": "vole · Reed hop charm (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_reed_charm.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_market_scarf",
+          "label": "vole · Lilymarket scarf (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_market_scarf.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_vole_levy_pin",
+          "label": "vole · Levy clerk's pin (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_levy_pin.png",
+          "visual": "borderline",
+          "note": "Reads as an oversized gold medallion on the chest."
+        },
+        {
+          "id": "out_vole_shell_brooch",
+          "label": "vole · Shell brooch (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_shell_brooch.png",
+          "visual": "borderline",
+          "note": "Procedural coral pin reads as a small pixel smudge at portrait scale."
+        },
+        {
+          "id": "out_vole_hop_whistle",
+          "label": "vole · Hop whistle (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_vole_hop_whistle.png",
+          "visual": "pass"
+        }
+      ]
+    },
+    {
+      "id": "species_turtle",
+      "label": "Turtle",
+      "items": [
+        {
+          "id": "build_turtle_slim",
+          "label": "turtle build slim",
+          "shot": "docs/playtests/screenshots/AR035_build_turtle_slim.png",
+          "visual": "borderline",
+          "note": "Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending)."
+        },
+        {
+          "id": "build_turtle_medium",
+          "label": "turtle build medium",
+          "shot": "docs/playtests/screenshots/AR035_build_turtle_medium.png",
+          "visual": "pass"
+        },
+        {
+          "id": "build_turtle_stout",
+          "label": "turtle build stout",
+          "shot": "docs/playtests/screenshots/AR035_build_turtle_stout.png",
+          "visual": "borderline",
+          "note": "Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending)."
+        },
+        {
+          "id": "pat_turtle_p1",
+          "label": "turtle pattern 1",
+          "shot": "docs/playtests/screenshots/AR035_pat_turtle_p1.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_turtle_p2",
+          "label": "turtle pattern 2",
+          "shot": "docs/playtests/screenshots/AR035_pat_turtle_p2.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_turtle_p3",
+          "label": "turtle pattern 3",
+          "shot": "docs/playtests/screenshots/AR035_pat_turtle_p3.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_turtle_p4",
+          "label": "turtle pattern 4",
+          "shot": "docs/playtests/screenshots/AR035_pat_turtle_p4.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_turtle_shell_cap",
+          "label": "turtle · Shell cap (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_shell_cap.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_turtle_mudwall_helm",
+          "label": "turtle · Mudwall helm (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_mudwall_helm.png",
+          "visual": "borderline",
+          "note": "Helm on head but sits low over the brow on shelled heads."
+        },
+        {
+          "id": "out_turtle_ferry_kepi",
+          "label": "turtle · Ferry kepi (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_ferry_kepi.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_turtle_marsh_hood",
+          "label": "turtle · Marsh hood (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_marsh_hood.png",
+          "visual": "borderline",
+          "note": "Hood sits on the head but perches high/tilted (hood art is asymmetric)."
+        },
+        {
+          "id": "out_turtle_basin_cloak",
+          "label": "turtle · Basin travel cloak (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_basin_cloak.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_turtle_croakend_weave",
+          "label": "turtle · Croakend patchcloak (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_croakend_weave.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_turtle_levy_mantle",
+          "label": "turtle · Levy mantle (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_levy_mantle.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_turtle_rain_poncho",
+          "label": "turtle · Rain poncho (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_rain_poncho.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_turtle_elder_robe",
+          "label": "turtle · Elder robe (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_elder_robe.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_turtle_reed_charm",
+          "label": "turtle · Reed hop charm (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_reed_charm.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_turtle_clay_bead",
+          "label": "turtle · Clay prayer bead (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_clay_bead.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_turtle_levy_pin",
+          "label": "turtle · Levy clerk's pin (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_levy_pin.png",
+          "visual": "borderline",
+          "note": "Reads as an oversized gold medallion on the chest."
+        },
+        {
+          "id": "out_turtle_shell_brooch",
+          "label": "turtle · Shell brooch (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_turtle_shell_brooch.png",
+          "visual": "borderline",
+          "note": "Procedural coral pin reads as a small pixel smudge at portrait scale."
+        }
+      ]
+    },
+    {
+      "id": "species_tortoise",
+      "label": "Tortoise",
+      "items": [
+        {
+          "id": "build_tortoise_slim",
+          "label": "tortoise build slim",
+          "shot": "docs/playtests/screenshots/AR035_build_tortoise_slim.png",
+          "visual": "borderline",
+          "note": "Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending)."
+        },
+        {
+          "id": "build_tortoise_medium",
+          "label": "tortoise build medium",
+          "shot": "docs/playtests/screenshots/AR035_build_tortoise_medium.png",
+          "visual": "pass"
+        },
+        {
+          "id": "build_tortoise_stout",
+          "label": "tortoise build stout",
+          "shot": "docs/playtests/screenshots/AR035_build_tortoise_stout.png",
+          "visual": "borderline",
+          "note": "Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending)."
+        },
+        {
+          "id": "pat_tortoise_p1",
+          "label": "tortoise pattern 1",
+          "shot": "docs/playtests/screenshots/AR035_pat_tortoise_p1.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_tortoise_p2",
+          "label": "tortoise pattern 2",
+          "shot": "docs/playtests/screenshots/AR035_pat_tortoise_p2.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_tortoise_p3",
+          "label": "tortoise pattern 3",
+          "shot": "docs/playtests/screenshots/AR035_pat_tortoise_p3.png",
+          "visual": "pass"
+        },
+        {
+          "id": "pat_tortoise_p4",
+          "label": "tortoise pattern 4",
+          "shot": "docs/playtests/screenshots/AR035_pat_tortoise_p4.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_tortoise_shell_cap",
+          "label": "tortoise · Shell cap (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_shell_cap.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_tortoise_mudwall_helm",
+          "label": "tortoise · Mudwall helm (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_mudwall_helm.png",
+          "visual": "borderline",
+          "note": "Helm on head but sits low over the brow on shelled heads."
+        },
+        {
+          "id": "out_tortoise_ferry_kepi",
+          "label": "tortoise · Ferry kepi (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_ferry_kepi.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_tortoise_marsh_hood",
+          "label": "tortoise · Marsh hood (hat)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_marsh_hood.png",
+          "visual": "borderline",
+          "note": "Hood sits on the head but perches high/tilted (hood art is asymmetric)."
+        },
+        {
+          "id": "out_tortoise_basin_cloak",
+          "label": "tortoise · Basin travel cloak (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_basin_cloak.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_tortoise_croakend_weave",
+          "label": "tortoise · Croakend patchcloak (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_croakend_weave.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_tortoise_levy_mantle",
+          "label": "tortoise · Levy mantle (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_levy_mantle.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_tortoise_rain_poncho",
+          "label": "tortoise · Rain poncho (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_rain_poncho.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_tortoise_elder_robe",
+          "label": "tortoise · Elder robe (cloak)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_elder_robe.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_tortoise_reed_charm",
+          "label": "tortoise · Reed hop charm (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_reed_charm.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_tortoise_clay_bead",
+          "label": "tortoise · Clay prayer bead (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_clay_bead.png",
+          "visual": "pass"
+        },
+        {
+          "id": "out_tortoise_levy_pin",
+          "label": "tortoise · Levy clerk's pin (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_levy_pin.png",
+          "visual": "borderline",
+          "note": "Reads as an oversized gold medallion on the chest."
+        },
+        {
+          "id": "out_tortoise_shell_brooch",
+          "label": "tortoise · Shell brooch (accessory)",
+          "shot": "docs/playtests/screenshots/AR035_out_tortoise_shell_brooch.png",
+          "visual": "borderline",
+          "note": "Procedural coral pin reads as a small pixel smudge at portrait scale."
+        }
+      ]
+    },
+    {
+      "id": "controls",
+      "label": "Look controls",
       "items": [
         {
           "id": "marking_spots",
-          "label": "Markings — Spots",
+          "label": "Marking: spots",
           "shot": "docs/playtests/screenshots/AR035_marking_spots.png",
-          "visual": "pass"
+          "visual": "borderline",
+          "note": "Spots render as dark blocks rather than organic dapples."
         },
         {
           "id": "marking_stripes",
-          "label": "Markings — Stripes",
+          "label": "Marking: stripes",
           "shot": "docs/playtests/screenshots/AR035_marking_stripes.png",
-          "visual": "pass"
+          "visual": "borderline",
+          "note": "Single horizontal band — reads as a stripe but coarse."
         },
         {
           "id": "marking_none",
-          "label": "Markings — None",
+          "label": "Marking: none",
           "shot": "docs/playtests/screenshots/AR035_marking_none.png",
           "visual": "pass"
         },
         {
           "id": "hue_shift",
-          "label": "Hue slider",
+          "label": "Hue tint +45",
           "shot": "docs/playtests/screenshots/AR035_hue_45.png",
           "visual": "pass"
         },
@@ -216,248 +820,66 @@
           "label": "Reset tab",
           "shot": "docs/playtests/screenshots/AR035_reset_look.png",
           "visual": "pass"
-        }
-      ]
-    },
-    {
-      "id": "outfit_frog",
-      "label": "Outfits — frog isolated preview (one slot each)",
-      "items": [
-        {
-          "id": "outfit_reed_sun_hat",
-          "label": "Reed sun hat",
-          "shot": "docs/playtests/screenshots/AR035_outfit_reed_sun_hat.png",
-          "visual": "pass"
         },
-        {
-          "id": "outfit_lily_bloom",
-          "label": "Lily bloom",
-          "shot": "docs/playtests/screenshots/AR035_outfit_lily_bloom.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_ferry_kepi",
-          "label": "Ferry kepi",
-          "shot": "docs/playtests/screenshots/AR035_outfit_ferry_kepi.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_marsh_hood",
-          "label": "Marsh hood",
-          "shot": "docs/playtests/screenshots/AR035_outfit_marsh_hood.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_basin_cloak",
-          "label": "Basin travel cloak",
-          "shot": "docs/playtests/screenshots/AR035_outfit_basin_travel_cloak.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_ferry_shawl",
-          "label": "Ferryman's shawl",
-          "shot": "docs/playtests/screenshots/AR035_outfit_ferryman_s_shawl.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_croakend",
-          "label": "Croakend patchcloak",
-          "shot": "docs/playtests/screenshots/AR035_outfit_croakend_patchcloak.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_levy_mantle",
-          "label": "Levy mantle",
-          "shot": "docs/playtests/screenshots/AR035_outfit_levy_mantle.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_rain_poncho",
-          "label": "Rain poncho",
-          "shot": "docs/playtests/screenshots/AR035_outfit_rain_poncho.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_elder_robe",
-          "label": "Elder robe",
-          "shot": "docs/playtests/screenshots/AR035_outfit_elder_robe.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_reed_charm",
-          "label": "Reed hop charm",
-          "shot": "docs/playtests/screenshots/AR035_outfit_reed_hop_charm.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_market_scarf",
-          "label": "Lilymarket scarf",
-          "shot": "docs/playtests/screenshots/AR035_outfit_lilymarket_scarf.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_levy_pin",
-          "label": "Levy clerk's pin",
-          "shot": "docs/playtests/screenshots/AR035_outfit_levy_clerk_s_pin.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_shell_brooch",
-          "label": "Shell brooch",
-          "shot": "docs/playtests/screenshots/AR035_outfit_shell_brooch.png",
-          "visual": "borderline",
-          "note": "procedural pin until PNG regen"
-        },
-        {
-          "id": "outfit_hop_whistle",
-          "label": "Hop whistle",
-          "shot": "docs/playtests/screenshots/AR035_outfit_hop_whistle.png",
-          "visual": "pass"
-        }
-      ]
-    },
-    {
-      "id": "outfit_tortoise",
-      "label": "Outfits — tortoise-only items",
-      "items": [
-        {
-          "id": "outfit_shell_cap",
-          "label": "Shell cap",
-          "shot": "docs/playtests/screenshots/AR035_outfit_tortoise_shell_cap.png",
-          "visual": "borderline",
-          "note": "rear-facing frame"
-        },
-        {
-          "id": "outfit_mudwall_helm",
-          "label": "Mudwall helm",
-          "shot": "docs/playtests/screenshots/AR035_outfit_tortoise_mudwall_helm.png",
-          "visual": "pass"
-        },
-        {
-          "id": "outfit_clay_bead",
-          "label": "Clay prayer bead",
-          "shot": "docs/playtests/screenshots/AR035_outfit_tortoise_clay_prayer_bead.png",
-          "visual": "pass"
-        }
-      ]
-    },
-    {
-      "id": "outfit_combo",
-      "label": "Outfit combo loadout",
-      "items": [
         {
           "id": "outfits_full",
-          "label": "Kepi + cloak + brooch",
+          "label": "Full combo (hat+cloak+accessory)",
           "shot": "docs/playtests/screenshots/AR035_outfits_full_equipped.png",
-          "visual": "borderline"
+          "visual": "pass"
         }
       ]
     },
     {
-      "id": "other_tabs",
-      "label": "Stats / Kit / Skills / Settings / Story / Review",
+      "id": "panels",
+      "label": "Panels & world",
       "items": [
         {
           "id": "stats_plus",
-          "label": "Stats + button",
+          "label": "Stats + spend",
           "shot": "docs/playtests/screenshots/AR035_stats_plus.png",
           "visual": "pass"
         },
         {
           "id": "kit_panel",
-          "label": "Kit abilities",
+          "label": "Kit panel",
           "shot": "docs/playtests/screenshots/AR035_kit.png",
           "visual": "pass"
         },
         {
           "id": "skills_panel",
-          "label": "Skills reference",
+          "label": "Skills panel",
           "shot": "docs/playtests/screenshots/AR035_skills.png",
           "visual": "pass"
         },
         {
           "id": "settings_toggle",
-          "label": "Settings checkbox",
+          "label": "Settings toggle",
           "shot": "docs/playtests/screenshots/AR035_settings.png",
           "visual": "pass"
         },
         {
           "id": "story_fill",
-          "label": "Story name + motivation",
+          "label": "Story fill",
           "shot": "docs/playtests/screenshots/AR035_story.png",
           "visual": "pass"
         },
         {
           "id": "review_panel",
-          "label": "Review summary",
+          "label": "Review panel",
           "shot": "docs/playtests/screenshots/AR035_review.png",
           "visual": "pass"
         },
         {
           "id": "fullpage",
-          "label": "Full-page creator",
+          "label": "Full page",
           "shot": "docs/playtests/screenshots/AR035_all_tabs_fullpage.png",
           "visual": "pass"
-        }
-      ]
-    },
-    {
-      "id": "folk_matrix",
-      "label": "5-folk stout+p4+outfit matrix (e2e)",
-      "items": [
-        {
-          "id": "matrix_frog",
-          "label": "Frog outfit matrix",
-          "shot": "docs/playtests/screenshots/AR033_frog_stout_p4_outfit.png",
-          "visual": "pass"
         },
-        {
-          "id": "matrix_toad",
-          "label": "Toad outfit matrix",
-          "shot": "docs/playtests/screenshots/AR033_toad_stout_p4_outfit.png",
-          "visual": "pass"
-        },
-        {
-          "id": "matrix_vole",
-          "label": "Vole outfit matrix",
-          "shot": "docs/playtests/screenshots/AR033_vole_stout_p4_outfit.png",
-          "visual": "pass"
-        },
-        {
-          "id": "matrix_turtle",
-          "label": "Turtle outfit matrix",
-          "shot": "docs/playtests/screenshots/AR033_turtle_stout_p4_outfit.png",
-          "visual": "pass"
-        },
-        {
-          "id": "matrix_tortoise",
-          "label": "Tortoise outfit matrix",
-          "shot": "docs/playtests/screenshots/AR033_tortoise_stout_p4_outfit.png",
-          "visual": "pass"
-        }
-      ]
-    },
-    {
-      "id": "enter_world",
-      "label": "Enter game click-through",
-      "items": [
         {
           "id": "enter_causeway",
-          "label": "Enter Reedwater Basin → HUD",
+          "label": "Enter world",
           "shot": "docs/playtests/screenshots/AR035_entered_causeway.png",
-          "visual": "borderline"
-        }
-      ]
-    },
-    {
-      "id": "nick_gate",
-      "label": "Human visual gate (not Playwright)",
-      "items": [
-        {
-          "id": "nick_creator_eye",
-          "label": "Nick creator eye test",
-          "shot": null,
-          "optional": true
+          "visual": "pass"
         }
       ]
     }

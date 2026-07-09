@@ -1,15 +1,15 @@
 # Visual + click Playwright audit
 
 **Auto-generated** — run `npm run audit:creator:progress` after screenshots.  
-**Last manifest:** 2026-07-09T00:05:45.060Z (AR-035)  
+**Last manifest:** 2026-07-09T02:19:56.055Z (AR-037)  
 **Playwright:** pass
 
 ## Progress bars
 
 ```
-CLICK+SHOT  [████████████████████] 100%  (64/64 screenshots on disk)
-AGENT EYE   [████████████████████] 100%  reviewed (60 pass · 4 borderline · 0 fail)
-VISUAL OK   [████████████████████] 100%  (pass + borderline / 64 items)
+CLICK+SHOT  [████████████████████] 100%  (133/133 screenshots on disk)
+AGENT EYE   [████████████████████] 100%  reviewed (104 pass · 29 borderline · 0 fail)
+VISUAL OK   [████████████████████] 100%  (pass + borderline / 133 items)
 NICK EYE    [░░░░░░░░░░░░░░░░░░░░]  0%  (human gate — not Playwright)
 ```
 
@@ -25,132 +25,195 @@ NICK EYE    [░░░░░░░░░░░░░░░░░░░░]  0%  
 
 | Category | Click+shot | Bar |
 |----------|------------|-----|
-| Creator tabs (click + screenshot) | 9/9 | `[██████████]` |
-| Folk cards (click + preview) | 5/5 | `[██████████]` |
-| Look — frog build × pattern matrix | 12/12 | `[██████████]` |
-| Look controls (click + preview) | 6/6 | `[██████████]` |
-| Outfits — frog isolated preview (one slot each) | 15/15 | `[██████████]` |
-| Outfits — tortoise-only items | 3/3 | `[██████████]` |
-| Outfit combo loadout | 1/1 | `[██████████]` |
-| Stats / Kit / Skills / Settings / Story / Review | 7/7 | `[██████████]` |
-| 5-folk stout+p4+outfit matrix (e2e) | 5/5 | `[██████████]` |
-| Enter game click-through | 1/1 | `[██████████]` |
+| Tabs | 9/9 | `[██████████]` |
+| Folk cards | 5/5 | `[██████████]` |
+| Frog | 22/22 | `[██████████]` |
+| Toad | 21/21 | `[██████████]` |
+| Vole | 21/21 | `[██████████]` |
+| Turtle | 20/20 | `[██████████]` |
+| Tortoise | 20/20 | `[██████████]` |
+| Look controls | 7/7 | `[██████████]` |
+| Panels & world | 8/8 | `[██████████]` |
 
 ## Checklist detail
 
-### Creator tabs (click + screenshot) (9/9)
+### Tabs (9/9)
 
 | Shot | Agent eye | Item |
 |------|-----------|------|
-| ✅ | ✅ | Folk tab |
-| ✅ | ✅ | Look tab |
-| ✅ | ✅ | Outfits tab |
-| ✅ | ✅ | Stats tab |
-| ✅ | ✅ | Kit tab |
-| ✅ | ✅ | Skills tab |
-| ✅ | ✅ | Story tab |
-| ✅ | ✅ | Settings tab |
-| ✅ | ✅ | Review tab |
+| ✅ | ✅ | Tab: species |
+| ✅ | ✅ | Tab: appearance |
+| ✅ | ✅ | Tab: wardrobe |
+| ✅ | ✅ | Tab: stats |
+| ✅ | ✅ | Tab: kit |
+| ✅ | ✅ | Tab: skills |
+| ✅ | ✅ | Tab: story |
+| ✅ | ✅ | Tab: settings |
+| ✅ | ✅ | Tab: review |
 
-### Folk cards (click + preview) (5/5)
-
-| Shot | Agent eye | Item |
-|------|-----------|------|
-| ✅ | ✅ | Frog |
-| ✅ | ✅ | Toad |
-| ✅ | ✅ | Vole |
-| ✅ | ✅ | Turtle |
-| ✅ | ✅ | Tortoise |
-
-### Look — frog build × pattern matrix (12/12)
+### Folk cards (5/5)
 
 | Shot | Agent eye | Item |
 |------|-----------|------|
-| ✅ | ✅ | Slim pattern 1 |
-| ✅ | ✅ | Slim pattern 2 |
-| ✅ | ✅ | Slim pattern 3 |
-| ✅ | ✅ | Slim pattern 4 |
-| ✅ | ✅ | Medium pattern 1 |
-| ✅ | ✅ | Medium pattern 2 |
-| ✅ | ✅ | Medium pattern 3 |
-| ✅ | ✅ | Medium pattern 4 |
-| ✅ | ✅ | Stout pattern 1 |
-| ✅ | ✅ | Stout pattern 2 |
-| ✅ | ✅ | Stout pattern 3 |
-| ✅ | ✅ | Stout pattern 4 |
+| ✅ | ✅ | Folk: frog |
+| ✅ | ✅ | Folk: toad |
+| ✅ | ✅ | Folk: vole |
+| ✅ | ✅ | Folk: turtle |
+| ✅ | ✅ | Folk: tortoise |
 
-### Look controls (click + preview) (6/6)
+### Frog (22/22)
 
 | Shot | Agent eye | Item |
 |------|-----------|------|
-| ✅ | ✅ | Markings — Spots |
-| ✅ | ✅ | Markings — Stripes |
-| ✅ | ✅ | Markings — None |
-| ✅ | ✅ | Hue slider |
+| ✅ | 🟡 | frog build slim — Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending). |
+| ✅ | ✅ | frog build medium |
+| ✅ | 🟡 | frog build stout — Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending). |
+| ✅ | ✅ | frog pattern 1 |
+| ✅ | ✅ | frog pattern 2 |
+| ✅ | ✅ | frog pattern 3 |
+| ✅ | ✅ | frog pattern 4 |
+| ✅ | ✅ | frog · Reed sun hat (hat) |
+| ✅ | ✅ | frog · Lily bloom (hat) |
+| ✅ | ✅ | frog · Ferry kepi (hat) |
+| ✅ | 🟡 | frog · Marsh hood (hat) — Hood sits on the head but perches high/tilted (hood art is asymmetric). |
+| ✅ | ✅ | frog · Basin travel cloak (cloak) |
+| ✅ | ✅ | frog · Ferryman's shawl (cloak) |
+| ✅ | ✅ | frog · Croakend patchcloak (cloak) |
+| ✅ | ✅ | frog · Levy mantle (cloak) |
+| ✅ | ✅ | frog · Rain poncho (cloak) |
+| ✅ | ✅ | frog · Elder robe (cloak) |
+| ✅ | ✅ | frog · Reed hop charm (accessory) |
+| ✅ | ✅ | frog · Lilymarket scarf (accessory) |
+| ✅ | 🟡 | frog · Levy clerk's pin (accessory) — Reads as an oversized gold medallion on the chest. |
+| ✅ | 🟡 | frog · Shell brooch (accessory) — Procedural coral pin reads as a small pixel smudge at portrait scale. |
+| ✅ | ✅ | frog · Hop whistle (accessory) |
+
+### Toad (21/21)
+
+| Shot | Agent eye | Item |
+|------|-----------|------|
+| ✅ | 🟡 | toad build slim — Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending). |
+| ✅ | ✅ | toad build medium |
+| ✅ | 🟡 | toad build stout — Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending). |
+| ✅ | ✅ | toad pattern 1 |
+| ✅ | ✅ | toad pattern 2 |
+| ✅ | ✅ | toad pattern 3 |
+| ✅ | ✅ | toad pattern 4 |
+| ✅ | ✅ | toad · Reed sun hat (hat) |
+| ✅ | ✅ | toad · Lily bloom (hat) |
+| ✅ | ✅ | toad · Ferry kepi (hat) |
+| ✅ | 🟡 | toad · Marsh hood (hat) — Hood sits on the head but perches high/tilted (hood art is asymmetric). |
+| ✅ | ✅ | toad · Basin travel cloak (cloak) |
+| ✅ | ✅ | toad · Ferryman's shawl (cloak) |
+| ✅ | ✅ | toad · Croakend patchcloak (cloak) |
+| ✅ | ✅ | toad · Levy mantle (cloak) |
+| ✅ | ✅ | toad · Rain poncho (cloak) |
+| ✅ | ✅ | toad · Reed hop charm (accessory) |
+| ✅ | ✅ | toad · Lilymarket scarf (accessory) |
+| ✅ | 🟡 | toad · Levy clerk's pin (accessory) — Reads as an oversized gold medallion on the chest. |
+| ✅ | 🟡 | toad · Shell brooch (accessory) — Procedural coral pin reads as a small pixel smudge at portrait scale. |
+| ✅ | ✅ | toad · Hop whistle (accessory) |
+
+### Vole (21/21)
+
+| Shot | Agent eye | Item |
+|------|-----------|------|
+| ✅ | 🟡 | vole build slim — Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending). |
+| ✅ | ✅ | vole build medium |
+| ✅ | 🟡 | vole build stout — Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending). |
+| ✅ | ✅ | vole pattern 1 |
+| ✅ | ✅ | vole pattern 2 |
+| ✅ | ✅ | vole pattern 3 |
+| ✅ | ✅ | vole pattern 4 |
+| ✅ | ✅ | vole · Reed sun hat (hat) |
+| ✅ | ✅ | vole · Lily bloom (hat) |
+| ✅ | ✅ | vole · Ferry kepi (hat) |
+| ✅ | 🟡 | vole · Marsh hood (hat) — Hood sits on the head but perches high/tilted (hood art is asymmetric). |
+| ✅ | ✅ | vole · Basin travel cloak (cloak) |
+| ✅ | ✅ | vole · Ferryman's shawl (cloak) |
+| ✅ | ✅ | vole · Croakend patchcloak (cloak) |
+| ✅ | ✅ | vole · Levy mantle (cloak) |
+| ✅ | ✅ | vole · Rain poncho (cloak) |
+| ✅ | ✅ | vole · Reed hop charm (accessory) |
+| ✅ | ✅ | vole · Lilymarket scarf (accessory) |
+| ✅ | 🟡 | vole · Levy clerk's pin (accessory) — Reads as an oversized gold medallion on the chest. |
+| ✅ | 🟡 | vole · Shell brooch (accessory) — Procedural coral pin reads as a small pixel smudge at portrait scale. |
+| ✅ | ✅ | vole · Hop whistle (accessory) |
+
+### Turtle (20/20)
+
+| Shot | Agent eye | Item |
+|------|-----------|------|
+| ✅ | 🟡 | turtle build slim — Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending). |
+| ✅ | ✅ | turtle build medium |
+| ✅ | 🟡 | turtle build stout — Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending). |
+| ✅ | ✅ | turtle pattern 1 |
+| ✅ | ✅ | turtle pattern 2 |
+| ✅ | ✅ | turtle pattern 3 |
+| ✅ | ✅ | turtle pattern 4 |
+| ✅ | ✅ | turtle · Shell cap (hat) |
+| ✅ | 🟡 | turtle · Mudwall helm (hat) — Helm on head but sits low over the brow on shelled heads. |
+| ✅ | ✅ | turtle · Ferry kepi (hat) |
+| ✅ | 🟡 | turtle · Marsh hood (hat) — Hood sits on the head but perches high/tilted (hood art is asymmetric). |
+| ✅ | ✅ | turtle · Basin travel cloak (cloak) |
+| ✅ | ✅ | turtle · Croakend patchcloak (cloak) |
+| ✅ | ✅ | turtle · Levy mantle (cloak) |
+| ✅ | ✅ | turtle · Rain poncho (cloak) |
+| ✅ | ✅ | turtle · Elder robe (cloak) |
+| ✅ | ✅ | turtle · Reed hop charm (accessory) |
+| ✅ | ✅ | turtle · Clay prayer bead (accessory) |
+| ✅ | 🟡 | turtle · Levy clerk's pin (accessory) — Reads as an oversized gold medallion on the chest. |
+| ✅ | 🟡 | turtle · Shell brooch (accessory) — Procedural coral pin reads as a small pixel smudge at portrait scale. |
+
+### Tortoise (20/20)
+
+| Shot | Agent eye | Item |
+|------|-----------|------|
+| ✅ | 🟡 | tortoise build slim — Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending). |
+| ✅ | ✅ | tortoise build medium |
+| ✅ | 🟡 | tortoise build stout — Renders identical to medium — build scale not applied to PNG body (slim/heavy sheet regen pending). |
+| ✅ | ✅ | tortoise pattern 1 |
+| ✅ | ✅ | tortoise pattern 2 |
+| ✅ | ✅ | tortoise pattern 3 |
+| ✅ | ✅ | tortoise pattern 4 |
+| ✅ | ✅ | tortoise · Shell cap (hat) |
+| ✅ | 🟡 | tortoise · Mudwall helm (hat) — Helm on head but sits low over the brow on shelled heads. |
+| ✅ | ✅ | tortoise · Ferry kepi (hat) |
+| ✅ | 🟡 | tortoise · Marsh hood (hat) — Hood sits on the head but perches high/tilted (hood art is asymmetric). |
+| ✅ | ✅ | tortoise · Basin travel cloak (cloak) |
+| ✅ | ✅ | tortoise · Croakend patchcloak (cloak) |
+| ✅ | ✅ | tortoise · Levy mantle (cloak) |
+| ✅ | ✅ | tortoise · Rain poncho (cloak) |
+| ✅ | ✅ | tortoise · Elder robe (cloak) |
+| ✅ | ✅ | tortoise · Reed hop charm (accessory) |
+| ✅ | ✅ | tortoise · Clay prayer bead (accessory) |
+| ✅ | 🟡 | tortoise · Levy clerk's pin (accessory) — Reads as an oversized gold medallion on the chest. |
+| ✅ | 🟡 | tortoise · Shell brooch (accessory) — Procedural coral pin reads as a small pixel smudge at portrait scale. |
+
+### Look controls (7/7)
+
+| Shot | Agent eye | Item |
+|------|-----------|------|
+| ✅ | 🟡 | Marking: spots — Spots render as dark blocks rather than organic dapples. |
+| ✅ | 🟡 | Marking: stripes — Single horizontal band — reads as a stripe but coarse. |
+| ✅ | ✅ | Marking: none |
+| ✅ | ✅ | Hue tint +45 |
 | ✅ | ✅ | Randomize look |
 | ✅ | ✅ | Reset tab |
+| ✅ | ✅ | Full combo (hat+cloak+accessory) |
 
-### Outfits — frog isolated preview (one slot each) (15/15)
-
-| Shot | Agent eye | Item |
-|------|-----------|------|
-| ✅ | ✅ | Reed sun hat |
-| ✅ | ✅ | Lily bloom |
-| ✅ | ✅ | Ferry kepi |
-| ✅ | ✅ | Marsh hood |
-| ✅ | ✅ | Basin travel cloak |
-| ✅ | ✅ | Ferryman's shawl |
-| ✅ | ✅ | Croakend patchcloak |
-| ✅ | ✅ | Levy mantle |
-| ✅ | ✅ | Rain poncho |
-| ✅ | ✅ | Elder robe |
-| ✅ | ✅ | Reed hop charm |
-| ✅ | ✅ | Lilymarket scarf |
-| ✅ | ✅ | Levy clerk's pin |
-| ✅ | 🟡 | Shell brooch — procedural pin until PNG regen |
-| ✅ | ✅ | Hop whistle |
-
-### Outfits — tortoise-only items (3/3)
+### Panels & world (8/8)
 
 | Shot | Agent eye | Item |
 |------|-----------|------|
-| ✅ | 🟡 | Shell cap — rear-facing frame |
-| ✅ | ✅ | Mudwall helm |
-| ✅ | ✅ | Clay prayer bead |
-
-### Outfit combo loadout (1/1)
-
-| Shot | Agent eye | Item |
-|------|-----------|------|
-| ✅ | 🟡 | Kepi + cloak + brooch |
-
-### Stats / Kit / Skills / Settings / Story / Review (7/7)
-
-| Shot | Agent eye | Item |
-|------|-----------|------|
-| ✅ | ✅ | Stats + button |
-| ✅ | ✅ | Kit abilities |
-| ✅ | ✅ | Skills reference |
-| ✅ | ✅ | Settings checkbox |
-| ✅ | ✅ | Story name + motivation |
-| ✅ | ✅ | Review summary |
-| ✅ | ✅ | Full-page creator |
-
-### 5-folk stout+p4+outfit matrix (e2e) (5/5)
-
-| Shot | Agent eye | Item |
-|------|-----------|------|
-| ✅ | ✅ | Frog outfit matrix |
-| ✅ | ✅ | Toad outfit matrix |
-| ✅ | ✅ | Vole outfit matrix |
-| ✅ | ✅ | Turtle outfit matrix |
-| ✅ | ✅ | Tortoise outfit matrix |
-
-### Enter game click-through (1/1)
-
-| Shot | Agent eye | Item |
-|------|-----------|------|
-| ✅ | 🟡 | Enter Reedwater Basin → HUD |
+| ✅ | ✅ | Stats + spend |
+| ✅ | ✅ | Kit panel |
+| ✅ | ✅ | Skills panel |
+| ✅ | ✅ | Settings toggle |
+| ✅ | ✅ | Story fill |
+| ✅ | ✅ | Review panel |
+| ✅ | ✅ | Full page |
+| ✅ | ✅ | Enter world |
 
 
 ## Open (not 100% click+shot)

@@ -1,11 +1,19 @@
 import * as THREE from 'three';
 import type { IGameModule } from '@/core/IGameModule';
-import { NavMesh, type NavPoint } from './NavMesh';
+import { NavMesh } from './NavMesh';
+import {
+  beginWalk,
+  cancelWalk,
+  createMovementState,
+  DEFAULT_MOVEMENT_CONFIG,
+  stepMovement,
+  type MovementState,
+} from '../../shared/movement/MovementSim';
 
 interface Walker {
+  id: string;
   group: THREE.Group;
-  path: NavPoint[];
-  pathIndex: number;
+  state: MovementState;
   destX: number;
   destZ: number;
   stopRadius: number;
@@ -13,7 +21,7 @@ interface Walker {
 }
 
 /**
- * NavMesh pathing for NPC sprites — slower than the player, one path per actor.
+ * NavMesh pathing for NPC sprites — uses shared MovementSim (same as player + server).
  */
 export class NpcPathFollower implements IGameModule {
   private nav: NavMesh | null = null;
@@ -64,24 +72,21 @@ export class NpcPathFollower implements IGameModule {
       z = snap.z;
     }
 
-    const dx = x - group.position.x;
-    const dz = z - group.position.z;
+    const state = createMovementState(group.position.x, group.position.z);
+    const dx = x - state.x;
+    const dz = z - state.z;
     if (Math.hypot(dx, dz) <= stopRadius) {
       group.position.set(x, 0, z);
       onArrive?.();
       return true;
     }
 
-    const path = this.nav.findPath(
-      { x: group.position.x, z: group.position.z },
-      { x, z },
-    );
-    if (path.length === 0) return false;
+    if (!beginWalk(state, this.nav, x, z, stopRadius)) return false;
 
     this.walkers.set(id, {
+      id,
       group,
-      path,
-      pathIndex: path.length > 1 ? 1 : 0,
+      state,
       destX: x,
       destZ: z,
       stopRadius,
@@ -93,53 +98,17 @@ export class NpcPathFollower implements IGameModule {
   update(dt: number): void {
     if (!this.nav) return;
 
+    const config = { ...DEFAULT_MOVEMENT_CONFIG, maxSpeed: this.speed };
+
     for (const [id, w] of [...this.walkers.entries()]) {
-      if (w.pathIndex >= w.path.length) {
-        this.finishWalker(id, w);
-        continue;
+      const moving = stepMovement(w.state, this.nav, dt, config);
+      w.group.position.set(w.state.x, 0, w.state.z);
+
+      if (!moving) {
+        this.walkers.delete(id);
+        cancelWalk(w.state);
+        w.onArrive?.();
       }
-
-      this.shortcutWalker(w);
-
-      const target = w.path[w.pathIndex]!;
-      const dx = target.x - w.group.position.x;
-      const dz = target.z - w.group.position.z;
-      const dist = Math.hypot(dx, dz);
-      const step = this.speed * dt;
-
-      if (dist <= step) {
-        w.group.position.set(target.x, 0, target.z);
-        w.pathIndex++;
-        if (w.pathIndex >= w.path.length) {
-          this.finishWalker(id, w);
-        }
-        continue;
-      }
-
-      w.group.position.x += (dx / dist) * step;
-      w.group.position.z += (dz / dist) * step;
     }
-  }
-
-  private shortcutWalker(w: Walker): void {
-    if (!this.nav || w.pathIndex >= w.path.length) return;
-
-    const here = { x: w.group.position.x, z: w.group.position.z };
-    if (this.nav.canWalkDirectly(here, { x: w.destX, z: w.destZ })) {
-      w.path = [here, { x: w.destX, z: w.destZ }];
-      w.pathIndex = 1;
-      return;
-    }
-
-    while (w.pathIndex < w.path.length - 1) {
-      const next = w.path[w.pathIndex + 1]!;
-      if (!this.nav.canWalkDirectly(here, next)) break;
-      w.pathIndex++;
-    }
-  }
-
-  private finishWalker(id: string, w: Walker): void {
-    this.walkers.delete(id);
-    w.onArrive?.();
   }
 }

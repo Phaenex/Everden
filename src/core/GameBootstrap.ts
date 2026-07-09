@@ -35,6 +35,11 @@ import { SkillCheckResolver } from '@/gameplay/SkillCheckResolver';
 import { npcPresentInScene } from '@/gameplay/NpcPresence';
 import { DevMenu } from '@/ui/DevMenu';
 import { installQaHarness, type EverdenQaState } from '@/core/QaHarness';
+import { NetworkBridge } from '@/net/NetworkBridge';
+import { RemotePlayerManager } from '@/net/RemotePlayerManager';
+import { ChatOverlay } from '@/net/ChatOverlay';
+import { NpcSyncManager } from '@/net/NpcSyncManager';
+import { getOrCreatePlayerId } from '@/net/PlayerIdentity';
 import * as THREE from 'three';
 
 /** Central bootstrap — wires all modules and starts the game loop. */
@@ -67,6 +72,10 @@ export class GameBootstrap {
   private npcWalker = new NpcPathFollower();
   private npcArriving = new Set<string>();
   private npcDeparting = new Set<string>();
+  private network!: NetworkBridge;
+  private remotePlayers!: RemotePlayerManager;
+  private chatOverlay!: ChatOverlay;
+  private npcSync!: NpcSyncManager;
 
   async start(canvas: HTMLCanvasElement, request: GameStartRequest = {
     mode: 'new',
@@ -206,6 +215,34 @@ export class GameBootstrap {
     this.setupNpcLabelPolicy();
     this.setupInteractionHandlers();
 
+    this.network = new NetworkBridge(this.eventBus, this.navigation, this.playerProfile);
+    this.remotePlayers = new RemotePlayerManager(
+      this.eventBus,
+      this.sceneManager,
+      wardrobe,
+      getOrCreatePlayerId(),
+    );
+    this.chatOverlay = new ChatOverlay(
+      this.eventBus,
+      this.sceneManager,
+      this.navigation,
+      getOrCreatePlayerId(),
+    );
+    this.npcSync = new NpcSyncManager(this.eventBus, this.sceneManager);
+    await this.network.init();
+    this.remotePlayers.init();
+    this.chatOverlay.init();
+    this.npcSync.init();
+
+    this.eventBus.on<{ sceneId: string }>('scene:server_transition', ({ sceneId }) => {
+      void this.loadScene(sceneId);
+    });
+    this.eventBus.on<{ weather: string }>('net:weather', ({ weather }) => {
+      if (this.network.isOnline()) {
+        this.eventBus.emit('weather:changed', { weather });
+      }
+    });
+
     this.eventBus.on('game:save', () => this.save.save());
     this.eventBus.on<{ paused: boolean }>('game:pause', ({ paused }) => {
       if (paused) this.loop.stop();
@@ -236,6 +273,10 @@ export class GameBootstrap {
     this.loop.addModule(this.navigation);
     this.loop.addModule(this.npcWalker);
     this.loop.addModule(this.player);
+    this.loop.addModule(this.remotePlayers);
+    this.loop.addModule(this.chatOverlay);
+    this.loop.addModule(this.npcSync);
+    this.loop.addModule(this.network);
     this.loop.addModule(this.sceneManager);
     this.loop.addModule(this.rainVfx);
     this.loop.addModule(this.combatManager);
@@ -500,6 +541,7 @@ export class GameBootstrap {
     const spawn = spawnOverride ?? spec.spawn;
     this.navigation.setPosition(spawn.x, spawn.z);
     this.ui.setDistrictName(spec.name);
+    this.eventBus.emit('scene:loaded', { sceneId });
   }
 
   private spawnSceneNpcs(spec: SceneDefinition): void {
@@ -682,7 +724,15 @@ export class GameBootstrap {
       }
       if (t.type === 'exit') {
         const target = t.payload?.targetScene as string;
-        if (target) void this.loadScene(target);
+        if (!target) return;
+        if (this.network.isOnline()) {
+          this.eventBus.emit('scene:transition_request', {
+            targetScene: target,
+            exitId: t.id.replace('exit:', ''),
+          });
+        } else {
+          void this.loadScene(target);
+        }
         return;
       }
       if (t.type === 'npc') {

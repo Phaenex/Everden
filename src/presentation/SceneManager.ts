@@ -18,6 +18,7 @@ export class SceneManager implements IGameModule {
 
   private camera: IsometricCamera;
   private actorGroups = new Map<string, THREE.Group>();
+  private remoteGroups = new Map<string, THREE.Group>();
   private npcLabels = new Map<string, THREE.Sprite>();
   private playerGroup: THREE.Group | null = null;
   private sortables: THREE.Object3D[] = [];
@@ -44,14 +45,20 @@ export class SceneManager implements IGameModule {
 
   init(): void {
     this.setupLighting();
-    this.eventBus.on<{ x: number; y: number; z: number }>('player:moved', (p) => {
-      if (this.playerGroup) {
-        this.playerGroup.position.set(p.x, 0, p.z);
-        // Fixed per-district camera: the whole stage fits one screen, so the camera
-        // frames the painted backdrop instead of chasing the player off the art.
-        if (!this.cameraLocked) this.camera.setTarget(p.x, p.z);
-      }
-    });
+    this.eventBus.on<{ x: number; y: number; z: number; heading?: number; moving?: boolean }>(
+      'player:moved',
+      (p) => {
+        if (this.playerGroup) {
+          this.playerGroup.position.set(p.x, 0, p.z);
+          if (p.heading !== undefined) {
+            // Mirror sprite when walking toward screen-left (negative X in iso space).
+            const mesh = this.playerGroup.children.find((c) => c instanceof THREE.Mesh) as THREE.Mesh | undefined;
+            if (mesh) mesh.scale.x = Math.cos(p.heading) < 0 ? -1 : 1;
+          }
+          if (!this.cameraLocked) this.camera.setTarget(p.x, p.z);
+        }
+      },
+    );
 
     this.eventBus.on<{ weather: string }>('weather:changed', ({ weather }) => {
       this.applyWeatherLighting(weather);
@@ -114,6 +121,9 @@ export class SceneManager implements IGameModule {
     for (const id of [...this.actorGroups.keys()]) {
       this.removeNPCActor(id);
     }
+    for (const id of [...this.remoteGroups.keys()]) {
+      this.removeRemotePlayerActor(id);
+    }
     if (this.playerGroup) {
       this.kernel.actors.remove(this.playerGroup);
     }
@@ -169,6 +179,41 @@ export class SceneManager implements IGameModule {
     }
     this.actorGroups.delete(id);
     this.npcLabels.delete(id);
+  }
+
+  addRemotePlayerActor(id: string, group: THREE.Group, label?: THREE.Sprite): void {
+    this.remoteGroups.set(id, group);
+    if (label) {
+      label.visible = true;
+      this.npcLabels.set(`remote:${id}`, label);
+    }
+    this.kernel.actors.add(group);
+    this.sortables.push(group);
+  }
+
+  removeRemotePlayerActor(id: string): void {
+    const group = this.remoteGroups.get(id);
+    if (group) {
+      this.kernel.actors.remove(group);
+      const idx = this.sortables.indexOf(group);
+      if (idx >= 0) this.sortables.splice(idx, 1);
+    }
+    this.remoteGroups.delete(id);
+    this.npcLabels.delete(`remote:${id}`);
+  }
+
+  getRemoteGroup(id: string): THREE.Group | null {
+    return this.remoteGroups.get(id) ?? null;
+  }
+
+  setRemotePlayerPosition(id: string, x: number, z: number, heading?: number): void {
+    const g = this.remoteGroups.get(id);
+    if (!g) return;
+    g.position.set(x, 0, z);
+    if (heading !== undefined) {
+      const mesh = g.children.find((c) => c instanceof THREE.Mesh) as THREE.Mesh | undefined;
+      if (mesh) mesh.scale.x = Math.cos(heading) < 0 ? -1 : 1;
+    }
   }
 
   getNPCGroup(id: string): THREE.Group | null {

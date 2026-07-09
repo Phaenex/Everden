@@ -5,6 +5,7 @@ import type { WardrobeDefinition } from '@/data/types';
 import { composeCharacterArtCanvas } from './CharacterSprites';
 
 const BOB_MS = 900;
+const WALK_BOB_MS = 420;
 const FLUTTER_MIN_MS = 8000;
 const FLUTTER_MAX_MS = 15000;
 const FLUTTER_RAIN_MIN_MS = 4000;
@@ -24,7 +25,9 @@ export class SpriteAnimator {
   private flutterTimer: ReturnType<typeof setTimeout> | null = null;
   private flutterSteps: ReturnType<typeof setTimeout>[] = [];
   private weatherUnsub: (() => void) | null = null;
+  private moveUnsub: (() => void) | null = null;
   private rainBoost = false;
+  private walking = false;
   private disposed = false;
 
   constructor(
@@ -39,6 +42,13 @@ export class SpriteAnimator {
       this.weatherUnsub = eventBus.on<{ weather: string }>('weather:changed', ({ weather }) => {
         this.rainBoost = weather === 'rain' || weather === 'storm';
         this.scheduleFlutter();
+      });
+      this.moveUnsub = eventBus.on<{ moving?: boolean }>('player:moved', ({ moving }) => {
+        const next = Boolean(moving);
+        if (next !== this.walking) {
+          this.walking = next;
+          this.restartBob();
+        }
       });
     }
   }
@@ -61,11 +71,17 @@ export class SpriteAnimator {
 
   start(): void {
     void this.applyFrame();
+    this.restartBob();
+    this.scheduleFlutter();
+  }
+
+  private restartBob(): void {
+    if (this.bobTimer !== null) window.clearInterval(this.bobTimer);
+    const ms = this.walking ? WALK_BOB_MS : BOB_MS;
     this.bobTimer = window.setInterval(() => {
       this.bodyFrame = this.bodyFrame === 0 ? 1 : 0;
       void this.applyFrame();
-    }, BOB_MS);
-    this.scheduleFlutter();
+    }, ms);
   }
 
   detach(): void {
@@ -75,6 +91,7 @@ export class SpriteAnimator {
     for (const t of this.flutterSteps) window.clearTimeout(t);
     this.flutterSteps = [];
     this.weatherUnsub?.();
+    this.moveUnsub?.();
     delete (this.mesh as MeshWithAnimator).__spriteAnimator;
   }
 
