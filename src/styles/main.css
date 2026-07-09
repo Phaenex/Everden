@@ -359,6 +359,23 @@ body {
   gap: 0.4rem;
 }
 
+.creator-btn,
+.creator-tab-actions button {
+  font-family: inherit;
+  font-size: 0.78rem;
+  padding: 0.4rem 0.65rem;
+  background: #1a2e28;
+  color: #fff8ec;
+  border: 1px solid #6a5848;
+  cursor: pointer;
+}
+
+.creator-btn:hover,
+.creator-tab-actions button:hover {
+  border-color: #f0c14b;
+  background: #243a32;
+}
+
 .variant-grid,
 .wardrobe-grid {
   display: grid;
@@ -398,8 +415,9 @@ body {
 .wardrobe-thumb,
 .variant-thumb {
   image-rendering: pixelated;
-  width: 48px;
-  height: 48px;
+  image-rendering: crisp-edges;
+  width: 56px;
+  height: 56px;
   border: 1px solid rgba(240, 193, 75, 0.45);
   background: #0c1814;
   display: block;

@@ -2,6 +2,7 @@ import type { AbilityDefinition, SpeciesDefinition, WardrobeDefinition } from '@
 import { composeCharacterArtCanvas, drawCharacterCanvas, cropOpaqueBounds } from '@/presentation/CharacterSprites';
 import type { CreatorState } from './types';
 import { BODY_BUILD_LABELS } from '@/gameplay/CharacterAppearance';
+import { patternLabel } from './WardrobePreview';
 import { applyRacial } from '@/gameplay/PointBuy';
 import { abilityModifier } from '@/gameplay/OpeningNarration';
 import { el } from './domUtils';
@@ -106,7 +107,7 @@ export function renderCreatorSummary(
     el(
       'p',
       'summary-look',
-      `Look: ${BODY_BUILD_LABELS[state.appearance.build]!} · pattern ${state.appearance.variant + 1} · tint ${state.appearance.hueShift}`,
+      `Look: ${BODY_BUILD_LABELS[state.appearance.build]!} · ${patternLabel(state.species, state.appearance.variant)} · tint ${state.appearance.hueShift}`,
     ),
   );
 }

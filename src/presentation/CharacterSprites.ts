@@ -209,14 +209,20 @@ function segmentDominantCell(
   let bestScore = -1;
   for (const [x0, x1] of colBands) {
     for (const [y0, y1] of rowBands) {
+      const cw = x1 - x0 + 1;
+      const ch = y1 - y0 + 1;
       let n = 0;
       for (let y = y0; y <= y1; y++) {
         const base = y * w;
         for (let x = x0; x <= x1; x++) if (data[(base + x) * 4 + 3]! > 24) n++;
       }
-      if (n > bestScore) {
-        bestScore = n;
-        best = { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+      // Prefer tall portrait cells over dense face close-ups in multi-pose AI sheets.
+      const aspect = ch / Math.max(1, cw);
+      const portraitBias = aspect >= 1.05 ? 1.35 : aspect <= 0.75 ? 0.45 : 1;
+      const score = n * portraitBias;
+      if (score > bestScore) {
+        bestScore = score;
+        best = { x: x0, y: y0, w: cw, h: ch };
       }
     }
   }

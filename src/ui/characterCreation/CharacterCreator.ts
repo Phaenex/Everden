@@ -13,7 +13,7 @@ import {
 } from '@/gameplay/PointBuy';
 import { abilityModifier } from '@/gameplay/OpeningNarration';
 import { filterWardrobeForSpecies } from '@/presentation/WardrobeLayers';
-import { drawSpeciesCardThumbnail, drawVariantThumbnail, drawWardrobeThumbnail, drawBuildThumbnail } from './WardrobePreview';
+import { drawSpeciesCardThumbnail, drawVariantThumbnail, drawWardrobeThumbnail, drawBuildThumbnail, patternLabel } from './WardrobePreview';
 import { button, el } from './domUtils';
 import { renderCreatorPreview, renderCreatorSummary } from './CreatorPreview';
 import { loadCreatorGuide, type CreatorGuide } from './CreatorGuide';
@@ -252,7 +252,7 @@ export class CharacterCreator {
     }
     panel.append(buildGrid);
 
-    panel.append(el('p', 'select-label', 'Body pattern — pick a look'));
+    panel.append(el('p', 'select-label', 'Body palette — pick your folk\'s colors'));
 
     const variantGrid = el('div', 'variant-grid');
     for (let v = 0; v < 4; v++) {
@@ -262,7 +262,7 @@ export class CharacterCreator {
       if (this.state.appearance.variant === v) card.classList.add('selected');
       const thumb = drawVariantThumbnail(this.state.species, v, this.state.appearance, this.wardrobe);
       card.append(thumb);
-      card.append(el('span', 'style-card-label', `Pattern ${v + 1}`));
+      card.append(el('span', 'style-card-label', patternLabel(this.state.species, v)));
       card.addEventListener('click', () => {
         this.state.appearance.variant = v;
         this.renderPanel();
@@ -573,7 +573,7 @@ export class CharacterCreator {
       el(
         'li',
         '',
-        `Look: ${BODY_BUILD_LABELS[this.state.appearance.build]!} build, pattern ${this.state.appearance.variant + 1}, tint ${this.state.appearance.hueShift}, ${markingLabel}`,
+        `Look: ${BODY_BUILD_LABELS[this.state.appearance.build]!} build, ${patternLabel(this.state.species, this.state.appearance.variant)}, tint ${this.state.appearance.hueShift}, ${markingLabel}`,
       ),
     );
     const wornLabels: string[] = [];
