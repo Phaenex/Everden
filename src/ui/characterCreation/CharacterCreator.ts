@@ -133,8 +133,8 @@ export class CharacterCreator {
     this.previewCanvas = document.createElement('canvas');
     this.previewCanvas.className = 'creator-preview-canvas';
     // Internal 256 so wardrobe / tint / markings read clearly when scaled up.
-    this.previewCanvas.width = 256;
-    this.previewCanvas.height = 256;
+    this.previewCanvas.width = 288;
+    this.previewCanvas.height = 288;
     const def = this.getSpecies(this.state.species);
     center.append(this.previewCanvas);
     center.append(el('p', 'creator-preview-title', def?.name.replace(' Folk', '') ?? ''));

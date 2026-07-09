@@ -1,6 +1,6 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-057)
+**Last updated:** 2026-07-08 (CHECKIN-059)
 **Play online:** https://croakend-club.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
@@ -33,24 +33,21 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://croakend-club.vercel.app · CHECKIN-057
+Play: https://croakend-club.vercel.app · CHECKIN-059
 
 OVERALL  [█████████░░░░░░░░░░░]  61%
 
 VISUAL + CLICK PLAYWRIGHT (creator) — see docs/playtests/VISUAL_CLICK_AUDIT.md
   CLICK+SHOT  [████████████████████] 100%  (133/133 screenshots — full per-species matrix)
   AGENT EYE   [████████████████████] 100%  (104 pass · 29 borderline · 0 fail)
-  NICK EYE    [░░░░░░░░░░░░░░░░░░░░]   0%  (human gate)
+  NICK EYE    [░░░░░░░░░░░░░░░░░░░░]   0%  (human gate — AR-040 deep pass shipped)
   Cmd: npm run audit:creator:visual
-  NOTE: AR-037 is a true matrix — every species × 3 builds × 4 patterns × every applicable
-        outfit piece, all 133 shots eye-checked by hand. Hats were landing on the chest →
-        `blitHatOnHead` now crops + re-centers them on the head (all 5 species verified).
-        29 borderline are documented limits, not bugs: slim/stout builds render like medium
-        (build scale not applied to PNG art), marsh_hood high, mudwall_helm low on shells,
-        levy_pin oversized, shell_brooch procedural smudge, spots/stripes coarse.
+  NOTE: AR-039/040 — thumb async race, dual-pose montage split, 72px thumbs (CSS matched),
+        folk blurbs un-clamped, crisp preview scaling, PNG markings, palette names.
+        Nick re-eye croakend-club after deploy.
 
 WORKSTREAMS (T1–T9)
-  T1 Mechanics & CI     [████████████████████]  95%  (155 unit)
+  T1 Mechanics & CI     [████████████████████]  95%  (163 unit)
   T2 First 5 minutes    [██████████████████░░]  88%  (AR-038 polish; Nick eye)
   T3 Districts & nav    [██████████████████░░]  90%  (MovementSim + separation)
   T4 Quests & dialogue  [████████████████░░░░]  82%
@@ -90,9 +87,9 @@ OPEN STEPS (⬜ / 🟡 only)
   ⬜ Second combat encounter (post-V5)
 
 DONE RECENTLY
-  · AR-032 Full Character Art Pipeline — 60 body sheets, wardrobe PNGs, SpriteAnimator
-  · AR-031 frog pattern PNG loader + p2–p4 sheets
-  · AR-025 compact creator header + appearance save e2e (6/6)
+  · AR-040 Deep creator pass — montage split, crisp preview, folk layout, PNG markings
+  · AR-039 Nick prod eye — per-canvas thumb async guard, palette names
+  · AR-038 Movement engine + Colyseus multiplayer (M0–M5)
 
 NEXT (pick 1–3)
   1. Nick — MANUAL_CHECKLIST.md (wizard + Lilymarket) → Save or Download JSON
@@ -351,6 +348,30 @@ After any session work, update the bars/rows above in this file, then paste the 
 **Not bumped:** T6 — Nick 16:9 eye test on full creator still required.
 
 **Still open:** Nick creator + Lilymarket composition eye test.
+
+---
+
+### CHECKIN-059 — 2026-07-08
+
+**Type:** Deep creator visual pass (Nick “look deeper, fix all”)  
+**Agent:** Cursor
+
+**Fixed:** `dualPoseColumnSplit` for side-by-side pose sheets; `drawPortraitFit` + 288px integer preview (no procedural flash); proportional crisp PNG markings; folk cards 72px thumbs with CSS size match (was 40px downscale blur); blurbs un-clamped + centered; build/pattern isolated swatches at 72px; compact CSS no longer hides folk blurbs or 32px thumbs. Verified `AR034_01_folk` + `AR034_02_look_stout_p4`. 163 unit + 7/7 e2e.
+
+**Still open:** Nick human eye; vole art style differs from amphibians (asset pipeline); AR-037 wardrobe borderlines.
+
+---
+
+### CHECKIN-058 — 2026-07-08
+
+**Type:** Nick production creator eye — thumbnail async race + pattern UI  
+**Agent:** Cursor
+
+**Root cause:** `WardrobePreview` used one global `_thumbSeq` for all folk/build/pattern canvases. When 20+ thumbs async-loaded PNG art, only the last upgrade stuck; the rest stayed on ugly procedural blocks (explains vole detailed, frog/toad/turtle/tortoise pixel mush on croakend-club).
+
+**Fixed:** Per-canvas `__thumbSeq`, placeholder until load, isolated swatches (marking none, hue 0), human palette labels (Moss/Reed/Marsh/Bog), `segmentDominantCell` prefers tall body cells (Pattern 4 face crop), `.creator-btn` on Randomize/Reset, 56px crisp-edges thumbs. Regression test in `WardrobePreview.test.ts`. Pushed `1e5b20e`; 162 unit + 7/7 e2e + build green.
+
+**Still open:** Nick re-eye on prod after Vercel deploy; AR-037 borderlines (build scale on PNG, coarse markings, levy_pin/shell_brooch).
 
 ---
 

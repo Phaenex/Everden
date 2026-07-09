@@ -7,8 +7,8 @@ import {
 } from '@/presentation/CharacterSprites';
 import { drawItemByIdProcedural, loadWardrobeItemCanvas } from '@/presentation/WardrobeLayers';
 
-const THUMB = 56;
-const THUMB_INSET = 3;
+const THUMB = 72;
+const THUMB_INSET = 4;
 const THUMB_DRAW = THUMB - THUMB_INSET * 2;
 let _thumbSeq = 0;
 
@@ -35,7 +35,7 @@ function drawThumbPlaceholder(ctx: CanvasRenderingContext2D): void {
   ctx.fillRect(THUMB_INSET, THUMB_INSET, THUMB_DRAW, THUMB_DRAW);
   ctx.strokeStyle = 'rgba(240, 193, 75, 0.28)';
   ctx.lineWidth = 1;
-  ctx.strokeRect(THUMB_INSET + 6, THUMB_INSET + 6, THUMB_DRAW - 12, THUMB_DRAW - 12);
+  ctx.strokeRect(THUMB_INSET + 8, THUMB_INSET + 8, THUMB_DRAW - 16, THUMB_DRAW - 16);
 }
 
 function bodyOnly(appearance: CharacterAppearance): CharacterAppearance {
@@ -141,7 +141,7 @@ export function drawBuildThumbnail(
     build,
     marking: 'none',
     hueShift: 0,
-    variant: appearance.variant,
+    variant: 0,
   });
   const out = createThumbCanvas();
   const seq = stampThumb(out);
@@ -159,6 +159,7 @@ export function drawVariantThumbnail(
   const app = bodyOnly({
     ...appearance,
     variant,
+    build: 1,
     marking: 'none',
     hueShift: 0,
   });
@@ -168,19 +169,21 @@ export function drawVariantThumbnail(
   return out;
 }
 
-/** Folk tab species card — always that species' default palette, no outfit. */
+/** Folk tab species card — always that species' default palette at medium build. */
 export function drawSpeciesCardThumbnail(
   species: string,
-  selected: boolean,
-  appearance: CharacterAppearance,
+  _selected: boolean,
+  _appearance: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[],
 ): HTMLCanvasElement {
-  const app = bodyOnly(
-    selected
-      ? { ...appearance, wardrobe: {} }
-      : { ...defaultAppearance(), build: 1, variant: 0, marking: 'none', hueShift: 0 },
-  );
-  return drawVariantThumbnail(species, app.variant ?? 0, app, wardrobeItems);
+  const app = bodyOnly({
+    ...defaultAppearance(),
+    build: 1,
+    variant: 0,
+    marking: 'none',
+    hueShift: 0,
+  });
+  return drawVariantThumbnail(species, 0, app, wardrobeItems);
 }
 
 export function mountThumbnail(parent: HTMLElement, canvas: HTMLCanvasElement, className = 'wardrobe-thumb'): void {

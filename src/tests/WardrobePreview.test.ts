@@ -5,8 +5,8 @@ import { defaultAppearance } from '@/gameplay/CharacterAppearance';
 describe('WardrobePreview thumbnails', () => {
   beforeEach(() => {
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(function (this: HTMLCanvasElement) {
-      const w = this.width || 56;
-      const h = this.height || 56;
+      const w = this.width || 72;
+      const h = this.height || 72;
       return {
         imageSmoothingEnabled: true,
         fillStyle: '',
@@ -50,5 +50,13 @@ describe('WardrobePreview thumbnails', () => {
     );
     const seqs = thumbs.map((t) => (t as { __thumbSeq?: number }).__thumbSeq);
     expect(new Set(seqs).size).toBe(4);
+  });
+
+  it('folk card thumbs always use that species default palette (not player variant)', () => {
+    const wardrobe: never[] = [];
+    const app = { ...defaultAppearance(), variant: 3, build: 2 as const, marking: 'stripes' as const, hueShift: 40 };
+    const frog = drawSpeciesCardThumbnail('frog', true, app, wardrobe);
+    const toad = drawSpeciesCardThumbnail('toad', false, app, wardrobe);
+    expect((frog as { __thumbSeq?: number }).__thumbSeq).not.toBe((toad as { __thumbSeq?: number }).__thumbSeq);
   });
 });

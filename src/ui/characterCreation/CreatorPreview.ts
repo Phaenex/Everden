@@ -1,5 +1,5 @@
 import type { AbilityDefinition, SpeciesDefinition, WardrobeDefinition } from '@/data/types';
-import { composeCharacterArtCanvas, drawCharacterCanvas, cropOpaqueBounds } from '@/presentation/CharacterSprites';
+import { composeCharacterArtCanvas, drawPortraitFit } from '@/presentation/CharacterSprites';
 import type { CreatorState } from './types';
 import { BODY_BUILD_LABELS } from '@/gameplay/CharacterAppearance';
 import { patternLabel } from './WardrobePreview';
@@ -13,11 +13,17 @@ import { el } from './domUtils';
  */
 let _seq = 0;
 
+function drawPreviewPlaceholder(ctx: CanvasRenderingContext2D, w: number, h: number): void {
+  ctx.fillStyle = '#0c1814';
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = 'rgba(240, 193, 75, 0.22)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(w * 0.2, h * 0.12, w * 0.6, h * 0.76);
+}
+
 /**
- * Renders the character preview canvas. Immediately draws the procedural
- * sprite (sync), then asynchronously upgrades to the species PNG + PNG
- * wardrobe overlays if assets are available. Stale async callbacks (triggered
- * by a render that has already been superseded) are dropped via sequence guard.
+ * Renders the character preview canvas. Shows a neutral placeholder until PNG art
+ * composes — never flashes blocky procedural sprites on top of real art.
  */
 export function renderCreatorPreview(
   canvas: HTMLCanvasElement,
@@ -28,27 +34,11 @@ export function renderCreatorPreview(
   const seq = ++_seq;
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
-
-  function drawProcedural(): void {
-    ctx.fillStyle = '#0c1814';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    const src = drawCharacterCanvas(state.species, state.appearance.variant, state.appearance, wardrobe);
-    const bounds = cropOpaqueBounds(src, 1);
-    const pad = Math.max(6, Math.floor(canvas.width * 0.03));
-    const dest = canvas.width - pad * 2;
-    ctx.drawImage(src, bounds.x, bounds.y, bounds.w, bounds.h, pad, pad, dest, dest);
-  }
-
-  drawProcedural();
+  drawPreviewPlaceholder(ctx, canvas.width, canvas.height);
 
   void composeCharacterArtCanvas(state.species, state.appearance, wardrobe, 0).then((composed) => {
     if (seq !== _seq || !composed) return;
-    ctx.fillStyle = '#0c1814';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    const bounds = cropOpaqueBounds(composed, 2);
-    const pad = Math.max(6, Math.floor(canvas.width * 0.03));
-    const dest = canvas.width - pad * 2;
-    ctx.drawImage(composed, bounds.x, bounds.y, bounds.w, bounds.h, pad, pad, dest, dest);
+    drawPortraitFit(ctx, composed, canvas.width, canvas.height);
   });
 }
 

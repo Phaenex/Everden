@@ -150,6 +150,35 @@ function cellInk(ctx: CanvasRenderingContext2D, x: number, y: number, cw: number
  * Gutters shorter than `minGutter` are treated as internal gaps (legs, ears) and merged,
  * so only true pose separators split the sheet. Returns `[start,end]` inclusive ranges.
  */
+/**
+ * Square sheets sometimes pack two poses side-by-side with a faint gutter the band
+ * splitter misses — force a center valley split when both halves carry ink.
+ */
+function dualPoseColumnSplit(col: Float64Array, w: number): number | null {
+  if (w < 64) return null;
+  const mid = Math.floor(w / 2);
+  let left = 0;
+  let right = 0;
+  for (let x = 0; x < mid; x++) left += col[x]!;
+  for (let x = mid; x < w; x++) right += col[x]!;
+  const total = left + right;
+  if (total < 20) return null;
+  if (left < total * 0.2 || right < total * 0.2) return null;
+  const lo = Math.floor(w * 0.36);
+  const hi = Math.floor(w * 0.64);
+  let bestX = mid;
+  let bestVal = col[mid]!;
+  for (let x = lo; x <= hi; x++) {
+    if (col[x]! < bestVal) {
+      bestVal = col[x]!;
+      bestX = x;
+    }
+  }
+  const peak = Math.max(...Array.from(col));
+  if (bestVal > peak * 0.12) return null;
+  return bestX;
+}
+
 function splitBands(profile: Float64Array, len: number): Array<[number, number]> {
   let max = 0;
   for (let i = 0; i < len; i++) if (profile[i]! > max) max = profile[i]!;
@@ -202,8 +231,17 @@ function segmentDominantCell(
       }
     }
   }
-  const colBands = splitBands(col, w);
+  let colBands = splitBands(col, w);
   const rowBands = splitBands(row, h);
+  if (colBands.length <= 1) {
+    const splitX = dualPoseColumnSplit(col, w);
+    if (splitX !== null && splitX > 4 && splitX < w - 5) {
+      colBands = [
+        [0, splitX - 1],
+        [splitX + 1, w - 1],
+      ];
+    }
+  }
   if (colBands.length <= 1 && rowBands.length <= 1) return { x: 0, y: 0, w, h };
   let best = { x: 0, y: 0, w, h };
   let bestScore = -1;
@@ -337,6 +375,7 @@ export function cropOpaqueBounds(src: HTMLCanvasElement, pad = 1): { x: number; 
   return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
 }
 
+/** Fit a cropped sprite into a square with smoothing off (thumbs + small swatches). */
 export function drawCroppedSprite(
   ctx: CanvasRenderingContext2D,
   src: HTMLCanvasElement,
@@ -344,9 +383,36 @@ export function drawCroppedSprite(
   destY: number,
   destSize: number,
 ): void {
-  const b = cropOpaqueBounds(src);
+  const b = cropOpaqueBounds(src, 2);
+  ctx.imageSmoothingEnabled = false;
   ctx.clearRect(destX, destY, destSize, destSize);
   ctx.drawImage(src, b.x, b.y, b.w, b.h, destX, destY, destSize, destSize);
+}
+
+/**
+ * Fit portrait art into a preview box using the largest integer upscale when the art is
+ * smaller than the box, otherwise downscale with smoothing off — avoids mushy CSS scaling.
+ */
+export function drawPortraitFit(
+  ctx: CanvasRenderingContext2D,
+  src: HTMLCanvasElement,
+  boxW: number,
+  boxH: number,
+  pad = 8,
+): void {
+  const b = cropOpaqueBounds(src, 2);
+  const innerW = boxW - pad * 2;
+  const innerH = boxH - pad * 2;
+  const fit = Math.min(innerW / b.w, innerH / b.h);
+  const scale = fit >= 1 ? Math.max(1, Math.floor(fit)) : fit;
+  const dw = Math.round(b.w * scale);
+  const dh = Math.round(b.h * scale);
+  const ox = pad + Math.floor((innerW - dw) / 2);
+  const oy = pad + Math.floor((innerH - dh) / 2);
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = '#0c1814';
+  ctx.fillRect(0, 0, boxW, boxH);
+  ctx.drawImage(src, b.x, b.y, b.w, b.h, ox, oy, dw, dh);
 }
 
 function tryLoadImage(path: string): Promise<HTMLCanvasElement | null> {
@@ -544,8 +610,10 @@ function shiftColor(hex: string, hueShift: number): string {
   return rgbToHex(r2 * 255, g2 * 255, b2 * 255);
 }
 
-function applyMarkings(ctx: CanvasRenderingContext2D, marking: CharacterAppearance['marking'], scale = 1): void {
+/** Procedural 32×32 markings (legacy pixel drawer). */
+function applyMarkingsProcedural(ctx: CanvasRenderingContext2D, marking: CharacterAppearance['marking'], scale = 1): void {
   if (marking === 'none') return;
+  ctx.imageSmoothingEnabled = false;
   if (marking === 'spots') {
     ctx.fillStyle = 'rgba(10, 16, 8, 0.55)';
     const spots: Array<[number, number, number]> = [
@@ -562,6 +630,39 @@ function applyMarkings(ctx: CanvasRenderingContext2D, marking: CharacterAppearan
     for (let y = 10; y < 26; y += 4) {
       const wobble = ((y * 3) % 5) - 2;
       ctx.fillRect((10 + wobble) * scale, y * scale, 12 * scale, 1.5 * scale);
+    }
+  }
+}
+
+/** Markings on loaded PNG portraits — proportional bands, crisp pixels. */
+function applyMarkingsOnArt(
+  ctx: CanvasRenderingContext2D,
+  marking: CharacterAppearance['marking'],
+  w: number,
+  h: number,
+): void {
+  if (marking === 'none') return;
+  ctx.imageSmoothingEnabled = false;
+  const cx = w * 0.5;
+  if (marking === 'spots') {
+    ctx.fillStyle = 'rgba(16, 24, 12, 0.52)';
+    const spots: Array<[number, number, number]> = [
+      [0.38, 0.2, 0.032], [0.58, 0.22, 0.028], [0.46, 0.34, 0.03], [0.62, 0.38, 0.026],
+      [0.34, 0.42, 0.024], [0.52, 0.48, 0.028], [0.42, 0.55, 0.022],
+    ];
+    for (const [px, py, pr] of spots) {
+      const r = Math.max(2, Math.round(pr * w));
+      ctx.beginPath();
+      ctx.arc(px * w, py * h, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else {
+    ctx.fillStyle = 'rgba(20, 30, 14, 0.58)';
+    const bandH = Math.max(2, Math.round(h * 0.016));
+    const bandW = Math.round(w * 0.38);
+    const x0 = Math.round(cx - bandW / 2);
+    for (const py of [0.17, 0.26, 0.35, 0.44, 0.53]) {
+      ctx.fillRect(x0, Math.round(py * h), bandW, bandH);
     }
   }
 }
@@ -623,7 +724,7 @@ export function drawCharacterCanvas(
     ctx.fillStyle = p.c;
     ctx.fillRect(p.x, p.y, 1, 1);
   }
-  applyMarkings(ctx, app.marking);
+  applyMarkingsProcedural(ctx, app.marking);
   applyWardrobeFrontLayers(ctx, app, wardrobeItems, species);
   return canvas;
 }
@@ -655,12 +756,7 @@ export function applyAppearanceToArtCanvas(
   }
 
   if (appearance.marking !== 'none') {
-    ctx.save();
-    ctx.imageSmoothingEnabled = true;
-    const s = w / 32;
-    ctx.scale(s, s);
-    applyMarkings(ctx, appearance.marking, 1);
-    ctx.restore();
+    applyMarkingsOnArt(ctx, appearance.marking, w, h);
   }
 }
 
