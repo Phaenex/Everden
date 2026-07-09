@@ -50,7 +50,7 @@ Feet center **(64, 112)** is the ground contact point. Billboards and depth sort
 |-------|------|
 | Species body (idle sheet) | `public/assets/sprites/species/{id}.png` |
 | Wardrobe overlay | `public/assets/sprites/wardrobe/{itemId}.png` |
-| Held item overlay | `public/assets/sprites/wardrobe/held_{itemId}.png` |
+| Held item overlay | `public/assets/sprites/wardrobe/{itemId}.png` (same as other wardrobe; e.g. `reed_staff.png`) |
 
 One PNG per species for slice: **2-frame horizontal strip** `256×128` (idle A | idle B). Loader uses frame 0 until animation is wired; frame 1 is a 1–2px vertical bob for future idle loop.
 
@@ -91,8 +91,23 @@ No text.
 | tortoise | olive `#5a6840` | amber | wide flat shell, wrinkled neck |
 | vole | brown-grey `#8a7868` | black | large pink inner ears, cream belly |
 
+## Look channels (v4 appearance)
+
+| Channel | Field | Source |
+|---------|-------|--------|
+| Skin tone | `skinTone` | `speciesAppearance.json` → `skinRamps` |
+| Eye color | `eyeColor` | `eyeRamps` |
+| Crest / hair | `crestId` + `crestColor` | `crests[]` + `crestColorRamps`; art under `sprites/crests/` |
+| Pattern | `patternId` + `patternIntensity` | `patterns[]` → sheet suffix `p1`–`p4` |
+| Markings | `marking` + `markingIntensity` | none / spots / stripes / bands / freckles |
+| Wardrobe dyes | `dyes.{hat,cloak,accessory,held}` | hue shift on item PNG (outlines preserved) |
+| Held slot | `wardrobe.held` | `sprites/wardrobe/held_{id}.png` (procedural fallback OK) |
+
+Registry: `public/data/speciesAppearance.json`. New folk checklist: `docs/design/NEW_FOLK_CHECKLIST.md`.
+
 ## Code hooks
 
+- `composeCharacterArtCanvas(species, appearance, …)` → full layered compose (creator + world + remotes)
+- `refreshCharacterMesh(mesh, …)` → live respec (Mudwall guild mirror)
 - `loadArtCanvas(species)` → body sheet (frame 0 for now)
-- `applyWardrobeOverlayAsync(canvas, appearance, …)` → PNG overlays per slot
 - Procedural `drawCharacterCanvas` remains fallback if PNG missing

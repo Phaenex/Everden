@@ -108,6 +108,17 @@ Cloaks: `basin_cloak`, `ferry_shawl`, `croakend_weave`, `levy_mantle`, `rain_pon
 
 Accessories: `reed_charm`, `clay_bead`, `market_scarf`, `levy_pin`, `shell_brooch`, `hop_whistle`
 
+Held (1024×1024 white bg, AR-042): `reed_staff`, `clay_lantern`, `market_basket`
+
+### Crest overlays — `sprites/crests/`
+
+| File | Folk | Notes |
+|------|------|-------|
+| `frog_reed_crest.png` | frog | Marsh reed fan; crestColor remaps green stalks |
+| `frog_lily_tuft.png` | frog | Pink lily + pads; multi-color (dye skips non-green) |
+
+Other folk crest paths in `speciesAppearance.json` still need PNG packs (toad wart ridge, turtle shell paint, tortoise shell etch, vole ear tuft / cheek fluff).
+
 ### AI generation prompts for species sprites (DALL-E 3 / Midjourney)
 
 All share this **base style** (append species-specific detail at the end):

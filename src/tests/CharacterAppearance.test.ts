@@ -3,10 +3,11 @@ import { appearanceNeedsProceduralRender, defaultAppearance } from '@/gameplay/C
 
 describe('CharacterAppearance', () => {
   it('default appearance can use species PNG in-world', () => {
-    expect(appearanceNeedsProceduralRender(defaultAppearance())).toBe(false);
+    expect(appearanceNeedsProceduralRender()).toBe(false);
   });
 
   it('PNG art is attempted for all pattern variants', () => {
-    expect(appearanceNeedsProceduralRender({ ...defaultAppearance(), variant: 2 })).toBe(false);
+    expect(appearanceNeedsProceduralRender()).toBe(false);
+    expect(defaultAppearance().patternId).toBeTruthy();
   });
 });

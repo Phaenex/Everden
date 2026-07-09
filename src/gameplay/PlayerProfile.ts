@@ -1,6 +1,11 @@
 import type { ISaveable } from '@/core/IGameModule';
 import type { SpeciesStats } from '@/data/types';
-import { defaultAppearance, type CharacterAppearance } from '@/gameplay/CharacterAppearance';
+import {
+  defaultAppearance,
+  migrateAppearance,
+  type CharacterAppearance,
+} from '@/gameplay/CharacterAppearance';
+import { getSpeciesAppearanceRegistry } from '@/data/SpeciesAppearanceRegistry';
 import { defaultCreatorSettings, type CreatorSettings } from '@/gameplay/CreatorSettings';
 import { applyRacial } from '@/gameplay/PointBuy';
 
@@ -42,13 +47,7 @@ export class PlayerProfile implements ISaveable {
     this.stats = { ...stats };
     this.statsPersisted = true;
     this.settings = { ...settings };
-    this.appearance = {
-      variant: appearance.variant,
-      build: appearance.build ?? 1,
-      hueShift: appearance.hueShift,
-      marking: appearance.marking,
-      wardrobe: { ...appearance.wardrobe },
-    };
+    this.appearance = migrateAppearance(appearance, species, getSpeciesAppearanceRegistry());
   }
 
   serialize(): PlayerProfileState {
@@ -57,13 +56,7 @@ export class PlayerProfile implements ISaveable {
       name: this.name,
       motivation: this.motivation,
       stats: { ...this.stats },
-      appearance: {
-        variant: this.appearance.variant,
-        build: this.appearance.build,
-        hueShift: this.appearance.hueShift,
-        marking: this.appearance.marking,
-        wardrobe: { ...this.appearance.wardrobe },
-      },
+      appearance: migrateAppearance(this.appearance, this.species, getSpeciesAppearanceRegistry()),
       settings: { ...this.settings },
     };
   }
@@ -85,13 +78,11 @@ export class PlayerProfile implements ISaveable {
       this.statsPersisted = true;
     }
     if (state.appearance) {
-      this.appearance = {
-        variant: state.appearance.variant ?? 0,
-        build: (state.appearance.build ?? 1) as 0 | 1 | 2,
-        hueShift: state.appearance.hueShift ?? 0,
-        marking: state.appearance.marking ?? 'none',
-        wardrobe: { ...state.appearance.wardrobe },
-      };
+      this.appearance = migrateAppearance(
+        state.appearance,
+        this.species,
+        getSpeciesAppearanceRegistry(),
+      );
     }
     if (state.settings) {
       this.settings = {
@@ -112,7 +103,13 @@ export class PlayerProfile implements ISaveable {
   ): void {
     this.stats = { ...finalStats };
     this.statsPersisted = true;
-    if (appearance) this.appearance = appearance;
+    if (appearance) {
+      this.appearance = migrateAppearance(
+        appearance,
+        this.species,
+        getSpeciesAppearanceRegistry(),
+      );
+    }
   }
 }
 

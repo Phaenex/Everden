@@ -2,7 +2,7 @@ import type { AbilityDefinition, SpeciesDefinition, WardrobeDefinition } from '@
 import { composeCharacterArtCanvas, drawPortraitFit } from '@/presentation/CharacterSprites';
 import type { CreatorState } from './types';
 import { BODY_BUILD_LABELS } from '@/gameplay/CharacterAppearance';
-import { patternLabel } from './WardrobePreview';
+import { patternLabel } from '@/data/SpeciesAppearanceRegistry';
 import { applyRacial } from '@/gameplay/PointBuy';
 import { abilityModifier } from '@/gameplay/OpeningNarration';
 import { el } from './domUtils';
@@ -97,7 +97,7 @@ export function renderCreatorSummary(
     el(
       'p',
       'summary-look',
-      `Look: ${BODY_BUILD_LABELS[state.appearance.build]!} · ${patternLabel(state.species, state.appearance.variant)} · tint ${state.appearance.hueShift}`,
+      `Look: ${BODY_BUILD_LABELS[state.appearance.build]!} · ${patternLabel(state.species, state.appearance.patternId)} · skin ${state.appearance.skinTone + 1}`,
     ),
   );
 }

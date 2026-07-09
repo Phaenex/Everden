@@ -1,35 +1,50 @@
 # Character Customization
 
-How Everden's slice creator compares to BG3/MMO norms, and what's deferred.
+Habbo-depth layered look + BG3-style creator depth, wired into the world (not creator-only).
 
-## Slice (shipped in vertical slice)
+## Shipped (deep customization engine C0–C5)
 
-| Feature | Everden slice | BG3 / MMO reference |
-|---------|---------------|---------------------|
-| Species / "class" | 5 folk; species = combat ability package | BG3: race + class; MMO: race + class |
-| Stats | 5e point-buy (27 pts) + racial +2/+1 | BG3 standard point-buy; many MMOs use sliders or templates |
-| Body look | Procedural: pattern, hue, markings | BG3: presets + sliders; MMO: morph targets |
-| Gear look | 3 wardrobe slots (hat/cloak/accessory), procedural layers | Full armor dye / transmog (post-launch) |
-| Identity | Name + arrival motivation | BG3 origin; MMO backstory often cosmetic |
-| Live preview | Center portrait updates on every tab change | Expected in modern creators |
-| Tab navigation | Any step in one click | BG3 camp mirror is in-game only |
+| Feature | Everden |
+|---------|---------|
+| Species / folk | Data-driven via `species.json` + `speciesAppearance.json` (`playable: true`) |
+| Body build | Slim / Medium / Stout (scale on medium sheets; build sheets when validated) |
+| Skin tone | Per-species ramp swatches (`skinTone` index) |
+| Eye color | Per-species ramp swatches (`eyeColor`) |
+| Crest / hair | Species-gated crest ids + crest color ramp |
+| Body pattern | Named palettes (`patternId`) + **intensity** 0–100 |
+| Markings | none / spots / stripes / bands / freckles + **intensity** |
+| Wardrobe | hat / cloak / accessory / **held** + per-slot **dye** |
+| Live preview | Creator + Mudwall guild looking-glass |
+| In-world | Same `composeCharacterArtCanvas` path; `refreshCharacterMesh` on respec |
+| Multiplayer | `appearanceJson` on join + `appearance_update` mid-session; remotes rebuild + `animState` walk bob |
 
-## Post-launch (not in this overhaul)
+## Schema
 
-- **Leveling / proficiency** — see [`LEVELING.md`](../systems/LEVELING.md)
-- **In-game appearance mirror** (e.g. Mudwall guild mirror) — respec look without new game
-- **Hand-drawn sprite sheets** (T6b) — wardrobe PNG overlays optional; procedural baseline stays
-- **Pick-your-loadout abilities** — species remains the combat kit for slice
-- **Full transmog / dye channels**
+- Shared types: `shared/appearance/AppearanceTypes.ts` (v4)
+- Migrate v3→v4: `shared/appearance/migrate.ts` (`variant` → `patternId`, `hueShift` → nearest `skinTone`)
+- Save: `PlayerProfile` always serializes migrated appearance
 
 ## Data paths
 
-- Appearance + stats: `PlayerProfile` save v3
+- Look registry: `public/data/speciesAppearance.json`
 - Wardrobe catalog: `public/data/wardrobe.json`
-- Racial bonuses: `public/data/species.json` → `racialBonuses`
+- New folk checklist: [`NEW_FOLK_CHECKLIST.md`](NEW_FOLK_CHECKLIST.md)
+- Art: [`HABBO_SPRITE_SPEC.md`](../art/HABBO_SPRITE_SPEC.md)
+
+## World hooks
+
+- **Mudwall** object `guild_mirror` → `AppearanceMirrorUI` → save + `appearance:changed` → net update
+- Combat portraits / creator / remotes share compose
+
+## Still deferred
+
+- Hand-drawn T6b sheets from Nick sketches (engine accepts better art when ready)
+- Distinct slim/heavy PNG sheets (loader still uses medium + scale until montages are fixed)
+- Full transmog catalog / held item art packs
 
 ## Tests
 
-- `src/tests/PointBuy.test.ts` — pool math, racial apply
-- `src/tests/PlayerProfile.test.ts` — v3 serialize, migration flag
-- `e2e/character-creation.spec.ts` — tabbed creator flow
+- `src/tests/AppearanceMigrate.test.ts`
+- `src/tests/SpeciesAppearanceRegistry.test.ts`
+- `src/tests/PlayerProfile.test.ts` (legacy create still migrates)
+- `e2e/character-creation.spec.ts`

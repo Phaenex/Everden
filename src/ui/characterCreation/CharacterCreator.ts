@@ -1,7 +1,23 @@
 import type { AbilityDefinition, SpeciesDefinition, WardrobeDefinition } from '@/data/types';
 import type { ArrivalMotivation } from '@/gameplay/PlayerProfile';
 import { defaultCreatorSettings } from '@/gameplay/CreatorSettings';
-import { defaultAppearance, randomAppearance, BODY_BUILD_LABELS, type BodyBuild } from '@/gameplay/CharacterAppearance';
+import {
+  defaultAppearance,
+  randomAppearance,
+  migrateAppearance,
+  BODY_BUILD_LABELS,
+  type BodyBuild,
+  type CharacterMarking,
+  type WardrobeSlot,
+} from '@/gameplay/CharacterAppearance';
+import {
+  getSpeciesAppearance,
+  getSpeciesAppearanceRegistry,
+  playableSpeciesIds,
+  setSpeciesAppearanceRegistry,
+  patternLabel,
+} from '@/data/SpeciesAppearanceRegistry';
+import type { SpeciesAppearanceRegistry } from '@/gameplay/CharacterAppearance';
 import {
   adjustBaseStat,
   applyRacial,
@@ -13,7 +29,7 @@ import {
 } from '@/gameplay/PointBuy';
 import { abilityModifier } from '@/gameplay/OpeningNarration';
 import { filterWardrobeForSpecies } from '@/presentation/WardrobeLayers';
-import { drawSpeciesCardThumbnail, drawVariantThumbnail, drawWardrobeThumbnail, drawBuildThumbnail, patternLabel } from './WardrobePreview';
+import { drawSpeciesCardThumbnail, drawVariantThumbnail, drawWardrobeThumbnail, drawBuildThumbnail } from './WardrobePreview';
 import { button, el } from './domUtils';
 import { renderCreatorPreview, renderCreatorSummary } from './CreatorPreview';
 import { loadCreatorGuide, type CreatorGuide } from './CreatorGuide';
@@ -21,8 +37,6 @@ import { appendInfoBox } from './CreatorInfo';
 import { renderKitPanel, renderSettingsPanel, renderSkillsPanel } from './CreatorPanels';
 import type { CreatorState, CreatorTab, GameStartRequest } from './types';
 import { CREATOR_TABS } from './types';
-
-const PLAYABLE_IDS = ['frog', 'toad', 'turtle', 'tortoise', 'vole'] as const;
 
 const MOTIVATION_OPTIONS: { id: ArrivalMotivation; label: string; hint: string }[] = [
   { id: 'investigator', label: 'Sent to find the truth', hint: 'Hired or asked to look into the flood.' },
@@ -55,20 +69,25 @@ export class CharacterCreator {
   ) {}
 
   async init(): Promise<void> {
-    const [speciesRes, abilitiesRes, wardrobeRes, guide] = await Promise.all([
+    const [speciesRes, abilitiesRes, wardrobeRes, lookRes, guide] = await Promise.all([
       fetch('/data/species.json'),
       fetch('/data/abilities.json'),
       fetch('/data/wardrobe.json'),
+      fetch('/data/speciesAppearance.json'),
       loadCreatorGuide(),
     ]);
     this.guide = guide;
     this.species = (await speciesRes.json()) as SpeciesDefinition[];
     this.abilities = (await abilitiesRes.json()) as AbilityDefinition[];
     this.wardrobe = (await wardrobeRes.json()) as WardrobeDefinition[];
-    this.species = this.species.filter((s) => PLAYABLE_IDS.includes(s.id as (typeof PLAYABLE_IDS)[number]));
+    const lookReg = (await lookRes.json()) as SpeciesAppearanceRegistry;
+    setSpeciesAppearanceRegistry(lookReg);
+    const playable = new Set(playableSpeciesIds());
+    this.species = this.species.filter((s) => playable.has(s.id));
     const frog = this.getSpecies('frog');
     if (frog) {
       this.state.baseStats = recommendedBaseStats(frog);
+      this.state.appearance = migrateAppearance(defaultAppearance(), 'frog', lookReg);
     }
     this.render();
   }
@@ -88,21 +107,32 @@ export class CharacterCreator {
     this.state.species = id;
     this.state.baseStats = recommendedBaseStats(def);
     const prevLook = this.state.appearance;
-    this.state.appearance = {
-      ...defaultAppearance(),
-      variant: 0,
-      build: prevLook.build ?? 1,
-      hueShift: prevLook.hueShift,
-      marking: prevLook.marking,
-      wardrobe: { ...prevLook.wardrobe },
-    };
+    const lookDef = getSpeciesAppearance(id);
+    this.state.appearance = migrateAppearance(
+      {
+        ...defaultAppearance(lookDef?.patterns[0]?.id ?? 'moss'),
+        build: prevLook.build ?? 1,
+        skinTone: prevLook.skinTone ?? 0,
+        eyeColor: prevLook.eyeColor ?? 0,
+        marking: prevLook.marking,
+        markingIntensity: prevLook.markingIntensity,
+        wardrobe: { ...prevLook.wardrobe },
+        dyes: { ...prevLook.dyes },
+      },
+      id,
+      getSpeciesAppearanceRegistry(),
+    );
     const allowed = new Set(filterWardrobeForSpecies(this.wardrobe, id).map((w) => w.id));
-    for (const slot of ['hat', 'cloak', 'accessory'] as const) {
+    for (const slot of ['hat', 'cloak', 'accessory', 'held'] as const) {
       const equipped = this.state.appearance.wardrobe[slot];
       if (equipped && !allowed.has(equipped)) delete this.state.appearance.wardrobe[slot];
     }
-    // Full re-render so center title/role labels match the new folk.
     this.render();
+  }
+
+  private playableIds(): string[] {
+    const fromReg = playableSpeciesIds();
+    return fromReg.length ? fromReg : this.species.map((s) => s.id);
   }
 
   private refreshPreview(): void {
@@ -201,7 +231,7 @@ export class CharacterCreator {
     if (this.guide) appendInfoBox(panel, this.guide.tabs.species ?? '');
     panel.append(el('p', 'select-label', 'Choose your folk'));
     const grid = el('div', 'species-cards');
-    for (const id of PLAYABLE_IDS) {
+    for (const id of this.playableIds()) {
       const def = this.getSpecies(id);
       if (!def) continue;
       const card = document.createElement('button');
@@ -228,10 +258,12 @@ export class CharacterCreator {
 
   private renderAppearancePanel(): void {
     const panel = el('div', 'creator-tab-panel');
+    const look = getSpeciesAppearance(this.state.species);
     if (this.guide) {
       appendInfoBox(panel, this.guide.tabs.appearance ?? '');
       appendInfoBox(panel, this.guide.appearance.variant, 'note');
     }
+
     panel.append(el('p', 'select-label', 'Body build'));
     const buildGrid = el('div', 'variant-grid build-grid');
     for (let b = 0; b < 3; b++) {
@@ -252,19 +284,96 @@ export class CharacterCreator {
     }
     panel.append(buildGrid);
 
-    panel.append(el('p', 'select-label', 'Body palette — pick your folk\'s colors'));
+    // Skin tone swatches
+    panel.append(el('p', 'select-label', 'Skin tone'));
+    const skinRow = el('div', 'swatch-row');
+    (look?.skinRamps ?? ['#4c7842']).forEach((hex, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'swatch-btn' + (this.state.appearance.skinTone === i ? ' selected' : '');
+      btn.style.background = hex;
+      btn.title = `Tone ${i + 1}`;
+      btn.addEventListener('click', () => {
+        this.state.appearance.skinTone = i;
+        this.state.appearance.hueShift = 0;
+        this.renderPanel();
+        this.refreshPreview();
+        this.renderSummary();
+      });
+      skinRow.append(btn);
+    });
+    panel.append(skinRow);
 
+    // Eye color
+    panel.append(el('p', 'select-label', 'Eye color'));
+    const eyeRow = el('div', 'swatch-row');
+    (look?.eyeRamps ?? ['#c8e8c0']).forEach((hex, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'swatch-btn' + (this.state.appearance.eyeColor === i ? ' selected' : '');
+      btn.style.background = hex;
+      btn.title = `Eyes ${i + 1}`;
+      btn.addEventListener('click', () => {
+        this.state.appearance.eyeColor = i;
+        this.renderPanel();
+        this.refreshPreview();
+        this.renderSummary();
+      });
+      eyeRow.append(btn);
+    });
+    panel.append(eyeRow);
+
+    // Crest / hair
+    panel.append(el('p', 'select-label', 'Crest / hair'));
+    const crestGrid = el('div', 'variant-grid');
+    for (const crest of look?.crests ?? [{ id: 'none', label: 'Bare' }]) {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'style-card crest-card';
+      if ((this.state.appearance.crestId ?? 'none') === crest.id) card.classList.add('selected');
+      card.append(el('span', 'style-card-label', crest.label));
+      card.addEventListener('click', () => {
+        this.state.appearance.crestId = crest.id;
+        this.renderPanel();
+        this.refreshPreview();
+        this.renderSummary();
+      });
+      crestGrid.append(card);
+    }
+    panel.append(crestGrid);
+    if ((this.state.appearance.crestId ?? 'none') !== 'none') {
+      panel.append(el('p', 'select-label', 'Crest color'));
+      const crestColorRow = el('div', 'swatch-row');
+      (look?.crestColorRamps ?? []).forEach((hex, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'swatch-btn' + (this.state.appearance.crestColor === i ? ' selected' : '');
+        btn.style.background = hex;
+        btn.addEventListener('click', () => {
+          this.state.appearance.crestColor = i;
+          this.renderPanel();
+          this.refreshPreview();
+          this.renderSummary();
+        });
+        crestColorRow.append(btn);
+      });
+      panel.append(crestColorRow);
+    }
+
+    // Body pattern
+    panel.append(el('p', 'select-label', 'Body palette — pick your folk\'s colors'));
     const variantGrid = el('div', 'variant-grid');
-    for (let v = 0; v < 4; v++) {
+    for (const pat of look?.patterns ?? []) {
       const card = document.createElement('button');
       card.type = 'button';
       card.className = 'style-card variant-card';
-      if (this.state.appearance.variant === v) card.classList.add('selected');
-      const thumb = drawVariantThumbnail(this.state.species, v, this.state.appearance, this.wardrobe);
+      if (this.state.appearance.patternId === pat.id) card.classList.add('selected');
+      const thumb = drawVariantThumbnail(this.state.species, pat.id, this.state.appearance, this.wardrobe);
       card.append(thumb);
-      card.append(el('span', 'style-card-label', patternLabel(this.state.species, v)));
+      card.append(el('span', 'style-card-label', pat.label));
       card.addEventListener('click', () => {
-        this.state.appearance.variant = v;
+        this.state.appearance.patternId = pat.id;
+        this.state.appearance.variant = look!.patterns.findIndex((p) => p.id === pat.id);
         this.renderPanel();
         this.refreshPreview();
         this.renderSummary();
@@ -273,26 +382,34 @@ export class CharacterCreator {
     }
     panel.append(variantGrid);
 
-    const hueLabel = el('label', 'hue-label', `Color tint (${this.state.appearance.hueShift})`);
-    const hue = document.createElement('input');
-    hue.type = 'range';
-  hue.min = '-60';
-  hue.max = '60';
-    hue.value = String(this.state.appearance.hueShift);
-    hue.className = 'hue-slider';
-    hue.addEventListener('input', () => {
-      this.state.appearance.hueShift = Number(hue.value);
-      hueLabel.textContent = `Color tint (${this.state.appearance.hueShift})`;
+    const patIntLabel = el(
+      'label',
+      'hue-label',
+      `Pattern intensity (${this.state.appearance.patternIntensity})`,
+    );
+    const patInt = document.createElement('input');
+    patInt.type = 'range';
+    patInt.min = '0';
+    patInt.max = '100';
+    patInt.value = String(this.state.appearance.patternIntensity ?? 100);
+    patInt.className = 'hue-slider';
+    patInt.addEventListener('input', () => {
+      this.state.appearance.patternIntensity = Number(patInt.value);
+      patIntLabel.textContent = `Pattern intensity (${this.state.appearance.patternIntensity})`;
       this.refreshPreview();
       this.renderSummary();
     });
-    panel.append(hueLabel, hue);
+    panel.append(patIntLabel, patInt);
 
+    // Markings
     panel.append(el('p', 'select-label', 'Markings'));
     const markRow = el('div', 'marking-row');
-    for (const m of ['none', 'spots', 'stripes'] as const) {
+    const marks = (look?.markings ?? ['none', 'spots', 'stripes']) as CharacterMarking[];
+    for (const m of marks) {
       const btn = button(m.charAt(0).toUpperCase() + m.slice(1), () => {
         this.state.appearance.marking = m;
+        if (m === 'none') this.state.appearance.markingIntensity = 0;
+        else if (this.state.appearance.markingIntensity < 20) this.state.appearance.markingIntensity = 60;
         this.renderPanel();
         this.refreshPreview();
         this.renderSummary();
@@ -303,17 +420,50 @@ export class CharacterCreator {
     }
     panel.append(markRow);
 
+    if (this.state.appearance.marking !== 'none') {
+      const markIntLabel = el(
+        'label',
+        'hue-label',
+        `Marking intensity (${this.state.appearance.markingIntensity})`,
+      );
+      const markInt = document.createElement('input');
+      markInt.type = 'range';
+      markInt.min = '0';
+      markInt.max = '100';
+      markInt.value = String(this.state.appearance.markingIntensity ?? 60);
+      markInt.className = 'hue-slider';
+      markInt.addEventListener('input', () => {
+        this.state.appearance.markingIntensity = Number(markInt.value);
+        markIntLabel.textContent = `Marking intensity (${this.state.appearance.markingIntensity})`;
+        this.refreshPreview();
+        this.renderSummary();
+      });
+      panel.append(markIntLabel, markInt);
+    }
+
     const actions = el('div', 'creator-tab-actions');
     actions.append(
       button('Randomize look', () => {
-        this.state.appearance = { ...randomAppearance(), wardrobe: { ...this.state.appearance.wardrobe } };
+        const next = randomAppearance(this.state.species, getSpeciesAppearanceRegistry());
+        next.wardrobe = { ...this.state.appearance.wardrobe };
+        next.dyes = { ...this.state.appearance.dyes };
+        this.state.appearance = next;
         this.renderPanel();
         this.refreshPreview();
+        this.renderSummary();
       }),
       button('Reset tab', () => {
-        this.state.appearance = { ...defaultAppearance(), wardrobe: { ...this.state.appearance.wardrobe } };
+        const base = migrateAppearance(
+          defaultAppearance(look?.patterns[0]?.id ?? 'moss'),
+          this.state.species,
+          getSpeciesAppearanceRegistry(),
+        );
+        base.wardrobe = { ...this.state.appearance.wardrobe };
+        base.dyes = { ...this.state.appearance.dyes };
+        this.state.appearance = base;
         this.renderPanel();
         this.refreshPreview();
+        this.renderSummary();
       }),
     );
     panel.append(actions);
@@ -321,7 +471,7 @@ export class CharacterCreator {
   }
 
   private buildWardrobeCard(
-    slot: 'hat' | 'cloak' | 'accessory',
+    slot: WardrobeSlot,
     itemId: string | null,
     label: string,
     hint: string,
@@ -354,7 +504,7 @@ export class CharacterCreator {
     }
     panel.append(el('p', 'select-label', 'Tap a style to equip — preview updates live'));
     const items = filterWardrobeForSpecies(this.wardrobe, this.state.species);
-    for (const slot of ['hat', 'cloak', 'accessory'] as const) {
+    for (const slot of ['hat', 'cloak', 'accessory', 'held'] as const) {
       const section = el('div', 'wardrobe-section');
       section.append(el('p', 'wardrobe-slot-label', slot.charAt(0).toUpperCase() + slot.slice(1)));
       const grid = el('div', 'wardrobe-grid');
@@ -367,6 +517,7 @@ export class CharacterCreator {
           !this.state.appearance.wardrobe[slot],
           () => {
             delete this.state.appearance.wardrobe[slot];
+            delete this.state.appearance.dyes[slot];
             this.renderPanel();
             this.refreshPreview();
             this.renderSummary();
@@ -391,6 +542,26 @@ export class CharacterCreator {
         );
       }
       section.append(grid);
+      if (this.state.appearance.wardrobe[slot]) {
+        const dyeLabel = el(
+          'label',
+          'hue-label',
+          `Dye (${this.state.appearance.dyes[slot] ?? 0})`,
+        );
+        const dye = document.createElement('input');
+        dye.type = 'range';
+        dye.min = '-60';
+        dye.max = '60';
+        dye.value = String(this.state.appearance.dyes[slot] ?? 0);
+        dye.className = 'hue-slider';
+        dye.addEventListener('input', () => {
+          this.state.appearance.dyes[slot] = Number(dye.value);
+          dyeLabel.textContent = `Dye (${this.state.appearance.dyes[slot]})`;
+          this.refreshPreview();
+          this.renderSummary();
+        });
+        section.append(dyeLabel, dye);
+      }
       panel.append(section);
     }
     this.panelEl!.append(panel);
@@ -573,7 +744,7 @@ export class CharacterCreator {
       el(
         'li',
         '',
-        `Look: ${BODY_BUILD_LABELS[this.state.appearance.build]!} build, ${patternLabel(this.state.species, this.state.appearance.variant)}, tint ${this.state.appearance.hueShift}, ${markingLabel}`,
+        `Look: ${BODY_BUILD_LABELS[this.state.appearance.build]!} · ${patternLabel(this.state.species, this.state.appearance.patternId)} · skin ${this.state.appearance.skinTone + 1} · ${markingLabel}`,
       ),
     );
     const wornLabels: string[] = [];
@@ -596,13 +767,11 @@ export class CharacterCreator {
         name: displayName,
         motivation: this.state.motivation,
         stats: finalStats,
-        appearance: {
-          variant: this.state.appearance.variant,
-          build: this.state.appearance.build,
-          hueShift: this.state.appearance.hueShift,
-          marking: this.state.appearance.marking,
-          wardrobe: { ...this.state.appearance.wardrobe },
-        },
+        appearance: migrateAppearance(
+          this.state.appearance,
+          this.state.species,
+          getSpeciesAppearanceRegistry(),
+        ),
         settings: { ...this.state.settings },
       });
     });

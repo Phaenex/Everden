@@ -15,6 +15,7 @@
     { "id": "council_rostrum", "x": -0.3, "z": 3.1 },
     { "id": "levy_plans", "x": 2.2, "z": 2.2 },
     { "id": "chapel_mural", "x": -3.6, "z": 2.3 },
+    { "id": "guild_mirror", "x": -2.2, "z": 1.4 },
     { "id": "blackfen_poachers", "x": 3.8, "z": 1.1 }
   ],
   "exits": [

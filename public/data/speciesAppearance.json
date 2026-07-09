@@ -1,0 +1,94 @@
+{
+  "frog": {
+    "playable": true,
+    "skinRamps": ["#4c7842", "#3a8a58", "#2e8a68", "#6a8832", "#207858", "#5a7040"],
+    "eyeRamps": ["#c8e8c0", "#f0d080", "#e8f0ff", "#f8c8a0"],
+    "crestColorRamps": ["#4c7842", "#c8a040", "#6888a8", "#a06050"],
+    "patterns": [
+      { "id": "moss", "label": "Moss", "sheetSuffix": "p1" },
+      { "id": "reed", "label": "Reed", "sheetSuffix": "p2" },
+      { "id": "marsh", "label": "Marsh", "sheetSuffix": "p3" },
+      { "id": "bog", "label": "Bog", "sheetSuffix": "p4" }
+    ],
+    "crests": [
+      { "id": "none", "label": "Bare" },
+      { "id": "reed_crest", "label": "Reed crest", "layer": "sprites/crests/frog_reed_crest.png" },
+      { "id": "lily_tuft", "label": "Lily tuft", "layer": "sprites/crests/frog_lily_tuft.png" }
+    ],
+    "markings": ["none", "spots", "stripes", "bands", "freckles"],
+    "wardrobeSlots": ["hat", "cloak", "accessory", "held"]
+  },
+  "toad": {
+    "playable": true,
+    "skinRamps": ["#8a6830", "#7a5828", "#9a7840", "#6a5020", "#a88848", "#5a4828"],
+    "eyeRamps": ["#f0c060", "#e8d898", "#c8e8c0", "#f8a878"],
+    "crestColorRamps": ["#8a6830", "#c8a040", "#6888a8", "#a06050"],
+    "patterns": [
+      { "id": "umber", "label": "Umber", "sheetSuffix": "p1" },
+      { "id": "clay", "label": "Clay", "sheetSuffix": "p2" },
+      { "id": "rust", "label": "Rust", "sheetSuffix": "p3" },
+      { "id": "peat", "label": "Peat", "sheetSuffix": "p4" }
+    ],
+    "crests": [
+      { "id": "none", "label": "Bare" },
+      { "id": "wart_ridge", "label": "Wart ridge", "layer": "sprites/crests/toad_wart_ridge.png" }
+    ],
+    "markings": ["none", "spots", "stripes", "bands", "freckles"],
+    "wardrobeSlots": ["hat", "cloak", "accessory", "held"]
+  },
+  "turtle": {
+    "playable": true,
+    "skinRamps": ["#3a7848", "#2e6840", "#4a8858", "#286038", "#5a9868", "#1e5030"],
+    "eyeRamps": ["#8a6840", "#f0d080", "#c8e8c0", "#e8f0ff"],
+    "crestColorRamps": ["#3a7848", "#c8a040", "#6888a8", "#a06050"],
+    "patterns": [
+      { "id": "river", "label": "River", "sheetSuffix": "p1" },
+      { "id": "slate", "label": "Slate", "sheetSuffix": "p2" },
+      { "id": "kelp", "label": "Kelp", "sheetSuffix": "p3" },
+      { "id": "mist", "label": "Mist", "sheetSuffix": "p4" }
+    ],
+    "crests": [
+      { "id": "none", "label": "Bare" },
+      { "id": "shell_paint", "label": "Shell paint", "layer": "sprites/crests/turtle_shell_paint.png" }
+    ],
+    "markings": ["none", "spots", "stripes", "bands"],
+    "wardrobeSlots": ["hat", "cloak", "accessory", "held"]
+  },
+  "tortoise": {
+    "playable": true,
+    "skinRamps": ["#5a6840", "#4a5838", "#6a7850", "#3a4828", "#7a8860", "#2a3820"],
+    "eyeRamps": ["#f0c060", "#8a6840", "#c8e8c0", "#e8d898"],
+    "crestColorRamps": ["#5a6840", "#c8a040", "#6888a8", "#a06050"],
+    "patterns": [
+      { "id": "loam", "label": "Loam", "sheetSuffix": "p1" },
+      { "id": "fern", "label": "Fern", "sheetSuffix": "p2" },
+      { "id": "oak", "label": "Oak", "sheetSuffix": "p3" },
+      { "id": "stone", "label": "Stone", "sheetSuffix": "p4" }
+    ],
+    "crests": [
+      { "id": "none", "label": "Bare" },
+      { "id": "shell_etch", "label": "Shell etch", "layer": "sprites/crests/tortoise_shell_etch.png" }
+    ],
+    "markings": ["none", "spots", "stripes", "bands"],
+    "wardrobeSlots": ["hat", "cloak", "accessory", "held"]
+  },
+  "vole": {
+    "playable": true,
+    "skinRamps": ["#8a7868", "#7a6858", "#9a8878", "#6a5848", "#aa9888", "#5a4838"],
+    "eyeRamps": ["#1a1410", "#3a2820", "#f0d080", "#e8f0ff"],
+    "crestColorRamps": ["#8a7868", "#c8a040", "#d8a0b0", "#6888a8"],
+    "patterns": [
+      { "id": "dust", "label": "Dust", "sheetSuffix": "p1" },
+      { "id": "clay", "label": "Clay", "sheetSuffix": "p2" },
+      { "id": "hazel", "label": "Hazel", "sheetSuffix": "p3" },
+      { "id": "soot", "label": "Soot", "sheetSuffix": "p4" }
+    ],
+    "crests": [
+      { "id": "none", "label": "Bare" },
+      { "id": "ear_tuft", "label": "Ear tuft", "layer": "sprites/crests/vole_ear_tuft.png" },
+      { "id": "cheek_fluff", "label": "Cheek fluff", "layer": "sprites/crests/vole_cheek_fluff.png" }
+    ],
+    "markings": ["none", "spots", "stripes", "freckles"],
+    "wardrobeSlots": ["hat", "cloak", "accessory", "held"]
+  }
+}

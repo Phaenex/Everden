@@ -16,5 +16,8 @@
   { "id": "market_scarf", "slot": "accessory", "label": "Lilymarket scarf", "hint": "Red trader scarf — Lilymarket traders.", "species": ["frog", "toad", "vole"], "layer": "sprite" },
   { "id": "levy_pin", "slot": "accessory", "label": "Levy clerk's pin", "hint": "Gold levy seal — bureaucracy chic.", "species": ["*"], "layer": "sprite" },
   { "id": "shell_brooch", "slot": "accessory", "label": "Shell brooch", "hint": "Polished shell pin — heirloom look.", "species": ["*"], "layer": "sprite" },
-  { "id": "hop_whistle", "slot": "accessory", "label": "Hop whistle", "hint": "Brass pea whistle on a cord.", "species": ["frog", "toad", "vole"], "layer": "sprite" }
+  { "id": "hop_whistle", "slot": "accessory", "label": "Hop whistle", "hint": "Brass pea whistle on a cord.", "species": ["frog", "toad", "vole"], "layer": "sprite" },
+  { "id": "reed_staff", "slot": "held", "label": "Reed walking staff", "hint": "Light basin staff — traveler's companion.", "species": ["*"], "layer": "sprite" },
+  { "id": "clay_lantern", "slot": "held", "label": "Clay lantern", "hint": "Warm Mudwall lantern for night walks.", "species": ["*"], "layer": "sprite" },
+  { "id": "market_basket", "slot": "held", "label": "Market basket", "hint": "Woven Lilymarket carry-basket.", "species": ["frog", "toad", "vole"], "layer": "sprite" }
 ]

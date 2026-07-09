@@ -2,8 +2,12 @@ import type { EventBus } from '@/core/EventBus';
 import type { IGameModule } from '@/core/IGameModule';
 import type { SceneManager } from '@/presentation/SceneManager';
 import { createCharacterActor } from '@/presentation/SpriteActor';
+import { refreshCharacterMesh } from '@/presentation/CharacterSprites';
+import { SpriteAnimator } from '@/presentation/SpriteAnimator';
 import type { WardrobeDefinition } from '@/data/types';
+import { parseAppearanceJson } from '@/gameplay/CharacterAppearance';
 import { InterpolationBuffer } from './InterpolationBuffer';
+import type * as THREE from 'three';
 
 export interface RemotePlayerState {
   id: string;
@@ -46,6 +50,7 @@ export class RemotePlayerManager implements IGameModule {
       const buf = this.buffers.get(p.id) ?? new InterpolationBuffer();
       if (!this.buffers.has(p.id)) this.buffers.set(p.id, buf);
       buf.push(p.x, p.z, p.heading);
+      this.applyAnimState(p);
     });
     this.eventBus.on('net:disconnected', () => this.clearAll());
   }
@@ -73,28 +78,41 @@ export class RemotePlayerManager implements IGameModule {
       const buf = this.buffers.get(p.id) ?? new InterpolationBuffer();
       buf.push(p.x, p.z, p.heading);
       this.buffers.set(p.id, buf);
+      this.applyAnimState(p);
     }
     for (const id of [...this.known.keys()]) {
       if (!ids.has(id)) this.remove(id);
     }
   }
 
+  private applyAnimState(p: RemotePlayerState): void {
+    const group = this.sceneManager.getRemoteGroup(p.id);
+    if (!group) return;
+    const mesh = group.children.find((c) => (c as THREE.Mesh).isMesh) as THREE.Mesh | undefined;
+    if (!mesh) return;
+    const anim = (mesh as THREE.Mesh & { __spriteAnimator?: SpriteAnimator }).__spriteAnimator;
+    anim?.setMoving(p.animState === 'walk');
+  }
+
   private async ensureActor(p: RemotePlayerState): Promise<void> {
     if (p.id === this.localPlayerId) return;
-    if (this.sceneManager.getRemoteGroup(p.id)) {
+    const existing = this.sceneManager.getRemoteGroup(p.id);
+    const appearance = parseAppearanceJson(p.appearanceJson, p.species);
+    if (existing) {
+      const prev = this.known.get(p.id);
+      if (prev?.appearanceJson !== p.appearanceJson) {
+        const mesh = existing.children.find((c) => (c as THREE.Mesh).isMesh) as THREE.Mesh | undefined;
+        if (mesh) {
+          refreshCharacterMesh(mesh, p.species, appearance, this.wardrobe, this.eventBus);
+        }
+      }
       this.known.set(p.id, p);
       return;
-    }
-    let appearance;
-    try {
-      appearance = p.appearanceJson ? JSON.parse(p.appearanceJson) : undefined;
-    } catch {
-      appearance = undefined;
     }
     const { group, label } = createCharacterActor(
       p.species,
       p.name,
-      appearance?.variant ?? 0,
+      appearance.variant ?? 0,
       undefined,
       appearance,
       this.wardrobe,

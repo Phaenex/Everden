@@ -1,8 +1,13 @@
 import * as THREE from 'three';
 import { ISO_CAMERA_OFFSET } from './IsometricCamera';
 import type { CharacterAppearance } from '@/gameplay/CharacterAppearance';
-import { defaultAppearance } from '@/gameplay/CharacterAppearance';
+import { defaultAppearance, variantFromPatternId } from '@/gameplay/CharacterAppearance';
 import type { WardrobeDefinition } from '@/data/types';
+import {
+  getSpeciesAppearance,
+  getSpeciesAppearanceRegistry,
+  patternSheetSuffix,
+} from '@/data/SpeciesAppearanceRegistry';
 import { applyWardrobeBackLayers, applyWardrobeFrontLayers, applyWardrobeBackOverlayAsync, applyWardrobeFrontOverlayAsync } from './WardrobeLayers';
 import { SpriteAnimator } from './SpriteAnimator';
 import type { EventBus } from '@/core/EventBus';
@@ -424,6 +429,13 @@ function tryLoadImage(path: string): Promise<HTMLCanvasElement | null> {
   });
 }
 
+function patternIndexFromAppearance(species: string, appearance: CharacterAppearance): number {
+  if (appearance.patternId) {
+    return variantFromPatternId(species, appearance.patternId, getSpeciesAppearanceRegistry());
+  }
+  return Math.min(3, Math.max(0, appearance.variant ?? 0));
+}
+
 /**
  * Named-NPC art first, then species art, then null so callers keep their procedural
  * fallback. Never throws — a missing/failed asset must never break the game.
@@ -433,20 +445,19 @@ async function loadArtSheet(
   npcId?: string,
   _build = 1,
   variant = 0,
+  patternId?: string,
 ): Promise<HTMLCanvasElement | null> {
   if (npcId) {
     const npcArt = await tryLoadImage(`${ART_BASE}/sprites/npcs/${npcId}.png`);
     if (npcArt) return npcArt;
   }
-  // Only the `medium_p{1..4}` sheets are single, correct portraits; the slim/heavy exports
-  // are multi-pose montages (turtle_slim even holds frog art), so they render as a grid of
-  // tiny sprites. Source every build from the medium sheet until slim/heavy are regenerated
-  // as single portraits (see docs/art/ASSET_SHEET.md). Build is still expressed by the
-  // procedural body scale and stats, just not by a separate body sheet.
+  // Medium sheets are the verified single portraits; slim/heavy still use scale transform.
   const slug = 'medium';
-  const pattern = Math.min(3, Math.max(0, variant)) + 1;
+  const suffix = patternId
+    ? patternSheetSuffix(species, patternId)
+    : `p${Math.min(3, Math.max(0, variant)) + 1}`;
   const patterned = await tryLoadImage(
-    `${ART_BASE}/sprites/species/${species}_${slug}_p${pattern}.png`,
+    `${ART_BASE}/sprites/species/${species}_${slug}_${suffix}.png`,
   );
   if (patterned) return patterned;
   const buildDefault = await tryLoadImage(`${ART_BASE}/sprites/species/${species}_${slug}_p1.png`);
@@ -468,8 +479,65 @@ export async function loadArtCanvas(
   return extractSpriteFrame(sheet, 0);
 }
 
+async function loadCrestLayer(species: string, crestId: string | null): Promise<HTMLCanvasElement | null> {
+  if (!crestId || crestId === 'none') return null;
+  const def = getSpeciesAppearance(species);
+  const crest = def?.crests.find((c) => c.id === crestId);
+  const path = crest?.layer
+    ? `${ART_BASE}/${crest.layer}`
+    : `${ART_BASE}/sprites/crests/${species}_${crestId}.png`;
+  return tryLoadImage(path);
+}
+
+function blitCrest(
+  target: HTMLCanvasElement,
+  crest: HTMLCanvasElement,
+  dyeHex: string | undefined,
+): void {
+  const ctx = target.getContext('2d');
+  if (!ctx) return;
+  const layer = document.createElement('canvas');
+  layer.width = crest.width;
+  layer.height = crest.height;
+  const lctx = layer.getContext('2d')!;
+  lctx.imageSmoothingEnabled = false;
+  lctx.drawImage(crest, 0, 0);
+  if (dyeHex) {
+    // Only recolor green/olive crest stalks — leave pinks, golds, etc. alone so
+    // multi-color crests (lily tuft) keep their art when crestColor is set.
+    const img = lctx.getImageData(0, 0, layer.width, layer.height);
+    const [tr, tg, tb] = hexToRgb(dyeHex);
+    const { data } = img;
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3]! < 12) continue;
+      const r = data[i]!;
+      const g = data[i + 1]!;
+      const b = data[i + 2]!;
+      const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+      if (luma < 28) continue; // keep outlines
+      const isGreenish = g > r + 8 && g > b + 4 && g > 40;
+      if (!isGreenish) continue;
+      data[i] = Math.round(tr * (luma / 180));
+      data[i + 1] = Math.round(tg * (luma / 180));
+      data[i + 2] = Math.round(tb * (luma / 180));
+    }
+    lctx.putImageData(img, 0, 0);
+  }
+  // Crop opaque bounds and pin to the crown (same idea as hats) — full-frame blit
+  // stretches padded 1024² crest art across the whole body.
+  const b = cropOpaqueBounds(layer, 0);
+  const targetW = target.width * 0.55;
+  const scale = targetW / Math.max(1, b.w);
+  const dw = b.w * scale;
+  const dh = b.h * scale;
+  const dx = (target.width - dw) / 2;
+  const dy = target.height * 0.02;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(layer, b.x, b.y, b.w, b.h, dx, dy, dw, dh);
+}
+
 /**
- * Compose one animation frame: body PNG + hue/markings + Habbo-style wardrobe overlays.
+ * Compose one animation frame: body PNG + look channels + Habbo-style wardrobe overlays.
  * Returns null when art is missing (callers keep procedural fallback).
  */
 export async function composeCharacterArtCanvas(
@@ -480,14 +548,36 @@ export async function composeCharacterArtCanvas(
   npcId?: string,
   cloakFrameIndex = 0,
 ): Promise<HTMLCanvasElement | null> {
-  const sheet = await loadArtSheet(species, npcId, appearance.build ?? 1, appearance.variant ?? 0);
+  const patternIdx = patternIndexFromAppearance(species, appearance);
+  const sheet = await loadArtSheet(
+    species,
+    npcId,
+    appearance.build ?? 1,
+    patternIdx,
+    appearance.patternId,
+  );
   if (!sheet) return null;
-  const bodyFrameRaw = extractSpriteFrame(sheet, frameIndex, species);
+
+  // Pattern intensity: blend base p1 with patterned sheet when intensity < 100.
+  let bodyFrameRaw = extractSpriteFrame(sheet, frameIndex, species);
+  const intensity = appearance.patternIntensity ?? 100;
+  if (intensity < 100 && appearance.patternId) {
+    const baseSheet = await loadArtSheet(species, npcId, appearance.build ?? 1, 0, undefined);
+    if (baseSheet) {
+      const baseFrame = extractSpriteFrame(baseSheet, frameIndex, species);
+      bodyFrameRaw = blendCanvases(baseFrame, bodyFrameRaw, intensity / 100);
+    }
+  }
+
   const bodyFrame = scaleBodyFrameForBuild(bodyFrameRaw, appearance.build ?? 1);
   applyAppearanceToArtCanvas(bodyFrame, species, appearance, wardrobeItems);
 
-  // When a cloak is equipped, pad the canvas so the drape has room to show around the body
-  // (the body portrait fills its own bounds edge-to-edge). Front items align to the body rect.
+  const crest = await loadCrestLayer(species, appearance.crestId ?? null);
+  if (crest) {
+    const dye = getSpeciesAppearance(species)?.crestColorRamps[appearance.crestColor ?? 0];
+    blitCrest(bodyFrame, crest, dye);
+  }
+
   const hasCloak = !!appearance.wardrobe?.cloak;
   const padX = hasCloak ? Math.round(bodyFrame.width * 0.26) : 0;
   const padBottom = hasCloak ? Math.round(bodyFrame.height * 0.1) : 0;
@@ -502,6 +592,25 @@ export async function composeCharacterArtCanvas(
   await applyWardrobeBackOverlayAsync(out, appearance, wardrobeItems, species, cloakFrameIndex, bodyRegion);
   ctx.drawImage(bodyFrame, bodyRegion.x, bodyRegion.y);
   await applyWardrobeFrontOverlayAsync(out, appearance, wardrobeItems, species, bodyRegion);
+  return out;
+}
+
+function blendCanvases(
+  base: HTMLCanvasElement,
+  patterned: HTMLCanvasElement,
+  t: number,
+): HTMLCanvasElement {
+  const w = Math.min(base.width, patterned.width);
+  const h = Math.min(base.height, patterned.height);
+  const out = document.createElement('canvas');
+  out.width = w;
+  out.height = h;
+  const ctx = out.getContext('2d')!;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(base, 0, 0);
+  ctx.globalAlpha = Math.max(0, Math.min(1, t));
+  ctx.drawImage(patterned, 0, 0, w, h, 0, 0, w, h);
+  ctx.globalAlpha = 1;
   return out;
 }
 
@@ -611,45 +720,67 @@ function shiftColor(hex: string, hueShift: number): string {
 }
 
 /** Procedural 32×32 markings (legacy pixel drawer). */
-function applyMarkingsProcedural(ctx: CanvasRenderingContext2D, marking: CharacterAppearance['marking'], scale = 1): void {
+function applyMarkingsProcedural(
+  ctx: CanvasRenderingContext2D,
+  marking: CharacterAppearance['marking'],
+  scale = 1,
+  intensity = 60,
+): void {
   if (marking === 'none') return;
+  const alpha = Math.max(0.15, Math.min(0.85, (intensity / 100) * 0.7));
   ctx.imageSmoothingEnabled = false;
-  if (marking === 'spots') {
-    ctx.fillStyle = 'rgba(10, 16, 8, 0.55)';
-    const spots: Array<[number, number, number]> = [
-      [12, 14, 1.2], [18, 16, 1], [14, 20, 1.4], [20, 12, 1], [10, 18, 1.1], [16, 13, 0.9], [13, 17, 1.3],
-      [22, 18, 1], [11, 22, 1.2], [17, 21, 0.8],
-    ];
+  if (marking === 'spots' || marking === 'freckles') {
+    ctx.fillStyle = `rgba(10, 16, 8, ${alpha})`;
+    const spots: Array<[number, number, number]> =
+      marking === 'freckles'
+        ? [
+            [12, 12, 0.7], [15, 11, 0.6], [18, 13, 0.7], [14, 15, 0.5], [17, 16, 0.6],
+            [11, 17, 0.5], [20, 15, 0.6],
+          ]
+        : [
+            [12, 14, 1.2], [18, 16, 1], [14, 20, 1.4], [20, 12, 1], [10, 18, 1.1], [16, 13, 0.9],
+            [13, 17, 1.3], [22, 18, 1], [11, 22, 1.2], [17, 21, 0.8],
+          ];
     for (const [x, y, r] of spots) {
       ctx.beginPath();
       ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2);
       ctx.fill();
     }
   } else {
-    ctx.fillStyle = 'rgba(12, 18, 10, 0.45)';
-    for (let y = 10; y < 26; y += 4) {
-      const wobble = ((y * 3) % 5) - 2;
-      ctx.fillRect((10 + wobble) * scale, y * scale, 12 * scale, 1.5 * scale);
+    ctx.fillStyle = `rgba(12, 18, 10, ${alpha})`;
+    const step = marking === 'bands' ? 5 : 4;
+    for (let y = 10; y < 26; y += step) {
+      const wobble = marking === 'bands' ? 0 : ((y * 3) % 5) - 2;
+      const thick = marking === 'bands' ? 2.2 : 1.5;
+      ctx.fillRect((10 + wobble) * scale, y * scale, 12 * scale, thick * scale);
     }
   }
 }
 
-/** Markings on loaded PNG portraits — proportional bands, crisp pixels. */
+/** Markings on loaded PNG portraits — proportional, intensity-aware. */
 function applyMarkingsOnArt(
   ctx: CanvasRenderingContext2D,
   marking: CharacterAppearance['marking'],
   w: number,
   h: number,
+  intensity = 60,
 ): void {
   if (marking === 'none') return;
+  const alpha = Math.max(0.12, Math.min(0.8, (intensity / 100) * 0.65));
   ctx.imageSmoothingEnabled = false;
   const cx = w * 0.5;
-  if (marking === 'spots') {
-    ctx.fillStyle = 'rgba(16, 24, 12, 0.52)';
-    const spots: Array<[number, number, number]> = [
-      [0.38, 0.2, 0.032], [0.58, 0.22, 0.028], [0.46, 0.34, 0.03], [0.62, 0.38, 0.026],
-      [0.34, 0.42, 0.024], [0.52, 0.48, 0.028], [0.42, 0.55, 0.022],
-    ];
+  if (marking === 'spots' || marking === 'freckles') {
+    ctx.fillStyle = `rgba(16, 24, 12, ${alpha})`;
+    const spots: Array<[number, number, number]> =
+      marking === 'freckles'
+        ? [
+            [0.4, 0.18, 0.018], [0.52, 0.2, 0.016], [0.46, 0.28, 0.015], [0.58, 0.3, 0.014],
+            [0.36, 0.32, 0.014], [0.5, 0.36, 0.016],
+          ]
+        : [
+            [0.38, 0.2, 0.032], [0.58, 0.22, 0.028], [0.46, 0.34, 0.03], [0.62, 0.38, 0.026],
+            [0.34, 0.42, 0.024], [0.52, 0.48, 0.028], [0.42, 0.55, 0.022],
+          ];
     for (const [px, py, pr] of spots) {
       const r = Math.max(2, Math.round(pr * w));
       ctx.beginPath();
@@ -657,12 +788,56 @@ function applyMarkingsOnArt(
       ctx.fill();
     }
   } else {
-    ctx.fillStyle = 'rgba(20, 30, 14, 0.58)';
-    const bandH = Math.max(2, Math.round(h * 0.016));
+    ctx.fillStyle = `rgba(20, 30, 14, ${alpha})`;
+    const bandH = Math.max(2, Math.round(h * (marking === 'bands' ? 0.022 : 0.016)));
     const bandW = Math.round(w * 0.38);
     const x0 = Math.round(cx - bandW / 2);
-    for (const py of [0.17, 0.26, 0.35, 0.44, 0.53]) {
+    const rows = marking === 'bands' ? [0.18, 0.3, 0.42, 0.54] : [0.17, 0.26, 0.35, 0.44, 0.53];
+    for (const py of rows) {
       ctx.fillRect(x0, Math.round(py * h), bandW, bandH);
+    }
+  }
+}
+
+function remapSkinTone(data: Uint8ClampedArray, targetHex: string): void {
+  const [tr, tg, tb] = hexToRgb(targetHex);
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3]! < 12) continue;
+    const r = data[i]!;
+    const g = data[i + 1]!;
+    const b = data[i + 2]!;
+    const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+    if (luma < 32 || luma > 230) continue; // outlines / highlights
+    // Prefer mid-saturation body greens/browns over near-grey eyes
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    if (max - min < 18 && luma > 140) continue;
+    const t = luma / 160;
+    data[i] = Math.round(tr * t);
+    data[i + 1] = Math.round(tg * t);
+    data[i + 2] = Math.round(tb * t);
+  }
+}
+
+function recolorEyes(data: Uint8ClampedArray, w: number, h: number, eyeHex: string): void {
+  const [er, eg, eb] = hexToRgb(eyeHex);
+  const y0 = Math.floor(h * 0.12);
+  const y1 = Math.floor(h * 0.38);
+  const xBands = [
+    [Math.floor(w * 0.28), Math.floor(w * 0.45)],
+    [Math.floor(w * 0.55), Math.floor(w * 0.72)],
+  ];
+  for (let y = y0; y < y1; y++) {
+    for (const [x0, x1] of xBands) {
+      for (let x = x0; x < x1; x++) {
+        const i = (y * w + x) * 4;
+        if (data[i + 3]! < 12) continue;
+        const luma = 0.299 * data[i]! + 0.587 * data[i + 1]! + 0.114 * data[i + 2]!;
+        if (luma < 90 || luma > 245) continue;
+        data[i] = Math.round(er * 0.85 + data[i]! * 0.15);
+        data[i + 1] = Math.round(eg * 0.85 + data[i + 1]! * 0.15);
+        data[i + 2] = Math.round(eb * 0.85 + data[i + 2]! * 0.15);
+      }
     }
   }
 }
@@ -717,22 +892,43 @@ export function drawCharacterCanvas(
   };
 
   let pixels = (drawers[species] ?? drawFrog)(app.variant ?? variant);
-  if (app.hueShift !== 0) {
-    pixels = pixels.map((p) => ({ ...p, c: shiftColor(p.c, app.hueShift) }));
+  const skin = getSpeciesAppearance(species)?.skinRamps[app.skinTone ?? 0];
+  if (skin) {
+    const [sr, sg, sb] = hexToRgb(skin);
+    pixels = pixels.map((p) => {
+      const [r, g, b] = hexToRgb(p.c);
+      const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+      if (luma < 40 || luma > 220) return p;
+      const t = luma / 160;
+      return { ...p, c: rgbToHex(sr * t, sg * t, sb * t) };
+    });
+  } else if (app.hueShift) {
+    pixels = pixels.map((p) => ({ ...p, c: shiftColor(p.c, app.hueShift!) }));
+  }
+  const eye = getSpeciesAppearance(species)?.eyeRamps[app.eyeColor ?? 0];
+  if (eye) {
+    pixels = pixels.map((p) => {
+      // Rough eye band on procedural 32×32
+      if (p.y >= 7 && p.y <= 10 && ((p.x >= 9 && p.x <= 13) || (p.x >= 19 && p.x <= 23))) {
+        const [r, g, b] = hexToRgb(p.c);
+        if (0.299 * r + 0.587 * g + 0.114 * b > 100) return { ...p, c: eye };
+      }
+      return p;
+    });
   }
   for (const p of pixels) {
     ctx.fillStyle = p.c;
     ctx.fillRect(p.x, p.y, 1, 1);
   }
-  applyMarkingsProcedural(ctx, app.marking);
+  applyMarkingsProcedural(ctx, app.marking, 1, app.markingIntensity ?? 60);
   applyWardrobeFrontLayers(ctx, app, wardrobeItems, species);
   return canvas;
 }
 
-/** Apply tint, markings, and wardrobe on top of loaded species/NPC portrait art. */
+/** Apply skin/eye/markings on top of loaded species/NPC portrait art. */
 export function applyAppearanceToArtCanvas(
   target: HTMLCanvasElement,
-  _species: string,
+  species: string,
   appearance: CharacterAppearance,
   _wardrobeItems: WardrobeDefinition[],
 ): void {
@@ -740,10 +936,13 @@ export function applyAppearanceToArtCanvas(
   if (!ctx) return;
   const w = target.width;
   const h = target.height;
+  const def = getSpeciesAppearance(species);
+  const img = ctx.getImageData(0, 0, w, h);
+  const { data } = img;
 
-  if (appearance.hueShift !== 0) {
-    const img = ctx.getImageData(0, 0, w, h);
-    const { data } = img;
+  const skin = def?.skinRamps[appearance.skinTone ?? 0];
+  if (skin) remapSkinTone(data, skin);
+  else if (appearance.hueShift) {
     for (let i = 0; i < data.length; i += 4) {
       if (data[i + 3]! < 12) continue;
       const shifted = shiftColor(rgbToHex(data[i]!, data[i + 1]!, data[i + 2]!), appearance.hueShift);
@@ -752,11 +951,15 @@ export function applyAppearanceToArtCanvas(
       data[i + 1] = g;
       data[i + 2] = b;
     }
-    ctx.putImageData(img, 0, 0);
   }
 
+  const eye = def?.eyeRamps[appearance.eyeColor ?? 0];
+  if (eye) recolorEyes(data, w, h, eye);
+
+  ctx.putImageData(img, 0, 0);
+
   if (appearance.marking !== 'none') {
-    applyMarkingsOnArt(ctx, appearance.marking, w, h);
+    applyMarkingsOnArt(ctx, appearance.marking, w, h, appearance.markingIntensity ?? 60);
   }
 }
 
@@ -1056,6 +1259,40 @@ export function createCharacterMesh(
   }
 
   return mesh;
+}
+
+/**
+ * Live appearance respec — swap composed art + reattach animator without rebuilding the group.
+ */
+export function refreshCharacterMesh(
+  mesh: THREE.Mesh,
+  species: string,
+  appearance: CharacterAppearance,
+  wardrobeItems: WardrobeDefinition[],
+  eventBus?: EventBus,
+  npcId?: string,
+): void {
+  const mat = mesh.material as THREE.MeshBasicMaterial;
+  const procedural = drawCharacterCanvas(species, appearance.variant ?? 0, appearance, wardrobeItems);
+  const procTex = new THREE.CanvasTexture(procedural);
+  procTex.magFilter = THREE.NearestFilter;
+  procTex.minFilter = THREE.NearestFilter;
+  const prev = mat.map;
+  mat.map = procTex;
+  mat.needsUpdate = true;
+  if (prev) prev.dispose();
+
+  void composeCharacterArtCanvas(species, appearance, wardrobeItems, 0, npcId, 0).then((composed) => {
+    if (!composed) return;
+    const tex = new THREE.CanvasTexture(composed);
+    tex.magFilter = THREE.NearestFilter;
+    tex.minFilter = THREE.NearestFilter;
+    const old = mat.map;
+    mat.map = tex;
+    mat.needsUpdate = true;
+    if (old && old !== tex) old.dispose();
+    SpriteAnimator.attach(mesh, species, appearance, wardrobeItems, npcId, eventBus);
+  });
 }
 
 export function createNameLabel(name: string, meshSize = CHARACTER_MESH_SIZE): THREE.Sprite {

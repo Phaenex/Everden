@@ -11,6 +11,7 @@ import {
 } from '../../../shared/movement/MovementSim.js';
 import { applySeparation } from '../../../shared/movement/Separation.js';
 import { NET_EVENTS } from '../../../shared/protocol.js';
+import { isAppearanceJsonSafe } from '../../../shared/appearance/validate.js';
 import { validateWalkTarget } from '../services/AntiCheat.js';
 import { partyService } from '../services/PartyService.js';
 import { npcAuthority } from '../services/NpcAuthority.js';
@@ -87,6 +88,23 @@ export class SceneRoom extends Room<RoomState> {
       const p = this.state.players.get(playerId);
       if (!p) return;
       p.animState = payload?.emote === 'sit' ? 'emote_sit' : 'emote_wave';
+    });
+
+    this.onMessage(NET_EVENTS.APPEARANCE_UPDATE, (client, payload: { appearanceJson?: string }) => {
+      const playerId = this.sessionToPlayer.get(client.sessionId);
+      if (!playerId) return;
+      const p = this.state.players.get(playerId);
+      if (!p) return;
+      const json = payload?.appearanceJson ?? '';
+      if (!isAppearanceJsonSafe(json)) return;
+      p.appearanceJson = json;
+      characterStore.save({
+        playerId,
+        name: p.name,
+        species: p.species,
+        appearanceJson: json,
+        updatedAt: Date.now(),
+      });
     });
 
     this.onMessage(NET_EVENTS.PARTY_JOIN, (client, payload: { partyId?: string }) => {

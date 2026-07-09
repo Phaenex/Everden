@@ -230,6 +230,11 @@ export class SceneManager implements IGameModule {
     return this.playerGroup ? { x: this.playerGroup.position.x, z: this.playerGroup.position.z } : null;
   }
 
+  getPlayerMesh(): THREE.Mesh | null {
+    if (!this.playerGroup) return null;
+    return (this.playerGroup.children.find((c) => c instanceof THREE.Mesh) as THREE.Mesh | undefined) ?? null;
+  }
+
   /** Projects a world (x,z) ground point to CSS pixel coordinates — used to verify
    *  actors don't visually overlap on screen (isometric depth can hide real-world
    *  separation), without trusting screenshot capture in automated environments. */

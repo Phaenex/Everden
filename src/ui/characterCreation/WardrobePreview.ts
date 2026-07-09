@@ -1,6 +1,7 @@
 import type { WardrobeDefinition } from '@/data/types';
-import type { CharacterAppearance, CharacterWardrobe } from '@/gameplay/CharacterAppearance';
+import type { CharacterAppearance, CharacterWardrobe, WardrobeSlot } from '@/gameplay/CharacterAppearance';
 import { defaultAppearance } from '@/gameplay/CharacterAppearance';
+import { patternLabel as registryPatternLabel } from '@/data/SpeciesAppearanceRegistry';
 import {
   composeCharacterArtCanvas,
   drawCroppedSprite,
@@ -14,7 +15,6 @@ let _thumbSeq = 0;
 
 type ThumbCanvas = HTMLCanvasElement & { __thumbSeq?: number };
 
-/** Per-canvas seq — the old global guard dropped every thumb except the last async upgrade. */
 function stampThumb(canvas: HTMLCanvasElement): number {
   const seq = ++_thumbSeq;
   (canvas as ThumbCanvas).__thumbSeq = seq;
@@ -39,7 +39,7 @@ function drawThumbPlaceholder(ctx: CanvasRenderingContext2D): void {
 }
 
 function bodyOnly(appearance: CharacterAppearance): CharacterAppearance {
-  return { ...appearance, wardrobe: {} };
+  return { ...appearance, wardrobe: {}, dyes: {} };
 }
 
 function paintThumbCanvas(canvas: HTMLCanvasElement, src: HTMLCanvasElement): void {
@@ -73,26 +73,12 @@ function createThumbCanvas(): HTMLCanvasElement {
   return out;
 }
 
-/** Human palette names per species (variant index 0–3). */
-export const PATTERN_LABELS: Record<string, readonly [string, string, string, string]> = {
-  frog: ['Moss', 'Reed', 'Marsh', 'Bog'],
-  toad: ['Umber', 'Clay', 'Rust', 'Peat'],
-  turtle: ['River', 'Slate', 'Kelp', 'Mist'],
-  tortoise: ['Loam', 'Fern', 'Oak', 'Stone'],
-  vole: ['Dust', 'Clay', 'Hazel', 'Soot'],
-};
-
-export function patternLabel(species: string, variant: number): string {
-  const row = PATTERN_LABELS[species];
-  if (!row) return `Palette ${variant + 1}`;
-  return row[Math.min(3, Math.max(0, variant))] ?? `Palette ${variant + 1}`;
+export function patternLabel(species: string, patternIdOrVariant: string | number): string {
+  return registryPatternLabel(species, patternIdOrVariant);
 }
 
-export type WardrobeSlot = keyof CharacterWardrobe;
+export type { WardrobeSlot };
 
-/**
- * Outfit card icon — shows the ITEM ONLY (hat/cloak/accessory), not a dressed character.
- */
 export function drawWardrobeThumbnail(
   _species: string,
   _slot: WardrobeSlot,
@@ -129,7 +115,6 @@ export function drawWardrobeThumbnail(
   return out;
 }
 
-/** Body build swatch — only build differs; neutral tint/markings so the silhouette reads. */
 export function drawBuildThumbnail(
   species: string,
   build: 0 | 1 | 2,
@@ -140,8 +125,8 @@ export function drawBuildThumbnail(
     ...appearance,
     build,
     marking: 'none',
+    markingIntensity: 0,
     hueShift: 0,
-    variant: 0,
   });
   const out = createThumbCanvas();
   const seq = stampThumb(out);
@@ -149,19 +134,20 @@ export function drawBuildThumbnail(
   return out;
 }
 
-/** Pattern swatch — only palette differs. */
 export function drawVariantThumbnail(
   species: string,
-  variant: number,
+  patternId: string,
   appearance: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[],
 ): HTMLCanvasElement {
   const app = bodyOnly({
     ...appearance,
-    variant,
+    patternId,
     build: 1,
     marking: 'none',
+    markingIntensity: 0,
     hueShift: 0,
+    patternIntensity: 100,
   });
   const out = createThumbCanvas();
   const seq = stampThumb(out);
@@ -169,7 +155,6 @@ export function drawVariantThumbnail(
   return out;
 }
 
-/** Folk tab species card — always that species' default palette at medium build. */
 export function drawSpeciesCardThumbnail(
   species: string,
   _selected: boolean,
@@ -179,11 +164,11 @@ export function drawSpeciesCardThumbnail(
   const app = bodyOnly({
     ...defaultAppearance(),
     build: 1,
-    variant: 0,
+    patternId: 'moss',
     marking: 'none',
     hueShift: 0,
   });
-  return drawVariantThumbnail(species, 0, app, wardrobeItems);
+  return drawVariantThumbnail(species, app.patternId, app, wardrobeItems);
 }
 
 export function mountThumbnail(parent: HTMLElement, canvas: HTMLCanvasElement, className = 'wardrobe-thumb'): void {
@@ -192,3 +177,5 @@ export function mountThumbnail(parent: HTMLElement, canvas: HTMLCanvasElement, c
   else parent.prepend(canvas);
   canvas.className = className;
 }
+
+export type { CharacterWardrobe };

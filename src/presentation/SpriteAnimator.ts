@@ -75,6 +75,18 @@ export class SpriteAnimator {
     this.scheduleFlutter();
   }
 
+  /** Drive walk bob from server animState (remotes) or local movement. */
+  setMoving(moving: boolean): void {
+    if (moving === this.walking) return;
+    this.walking = moving;
+    this.restartBob();
+  }
+
+  setAppearance(appearance: CharacterAppearance): void {
+    this.appearance = appearance;
+    void this.applyFrame();
+  }
+
   private restartBob(): void {
     if (this.bobTimer !== null) window.clearInterval(this.bobTimer);
     const ms = this.walking ? WALK_BOB_MS : BOB_MS;

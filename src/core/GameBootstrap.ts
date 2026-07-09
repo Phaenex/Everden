@@ -21,11 +21,15 @@ import { SceneManager } from '@/presentation/SceneManager';
 import { RainVFX } from '@/presentation/RainVFX';
 import { AudioManager } from '@/presentation/AudioManager';
 import { createCharacterActor } from '@/presentation/SpriteActor';
+import { refreshCharacterMesh } from '@/presentation/CharacterSprites';
 import { buildSceneGraphics, fetchSceneDefinition, SceneState } from '@/presentation/SceneLoader';
 import { UIManager } from '@/ui/UIManager';
+import { AppearanceMirrorUI } from '@/ui/AppearanceMirrorUI';
 import type { DialogueTree, NPCDefinition, WorldObjectDefinition, ItemDefinition } from '@/data/types';
 import type { SceneDefinition } from '@/data/sceneTypes';
 import { PlayerProfile, applyMotivationFlags } from '@/gameplay/PlayerProfile';
+import { migrateAppearance, type CharacterAppearance } from '@/gameplay/CharacterAppearance';
+import { getSpeciesAppearanceRegistry } from '@/data/SpeciesAppearanceRegistry';
 import { defaultCreatorSettings } from '@/gameplay/CreatorSettings';
 import { getOpeningNarrationLines } from '@/gameplay/OpeningNarration';
 import { recommendedFinalStats } from '@/gameplay/PointBuy';
@@ -83,7 +87,7 @@ export class GameBootstrap {
     name: 'Traveler',
     motivation: 'investigator',
     stats: { str: 8, dex: 14, con: 10, int: 10, wis: 10, cha: 12 },
-    appearance: { variant: 0, build: 1, hueShift: 0, marking: 'none', wardrobe: {} },
+    appearance: migrateAppearance(null, 'frog'),
     settings: defaultCreatorSettings(),
   }): Promise<void> {
     if (this.started) return;
@@ -167,10 +171,15 @@ export class GameBootstrap {
     }
 
     const wardrobe = this.data.get('wardrobe');
+    this.playerProfile.appearance = migrateAppearance(
+      this.playerProfile.appearance,
+      playerSpecies,
+      getSpeciesAppearanceRegistry(),
+    );
     const playerActor = createCharacterActor(
       playerSpecies,
       this.playerProfile.name,
-      this.playerProfile.appearance.variant,
+      this.playerProfile.appearance.variant ?? 0,
       undefined,
       this.playerProfile.appearance,
       wardrobe,
@@ -772,6 +781,10 @@ export class GameBootstrap {
       this.openDialogue('council_vote', 'turtle', 'Council');
       return;
     }
+    if (payload?.openMirror) {
+      this.openGuildMirror();
+      return;
+    }
     const target = payload?.target as string;
     if (!target) return;
     this.questManager.completeObjective('examine', target);
@@ -784,6 +797,36 @@ export class GameBootstrap {
       { id: 'examine', speaker: 'Examination', text: this.examineText(target) },
       () => this.ui.hideDialogue(),
     );
+  }
+
+  private openGuildMirror(): void {
+    const wardrobe = this.data.get('wardrobe');
+    const mirror = new AppearanceMirrorUI(
+      this.playerSpecies,
+      wardrobe,
+      () => this.playerProfile.appearance,
+      (appearance: CharacterAppearance) => {
+        this.playerProfile.appearance = migrateAppearance(
+          appearance,
+          this.playerSpecies,
+          getSpeciesAppearanceRegistry(),
+        );
+        const mesh = this.sceneManager.getPlayerMesh();
+        if (mesh) {
+          refreshCharacterMesh(
+            mesh,
+            this.playerSpecies,
+            this.playerProfile.appearance,
+            wardrobe,
+            this.eventBus,
+          );
+        }
+        this.save.save();
+        this.eventBus.emit('appearance:changed');
+        this.ui.showToast('Looking-glass locked in your new look.');
+      },
+    );
+    mirror.open();
   }
 
   private onMerchant(payload: Record<string, unknown> | undefined): void {
@@ -900,6 +943,8 @@ export class GameBootstrap {
         'A stone waystone, chipped at the edges. Lilymarket north across the reeds, Mudwall east past the stoneworks, Croakend west through the smoke, Ferryman\'s Rest south along the water. A fifth line is scratched deeper than the rest, pointing off the map entirely.',
       causeway_lantern:
         'An old ferry lantern, unlit this hour. Its glass is scratched with a dozen names — travelers who swore they\'d "come back for it." None have.',
+      guild_mirror:
+        'A tall guild looking-glass, silvered with basin tin. Mudwall masons use it to check crest paint and levy pins before council.',
     };
     return texts[target] ?? 'Nothing remarkable.';
   }

@@ -80,6 +80,8 @@ export async function completeCharacterWithAppearance(
     skipNarration?: boolean;
     buildIndex?: number;
     variantIndex?: number;
+    skinToneIndex?: number;
+    patternIntensity?: number;
     marking?: 'none' | 'spots' | 'stripes';
     hueShift?: number;
     hatLabel?: RegExp;
@@ -103,16 +105,19 @@ export async function completeCharacterWithAppearance(
   if (opts.variantIndex !== undefined) {
     await page.locator('.variant-card').nth(opts.variantIndex).click();
   }
+  if (opts.skinToneIndex !== undefined) {
+    await page.locator('.swatch-row').first().locator('.swatch-btn').nth(opts.skinToneIndex).click();
+  }
   if (opts.marking && opts.marking !== 'none') {
     const label = opts.marking.charAt(0).toUpperCase() + opts.marking.slice(1);
-    await page.getByRole('button', { name: label }).click();
+    await page.getByRole('button', { name: label, exact: true }).click();
   }
-  if (opts.hueShift !== undefined) {
-    await page.locator('.hue-slider').evaluate((el, v) => {
+  if (opts.patternIntensity !== undefined) {
+    await page.locator('.hue-slider').first().evaluate((el, v) => {
       const input = el as HTMLInputElement;
       input.value = String(v);
       input.dispatchEvent(new Event('input', { bubbles: true }));
-    }, opts.hueShift);
+    }, opts.patternIntensity);
   }
 
   if (opts.hatLabel || opts.cloakLabel || opts.accessoryLabel) {

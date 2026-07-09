@@ -93,7 +93,8 @@ test.describe('Character creation wizard', () => {
       buildIndex: 2,
       variantIndex: 2,
       marking: 'spots',
-      hueShift: 35,
+      skinToneIndex: 2,
+      patternIntensity: 70,
       hatLabel: /Ferry kepi/,
       cloakLabel: /Levy mantle/,
       accessoryLabel: /Shell brooch/,
@@ -107,9 +108,10 @@ test.describe('Character creation wizard', () => {
 
     const profile = await readSaveProfile(page);
     expect(profile?.appearance?.build).toBe(2);
-    expect(profile?.appearance?.variant).toBe(2);
+    expect(profile?.appearance?.patternId).toBe('marsh');
     expect(profile?.appearance?.marking).toBe('spots');
-    expect(profile?.appearance?.hueShift).toBe(35);
+    expect(profile?.appearance?.skinTone).toBe(2);
+    expect(profile?.appearance?.patternIntensity).toBe(70);
     expect(profile?.appearance?.wardrobe?.hat).toBe('ferry_kepi');
     expect(profile?.appearance?.wardrobe?.cloak).toBe('levy_mantle');
     expect(profile?.appearance?.wardrobe?.accessory).toBe('shell_brooch');

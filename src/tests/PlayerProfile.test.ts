@@ -6,23 +6,31 @@ import { abilityModifier, getOpeningNarrationLines } from '@/gameplay/OpeningNar
 import { resolveInitialTitleStep } from '@/ui/TitleScreen';
 
 describe('PlayerProfile', () => {
-  it('serializes v3 state with stats and appearance', () => {
+  it('serializes v4 state with stats and migrated appearance', () => {
     const profile = new PlayerProfile();
     profile.setFromCreation(
       'tortoise',
       'Myrtle',
       'neighbor',
       { str: 12, dex: 8, con: 16, int: 12, wis: 14, cha: 10 },
-      { variant: 1, build: 2, hueShift: 10, marking: 'spots', wardrobe: { hat: 'shell_cap' } },
+      {
+        variant: 1,
+        build: 2,
+        hueShift: 10,
+        marking: 'spots',
+        wardrobe: { hat: 'shell_cap' },
+      } as never,
     );
-    expect(profile.serialize()).toEqual({
-      species: 'tortoise',
-      name: 'Myrtle',
-      motivation: 'neighbor',
-      stats: { str: 12, dex: 8, con: 16, int: 12, wis: 14, cha: 10 },
-      appearance: { variant: 1, build: 2, hueShift: 10, marking: 'spots', wardrobe: { hat: 'shell_cap' } },
-      settings: defaultCreatorSettings(),
-    });
+    const ser = profile.serialize();
+    expect(ser.species).toBe('tortoise');
+    expect(ser.name).toBe('Myrtle');
+    expect(ser.motivation).toBe('neighbor');
+    expect(ser.stats).toEqual({ str: 12, dex: 8, con: 16, int: 12, wis: 14, cha: 10 });
+    expect(ser.appearance?.patternId).toBeDefined();
+    expect(ser.appearance?.build).toBe(2);
+    expect(ser.appearance?.marking).toBe('spots');
+    expect(ser.appearance?.wardrobe.hat).toBe('shell_cap');
+    expect(ser.settings).toEqual(defaultCreatorSettings());
   });
 
   it('defaults blank name to Traveler on deserialize (v1 saves without name/motivation)', () => {

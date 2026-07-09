@@ -1,6 +1,6 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-059)
+**Last updated:** 2026-07-08 (CHECKIN-061)
 **Play online:** https://croakend-club.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
@@ -17,7 +17,7 @@
 | T4 | **Quests & dialogue** | `████████████████░░░░` | **82%** | quest hard-block; missing fail-forward |
 | T5 | **Combat & D&D** | `█████████████████░░░` | **88%** | soft-lock; RAW doc gaps |
 | T6 | **Look & feel** | `████████░░░░░░░░░░░░` | **42%** | scout FAIL; Nick eye no |
-| T7 | **Art & audio** | `███████████░░░░░░░░░` | **55%** | playable folk PNG set incomplete |
+| T7 | **Art & audio** | `████████████░░░░░░░░` | **62%** | other folk crest/held packs incomplete |
 | T8 | **Gated build V1–V5** | `█████████░░░░░░░░░░░` | **48%** | any V-row FAIL |
 | T9 | **Groundwork** | `████████░░░░░░░░░░░░` | **45%** | (future; does not move headline %) |
 
@@ -33,29 +33,28 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://croakend-club.vercel.app · CHECKIN-059
+Play: https://croakend-club.vercel.app · CHECKIN-061
 
 OVERALL  [█████████░░░░░░░░░░░]  61%
 
 VISUAL + CLICK PLAYWRIGHT (creator) — see docs/playtests/VISUAL_CLICK_AUDIT.md
   CLICK+SHOT  [████████████████████] 100%  (133/133 screenshots — full per-species matrix)
   AGENT EYE   [████████████████████] 100%  (104 pass · 29 borderline · 0 fail)
-  NICK EYE    [░░░░░░░░░░░░░░░░░░░░]   0%  (human gate — AR-040 deep pass shipped)
+  NICK EYE    [░░░░░░░░░░░░░░░░░░░░]   0%  (human gate — AR-042 frog crest/held art + Look proof)
   Cmd: npm run audit:creator:visual
-  NOTE: AR-039/040 — thumb async race, dual-pose montage split, 72px thumbs (CSS matched),
-        folk blurbs un-clamped, crisp preview scaling, PNG markings, palette names.
-        Nick re-eye croakend-club after deploy.
+  NOTE: AR-042 — frog reed/lily crests + 3 held PNGs live in preview (agent eye). Other folk
+        crest packs still missing. Nick eye before T6 %.
 
 WORKSTREAMS (T1–T9)
-  T1 Mechanics & CI     [████████████████████]  95%  (163 unit)
-  T2 First 5 minutes    [██████████████████░░]  88%  (AR-038 polish; Nick eye)
+  T1 Mechanics & CI     [████████████████████]  96%  (170 unit)
+  T2 First 5 minutes    [██████████████████░░]  88%  (AR-042 frog Look art; Nick eye)
   T3 Districts & nav    [██████████████████░░]  90%  (MovementSim + separation)
   T4 Quests & dialogue  [████████████████░░░░]  82%
   T5 Combat & D&D       [█████████████████░░░]  88%
-  T6 Look & feel        [████████░░░░░░░░░░░░]  42%  ← gates Experience %
-  T7 Art & audio        [███████████░░░░░░░░░]  55%
+  T6 Look & feel        [████████░░░░░░░░░░░░]  42%  ← gates Experience % (Nick eye)
+  T7 Art & audio        [█████████████░░░░░░░]  62%  (frog crest+held PNG pack)
   T8 Gated build V1–V5  [█████████░░░░░░░░░░░]  48%
-  T9 Groundwork         [████████░░░░░░░░░░░░]  45%  (not in overall %)
+  T9 Groundwork         [█████████░░░░░░░░░░░]  50%  (appearance shared schema)
 
 GATED BUILD
   V1 composition+exits  ✅ PASS (AR-002)
@@ -85,16 +84,17 @@ OPEN STEPS (⬜ / 🟡 only)
   ⬜ NPC walk-not-teleport — 🟡 mechanical walk shipped; Nick eye on feel
   ⬜ T6b hand-drawn art (blocked — Nick sketches)
   ⬜ Second combat encounter (post-V5)
+  ⬜ Crest/held PNG packs for toad/turtle/tortoise/vole
 
 DONE RECENTLY
+  · AR-042 Frog crest+held art + Look matrix screenshots (agent eye PASS frog slice)
+  · AR-041 Deep customization engine C0–C5 (appearance v4, registry, mirror, mp sync)
   · AR-040 Deep creator pass — montage split, crisp preview, folk layout, PNG markings
-  · AR-039 Nick prod eye — per-canvas thumb async guard, palette names
-  · AR-038 Movement engine + Colyseus multiplayer (M0–M5)
 
 NEXT (pick 1–3)
-  1. Nick — MANUAL_CHECKLIST.md (wizard + Lilymarket) → Save or Download JSON
-  2. Agent reads NICK_RESPONSES.json + `npm run nick:summary` after save
-  3. T6 eye test → unlock Experience % bump
+  1. Nick — eye frog Look (crests + held) on localhost or prod after deploy
+  2. Same art pack for toad (wart ridge) then shelled folk
+  3. Nick — MANUAL_CHECKLIST.md (wizard + Lilymarket) → unlock T6 %
 ```
 
 After any session work, update the bars/rows above in this file, then paste the refreshed block.
@@ -348,6 +348,26 @@ After any session work, update the bars/rows above in this file, then paste the 
 **Not bumped:** T6 — Nick 16:9 eye test on full creator still required.
 
 **Still open:** Nick creator + Lilymarket composition eye test.
+
+---
+
+### CHECKIN-061 — 2026-07-08
+
+**Type:** Frog crest + held art pack + Look visual proof (AR-042)  
+**Agent:** Cursor
+
+**Shipped:** Real 1024² PNGs for frog reed crest, lily tuft, reed staff, clay lantern, market basket; crest crown blit + green-only crest dye; held opaque-bounds blit + procedural held fallbacks. Agent eye on cropped previews (`AR042_30`–`36`) — crests and all three held items visibly distinct. 170 unit + 7/7 e2e + typecheck. T7 → 62%. **T6 not bumped.**
+
+**Still open:** Nick eye; crest packs for other folk; slim/heavy distinct sheets; Mudwall mirror re-eye with new art.
+
+### CHECKIN-060 — 2026-07-08
+
+**Type:** Deep customization engine (Habbo + BG3 depth) C0–C5  
+**Agent:** Cursor
+
+**Shipped:** `shared/appearance/*` v4 schema + migrate; `speciesAppearance.json` registry (playable-from-data); skin/eye/crest/patternIntensity/markingIntensity in compose + Look tab; held wardrobe slot + dyes; Mudwall `guild_mirror` + `AppearanceMirrorUI` + `refreshCharacterMesh`; `appearance_update` protocol + remote rebuild/`animState` walk bob; `NEW_FOLK_CHECKLIST.md`. 170 unit + 7/7 e2e + typecheck + build.
+
+**Still open:** Nick eye on Look channels + mirror before T6 %; crest/held PNG art packs; slim/heavy sheet validation.
 
 ---
 

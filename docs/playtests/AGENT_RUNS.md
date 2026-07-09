@@ -48,6 +48,23 @@ Use [`docs/systems/VISUAL_QA_AGENTS.md`](../systems/VISUAL_QA_AGENTS.md) for age
 | AR-038 | 2026-07-08 | Movement engine + Colyseus multiplayer (M0–M5) | preview + server:2567 | **PASS** mechanical | movement+mp | **Track A polish:** build squash/stretch, hat tune + species anchors, accessory chest band, softer markings. **M0:** shared MovementSim/Separation, accel/decel, walk bob, facing mirror, crowd separation, emote `[G]`. **M1–M5:** `server/` Colyseus SceneRoom (50 cap), walk validation, chat, party 16, scene transition relay, NpcAuthority, CombatAuthority stub, AntiCheat, loadtest, Fly Dockerfile. Client NetworkBridge + RemotePlayerManager + remote actors. 155 unit + audit green + server tsc green. `VITE_COLYSEUS_URL` + `npm run server:dev` for co-presence. |
 | AR-039 | 2026-07-08 | Nick production eye — creator thumb race + pattern UI | croakend-club + localhost:5200 | **PASS** agent visual (fix shipped) | creator | Nick screenshots on live Vercel: folk cards 4× blocky procedural + vole PNG; Look build/pattern thumbs tiny/mismatched; Pattern 4 face crop; unstyled Randomize/Reset. **Root cause:** global `_thumbSeq` in `WardrobePreview` — only the last async PNG upgrade won; others stuck on procedural blocks. **Fix:** per-canvas `__thumbSeq`, neutral placeholder until art loads, isolated swatches (no markings/tint bleed), named palettes (Moss/Reed/Marsh/Bog…), `segmentDominantCell` prefers full-body cells, `.creator-btn` styling, 56px `crisp-edges` thumbs. 162 unit + 7/7 char-creation e2e + build green. Pushed `1e5b20e` — **Nick re-eye on prod after deploy**. |
 | AR-040 | 2026-07-08 | Deep creator pass — montage, blur, folk layout, markings | preview e2e | **PASS** agent visual | creator | Nick asked for deeper screenshot audit + all fixes. **Shipped:** `dualPoseColumnSplit` (vole/pattern-4 montage); `drawPortraitFit` + 288px integer preview, no procedural flash; proportional crisp PNG markings; folk 72px thumbs with CSS size match (was 40px downscale); blurbs un-clamped; build/pattern isolated 72px swatches; compact CSS stops hiding blurbs / 32px thumbs. Agent read `AR034_01_folk` + `AR034_02_look_stout_p4`. 163 unit + 7/7 e2e. Pushed `be5a1cc`. |
+| AR-041 | 2026-07-08 | Deep customization engine C0–C5 (Habbo+BG3 look) | localhost | **PASS** mechanical | creator+world+mp | Appearance v4 schema (`shared/appearance/*`), `speciesAppearance.json` registry, skin/eye/crest/patternIntensity/markingIntensity compose, Look tab swatches+sliders, held slot+dyes, Mudwall `guild_mirror` + `AppearanceMirrorUI` + `refreshCharacterMesh`, `appearance_update` net + remote rebuild/`animState` walk bob, NEW_FOLK_CHECKLIST. 170 unit + 7/7 e2e + typecheck + build. **Nick eye pending before T6 bump.** |
+| AR-042 | 2026-07-08 | Frog crest+held art pack + Look matrix proof | localhost:5200 | **PASS** agent visual (frog slice) | creator | Real PNGs: `crests/frog_reed_crest`, `frog_lily_tuft`; held `reed_staff`, `clay_lantern`, `market_basket` (1024²). Crest blit crops to crown; crest dye only remaps green stalks (lily pink preserved); held blit uses opaque bounds + procedural fallbacks. Live clicks + cropped preview diffs: skin 15%, reed crest 31%, lily vs reed 3.1%, staff/lantern/basket 1.7–3.3% pixel change. Shots `AR042_*.png`. 170 unit + 7/7 e2e. **Nick eye still pending; other folk crests still path-only.** |
+
+### AR-042 detail (Frog crest + held art)
+
+**Scope:** Honest follow-up after AR-041 — engine existed, crest/held PNGs did not.
+
+**Shipped art:**
+- `public/assets/sprites/crests/frog_reed_crest.png` — marsh reed fan for crown
+- `public/assets/sprites/crests/frog_lily_tuft.png` — pink lily + pads (multi-color; dye skips non-green)
+- `public/assets/sprites/wardrobe/reed_staff.png`, `clay_lantern.png`, `market_basket.png`
+
+**Code:** `blitCrest` crown pin + green-only dye; `blitHeldInHand`; procedural `HELD_DRAW` for staff/lantern/basket.
+
+**Eye proof (agent read crops):** bare vs reed crest, lily pink flower visible, staff/lantern/basket each distinct in hand. Held section scrolls below hat/cloak/accessory.
+
+**Not claimed:** other folk crest packs; slim/heavy distinct sheets; Nick T6 bump.
 
 ### AR-028 detail (Pixel art redesign + full creator audit)
 

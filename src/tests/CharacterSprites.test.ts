@@ -222,7 +222,9 @@ describe('CharacterSprites art fallback', () => {
 
   it('drawCharacterCanvas accepts appearance options without throwing', () => {
     const canvas = drawCharacterCanvas('frog', 0, {
+      ...defaultAppearance(),
       variant: 2,
+      patternId: 'marsh',
       build: 1,
       hueShift: 15,
       marking: 'spots',
@@ -294,7 +296,12 @@ describe('CharacterSprites art fallback', () => {
       applyAppearanceToArtCanvas(
         canvas,
         'frog',
-        { variant: 0, build: 1, hueShift: 25, marking: 'spots', wardrobe: { cloak: 'levy_mantle', hat: 'ferry_kepi' } },
+        {
+          ...defaultAppearance(),
+          hueShift: 25,
+          marking: 'spots',
+          wardrobe: { cloak: 'levy_mantle', hat: 'ferry_kepi' },
+        },
         [{ id: 'levy_mantle', slot: 'cloak', label: 'Mantle', species: ['*'], layer: 'procedural' }],
       ),
     ).not.toThrow();

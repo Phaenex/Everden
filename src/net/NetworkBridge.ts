@@ -3,6 +3,7 @@ import type { IGameModule } from '@/core/IGameModule';
 import type { NavigationController } from '@/engine/NavigationController';
 import type { PlayerProfile } from '@/gameplay/PlayerProfile';
 import { NET_EVENTS, type ChatPayload, type WalkIntentPayload } from '../../shared/protocol';
+import { serializeAppearance } from '@/gameplay/CharacterAppearance';
 import { getOrCreatePlayerId } from './PlayerIdentity';
 
 type ColyseusRoom = {
@@ -73,6 +74,9 @@ export class NetworkBridge implements IGameModule {
       this.eventBus.on<ChatPayload>('chat:send', (payload) => {
         this.room?.send(NET_EVENTS.CHAT, payload);
       });
+      this.eventBus.on('appearance:changed', () => {
+        this.sendAppearanceUpdate();
+      });
       this.eventBus.on<{ targetScene: string; exitId?: string }>('scene:transition_request', (p) => {
         this.room?.send(NET_EVENTS.SCENE_TRANSITION, {
           targetScene: p.targetScene,
@@ -105,6 +109,13 @@ export class NetworkBridge implements IGameModule {
     this.room?.send(NET_EVENTS.EMOTE, { emote });
   }
 
+  sendAppearanceUpdate(): void {
+    if (!this.room) return;
+    this.room.send(NET_EVENTS.APPEARANCE_UPDATE, {
+      appearanceJson: serializeAppearance(this.profile.appearance),
+    });
+  }
+
   private async joinCurrentScene(sceneId: string): Promise<void> {
     if (!this.client || !this.enabled) return;
     try {
@@ -114,7 +125,7 @@ export class NetworkBridge implements IGameModule {
         playerId: this.playerId,
         name: this.profile.name,
         species: this.profile.species,
-        appearanceJson: JSON.stringify(this.profile.appearance),
+        appearanceJson: serializeAppearance(this.profile.appearance),
       });
       this.room = room;
       this.eventBus.emit('net:connected', { sceneId });

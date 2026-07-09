@@ -393,6 +393,85 @@ body {
   grid-template-columns: repeat(3, minmax(6.25rem, 1fr));
 }
 
+.swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.15rem 0 0.35rem;
+}
+
+.swatch-btn {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 2px solid #6a5848;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 0;
+  background: #152420;
+}
+
+.swatch-btn.selected {
+  border-color: #f0c14b;
+  box-shadow: 0 0 0 1px rgba(240, 193, 75, 0.5);
+}
+
+.swatch-btn:hover {
+  border-color: #f0c14b;
+}
+
+.mirror-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 12, 10, 0.72);
+}
+
+.mirror-panel {
+  width: min(28rem, 94vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1rem 1.1rem 1.2rem;
+  background: #101e1a;
+  border: 2px solid #f0c14b;
+  color: #f2eee4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.mirror-title {
+  margin: 0;
+  font-family: 'Crimson Pro', Georgia, serif;
+  color: #f0c14b;
+  font-size: 1.35rem;
+}
+
+.mirror-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #d8d4c8;
+  font-style: italic;
+}
+
+.mirror-preview {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: 192px;
+  height: 192px;
+  align-self: center;
+  border: 2px solid #f0c14b;
+  background: #0c1814;
+}
+
+.mirror-summary {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: #f0c14b;
+}
+
 
 .style-card {
   display: flex;

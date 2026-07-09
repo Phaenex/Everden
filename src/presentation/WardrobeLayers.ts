@@ -246,6 +246,24 @@ function blitAccessoryOnBody(
   gfx.restore();
 }
 
+/** Held items: crop opaque bounds into the hand rect so padded 1024² art doesn't shrink to a speck. */
+function blitHeldInHand(
+  gfx: CanvasRenderingContext2D,
+  png: HTMLCanvasElement,
+  r: WardrobeRegion,
+): void {
+  const b = cropOpaqueBounds(png, 0);
+  const scale = Math.min(r.w / b.w, r.h / b.h);
+  const dw = b.w * scale;
+  const dh = b.h * scale;
+  const dx = r.x + (r.w - dw) / 2;
+  const dy = r.y + (r.h - dh) / 2;
+  gfx.save();
+  gfx.imageSmoothingEnabled = false;
+  gfx.drawImage(png, b.x, b.y, b.w, b.h, dx, dy, dw, dh);
+  gfx.restore();
+}
+
 function accessoryRegion(r: WardrobeRegion): WardrobeRegion {
   const w = r.w * ACCESSORY_REGION_SCALE;
   const h = r.h * 0.35;
@@ -459,6 +477,49 @@ function drawHopWhistle(ctx: CanvasRenderingContext2D): void {
   px(ctx, 19, 19, 2, 2);
 }
 
+/* ── Held items (front of body, right side) ── */
+
+function drawReedStaff(ctx: CanvasRenderingContext2D): void {
+  ctx.fillStyle = '#6a5830';
+  px(ctx, 18, 4, 3, 24);
+  ctx.fillStyle = '#a88848';
+  px(ctx, 18, 4, 2, 24);
+  ctx.fillStyle = '#4c7842';
+  px(ctx, 17, 3, 2, 3);
+  px(ctx, 20, 5, 2, 2);
+  ctx.fillStyle = '#5a4020';
+  px(ctx, 17, 12, 4, 2);
+}
+
+function drawClayLantern(ctx: CanvasRenderingContext2D): void {
+  ctx.fillStyle = '#8a4828';
+  px(ctx, 12, 14, 10, 10);
+  ctx.fillStyle = '#c87840';
+  px(ctx, 13, 15, 8, 8);
+  ctx.fillStyle = '#f0c14b';
+  px(ctx, 15, 17, 4, 4);
+  ctx.fillStyle = '#fff0a0';
+  px(ctx, 16, 18, 2, 2);
+  ctx.fillStyle = '#5a3020';
+  px(ctx, 15, 11, 4, 3);
+  px(ctx, 14, 12, 1, 2);
+  px(ctx, 19, 12, 1, 2);
+}
+
+function drawMarketBasket(ctx: CanvasRenderingContext2D): void {
+  ctx.fillStyle = '#8a6830';
+  px(ctx, 8, 16, 16, 10);
+  ctx.fillStyle = '#c8a050';
+  px(ctx, 9, 17, 14, 8);
+  ctx.fillStyle = '#6a4820';
+  px(ctx, 10, 19, 12, 1);
+  px(ctx, 10, 22, 12, 1);
+  ctx.fillStyle = '#a88840';
+  px(ctx, 12, 12, 2, 5);
+  px(ctx, 18, 12, 2, 5);
+  px(ctx, 13, 11, 6, 2);
+}
+
 type WardrobeDrawer = (ctx: CanvasRenderingContext2D) => void;
 
 const HAT_DRAW: Record<string, WardrobeDrawer> = {
@@ -488,10 +549,17 @@ const ACCESSORY_DRAW: Record<string, WardrobeDrawer> = {
   hop_whistle: drawHopWhistle,
 };
 
+const HELD_DRAW: Record<string, WardrobeDrawer> = {
+  reed_staff: drawReedStaff,
+  clay_lantern: drawClayLantern,
+  market_basket: drawMarketBasket,
+};
+
 export const WARDROBE_ITEM_IDS = [
   ...Object.keys(HAT_DRAW),
   ...Object.keys(CLOAK_DRAW),
   ...Object.keys(ACCESSORY_DRAW),
+  ...Object.keys(HELD_DRAW),
 ] as const;
 
 /** Procedural wardrobe item draw for thumbnails / fallback. */
@@ -500,7 +568,7 @@ export function drawItemByIdProcedural(ctx: CanvasRenderingContext2D, itemId: st
 }
 
 function drawItemById(ctx: CanvasRenderingContext2D, itemId: string): boolean {
-  const drawer = HAT_DRAW[itemId] ?? CLOAK_DRAW[itemId] ?? ACCESSORY_DRAW[itemId];
+  const drawer = HAT_DRAW[itemId] ?? CLOAK_DRAW[itemId] ?? ACCESSORY_DRAW[itemId] ?? HELD_DRAW[itemId];
   if (!drawer) return false;
   drawer(ctx);
   return true;
@@ -597,7 +665,8 @@ export async function applyWardrobeBackOverlayAsync(
   const cloakRect: WardrobeRegion = { x: 0, y: 0, w: target.width, h: target.height };
   const png = await loadWardrobeItemPng(cloakId, build, cloakFrameIndex);
   if (png) {
-    blitPngInRegion(gfx, png, cloakRect);
+    const dyed = applyDyeToCanvas(png, appearance.dyes?.cloak ?? 0);
+    blitPngInRegion(gfx, dyed, cloakRect);
     return;
   }
   drawItemInRegion(gfx, cloakId, region ?? cloakRect);
@@ -624,11 +693,14 @@ export async function applyWardrobeFrontOverlayAsync(
 
   async function drawItem(itemId: string | undefined, isHat: boolean, isAccessory: boolean): Promise<void> {
     if (!itemId) return;
+    const dyeKey = isHat ? 'hat' : isAccessory ? 'accessory' : 'cloak';
+    const dye = appearance.dyes?.[dyeKey as keyof typeof appearance.dyes] ?? 0;
     const png = await loadWardrobeItemPng(itemId, build, 0);
     if (png) {
-      if (isHat) blitHatOnHead(gfx, png, r, itemId, speciesId);
-      else if (isAccessory) blitAccessoryOnBody(gfx, png, r, itemId);
-      else blitPngInRegion(gfx, png, r);
+      const dyed = applyDyeToCanvas(png, dye);
+      if (isHat) blitHatOnHead(gfx, dyed, r, itemId, speciesId);
+      else if (isAccessory) blitAccessoryOnBody(gfx, dyed, r, itemId);
+      else blitPngInRegion(gfx, dyed, r);
       return;
     }
     const region = isAccessory ? accessoryRegion(r) : r;
@@ -637,8 +709,55 @@ export async function applyWardrobeFrontOverlayAsync(
 
   const hatId = resolveItem(appearance.wardrobe, 'hat', wardrobeItems, speciesId);
   const accId = resolveItem(appearance.wardrobe, 'accessory', wardrobeItems, speciesId);
+  const heldId = resolveItem(appearance.wardrobe, 'held', wardrobeItems, speciesId);
   await drawItem(hatId, true, false);
   await drawItem(accId, false, true);
+  if (heldId) {
+    const png = await loadWardrobeItemPng(heldId, build, 0);
+    const heldRect: WardrobeRegion = {
+      x: r.x + Math.round(r.w * 0.55),
+      y: r.y + Math.round(r.h * 0.35),
+      w: Math.round(r.w * 0.4),
+      h: Math.round(r.h * 0.55),
+    };
+    if (png) {
+      const dyed = applyDyeToCanvas(png, appearance.dyes?.held ?? 0);
+      blitHeldInHand(gfx, dyed, heldRect);
+    } else {
+      drawItemInRegion(gfx, heldId, heldRect);
+    }
+  }
+}
+
+function applyDyeToCanvas(src: HTMLCanvasElement, dyeShift: number): HTMLCanvasElement {
+  if (!dyeShift) return src;
+  const out = document.createElement('canvas');
+  out.width = src.width;
+  out.height = src.height;
+  const ctx = out.getContext('2d')!;
+  ctx.drawImage(src, 0, 0);
+  const img = ctx.getImageData(0, 0, out.width, out.height);
+  const { data } = img;
+  const rad = (dyeShift * Math.PI) / 180;
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3]! < 12) continue;
+    const r = data[i]!;
+    const g = data[i + 1]!;
+    const b = data[i + 2]!;
+    const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+    if (luma < 28) continue;
+    // Approximate hue rotate in RGB
+    const nr = r * cos + g * -sin + b * (1 - cos);
+    const ng = r * sin + g * cos + b * (1 - cos);
+    const nb = r * (1 - cos) + g * sin + b * cos;
+    data[i] = Math.max(0, Math.min(255, Math.round(nr * 0.35 + r * 0.65)));
+    data[i + 1] = Math.max(0, Math.min(255, Math.round(ng * 0.35 + g * 0.65)));
+    data[i + 2] = Math.max(0, Math.min(255, Math.round(nb * 0.35 + b * 0.65)));
+  }
+  ctx.putImageData(img, 0, 0);
+  return out;
 }
 
 /**

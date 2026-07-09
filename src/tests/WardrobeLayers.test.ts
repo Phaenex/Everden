@@ -10,7 +10,10 @@ const catalog: WardrobeDefinition[] = [
 
 describe('WardrobeLayers', () => {
   it('registers procedural art for every wardrobe catalog id', () => {
-    expect(WARDROBE_ITEM_IDS.length).toBeGreaterThanOrEqual(18);
+    expect(WARDROBE_ITEM_IDS.length).toBeGreaterThanOrEqual(21);
+    expect(WARDROBE_ITEM_IDS).toContain('reed_staff');
+    expect(WARDROBE_ITEM_IDS).toContain('clay_lantern');
+    expect(WARDROBE_ITEM_IDS).toContain('market_basket');
     for (const id of WARDROBE_ITEM_IDS) {
       expect(id.length).toBeGreaterThan(0);
     }

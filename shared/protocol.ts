@@ -49,4 +49,9 @@ export const NET_EVENTS = {
   PARTY_JOIN: 'party_join',
   SCENE_TRANSITION: 'scene_transition',
   COMBAT_ACTION: 'combat_action',
+  APPEARANCE_UPDATE: 'appearance_update',
 } as const;
+
+export interface AppearanceUpdatePayload {
+  appearanceJson: string;
+}

@@ -208,7 +208,7 @@ export interface AbilityDefinition {
 
 export interface WardrobeDefinition {
   id: string;
-  slot: 'hat' | 'cloak' | 'accessory';
+  slot: 'hat' | 'cloak' | 'accessory' | 'held';
   label: string;
   hint?: string;
   species: string[];
@@ -230,6 +230,8 @@ export interface GameData {
   journal: JournalDefinition[];
   districts: DistrictDefinition[];
   wardrobe: WardrobeDefinition[];
+  /** Look registry keyed by species id — not an array. */
+  speciesAppearance: import('../../shared/appearance/AppearanceTypes').SpeciesAppearanceRegistry;
 }
 
 export interface DistrictDefinition {
