@@ -1,7 +1,7 @@
 import type { WardrobeDefinition } from '@/data/types';
 import type { CharacterAppearance, CharacterWardrobe } from '@/gameplay/CharacterAppearance';
 
-import { spriteSheetFrameCount, spriteFrameWidth, cropOpaqueBounds } from './CharacterSprites';
+import { spriteSheetFrameCount, spriteFrameWidth } from './CharacterSprites';
 
 const CANVAS_SIZE = 32;
 const WARDROBE_ART_BASE = '/assets/sprites/wardrobe';
@@ -111,24 +111,16 @@ function loadWardrobeItemPng(
   return p;
 }
 
-const SLOT_BLIT_REGIONS = {
-  hat: { x: 8, y: 2, w: 16, h: 8 },
-  cloak: { x: 2, y: 10, w: 28, h: 22 },
-  accessory: { x: 13, y: 17, w: 6, h: 5 },
-} as const;
-
 function blitWardrobeOverlay(
   gfx: CanvasRenderingContext2D,
   png: HTMLCanvasElement,
   w: number,
   h: number,
-  slot: keyof typeof SLOT_BLIT_REGIONS,
 ): void {
-  const b = cropOpaqueBounds(png);
-  const region = SLOT_BLIT_REGIONS[slot];
+  // Preserve author layout: map full 1024 PNG into 32×32 procedural grid (do not crop).
   gfx.save();
   gfx.scale(w / CANVAS_SIZE, h / CANVAS_SIZE);
-  gfx.drawImage(png, b.x, b.y, b.w, b.h, region.x, region.y, region.w, region.h);
+  gfx.drawImage(png, 0, 0, png.width, png.height, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
   gfx.restore();
 }
 
@@ -313,11 +305,11 @@ function drawLevyPin(ctx: CanvasRenderingContext2D): void {
 
 function drawShellBrooch(ctx: CanvasRenderingContext2D): void {
   ctx.fillStyle = '#fff0d8';
-  px(ctx, 12, 16, 8, 6);
+  px(ctx, 14, 18, 4, 4);
   ctx.fillStyle = '#c0a080';
-  px(ctx, 14, 17, 4, 4);
+  px(ctx, 15, 19, 2, 2);
   ctx.fillStyle = '#ffffff';
-  px(ctx, 15, 18, 2, 2);
+  px(ctx, 15, 19, 1, 1);
 }
 
 function drawHopWhistle(ctx: CanvasRenderingContext2D): void {
@@ -465,7 +457,7 @@ export async function applyWardrobeBackOverlayAsync(
   if (!cloakId) return;
   const png = await loadWardrobeItemPng(cloakId, build, cloakFrameIndex);
   if (png) {
-    blitWardrobeOverlay(gfx, png, w, h, 'cloak');
+    blitWardrobeOverlay(gfx, png, w, h);
     return;
   }
   gfx.save();
@@ -491,11 +483,11 @@ export async function applyWardrobeFrontOverlayAsync(
   const build = appearance.build ?? 1;
   gfx.imageSmoothingEnabled = false;
 
-  async function drawItem(itemId: string | undefined, slot: 'hat' | 'accessory'): Promise<void> {
+  async function drawItem(itemId: string | undefined): Promise<void> {
     if (!itemId) return;
     const png = await loadWardrobeItemPng(itemId, build, 0);
     if (png) {
-      blitWardrobeOverlay(gfx, png, w, h, slot);
+      blitWardrobeOverlay(gfx, png, w, h);
       return;
     }
     gfx.save();
@@ -506,8 +498,8 @@ export async function applyWardrobeFrontOverlayAsync(
 
   const hatId = resolveItem(appearance.wardrobe, 'hat', wardrobeItems, speciesId);
   const accId = resolveItem(appearance.wardrobe, 'accessory', wardrobeItems, speciesId);
-  await drawItem(hatId, 'hat');
-  await drawItem(accId, 'accessory');
+  await drawItem(hatId);
+  await drawItem(accId);
 }
 
 /**

@@ -18,27 +18,39 @@ const TABS = [
   'review',
 ] as const;
 
-/** Every wardrobe label from wardrobe.json — clicks first visible match per species. */
-const OUTFIT_LABELS = [
-  'Reed sun hat',
-  'Shell cap',
-  'Mudwall helm',
-  'Lily bloom',
-  'Ferry kepi',
-  'Marsh hood',
-  'Basin travel cloak',
-  "Ferryman's shawl",
-  'Croakend patchcloak',
-  'Levy mantle',
-  'Rain poncho',
-  'Elder robe',
-  'Reed hop charm',
-  'Clay prayer bead',
-  'Lilymarket scarf',
-  "Levy clerk's pin",
-  'Shell brooch',
-  'Hop whistle',
-] as const;
+/** Every wardrobe label from wardrobe.json, grouped by slot. */
+const OUTFIT_BY_SLOT: { section: number; labels: readonly string[] }[] = [
+  {
+    section: 0,
+    labels: ['Reed sun hat', 'Lily bloom', 'Ferry kepi', 'Marsh hood'],
+  },
+  {
+    section: 1,
+    labels: [
+      'Basin travel cloak',
+      "Ferryman's shawl",
+      'Croakend patchcloak',
+      'Levy mantle',
+      'Rain poncho',
+      'Elder robe',
+    ],
+  },
+  {
+    section: 2,
+    labels: [
+      'Reed hop charm',
+      'Lilymarket scarf',
+      "Levy clerk's pin",
+      'Shell brooch',
+      'Hop whistle',
+    ],
+  },
+];
+
+const TORTOISE_ONLY: { section: number; labels: readonly string[] }[] = [
+  { section: 0, labels: ['Shell cap', 'Mudwall helm'] },
+  { section: 2, labels: ['Clay prayer bead'] },
+];
 
 function slug(label: string): string {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
@@ -46,7 +58,7 @@ function slug(label: string): string {
 
 test.describe('AR-035 Full creator visual audit', () => {
   test('screenshot every tab, folk, look combo, outfit, and control', async ({ page }) => {
-    test.setTimeout(360_000);
+    test.setTimeout(480_000);
     await clearEverdenSave(page);
     await page.reload();
     await page.waitForSelector('.creator-shell');
@@ -102,16 +114,37 @@ test.describe('AR-035 Full creator visual audit', () => {
     await page.locator('.build-card').nth(1).click();
     await page.locator('.creator-tab[data-tab="wardrobe"]').click();
 
-    for (const label of OUTFIT_LABELS) {
-      const btn = page.getByRole('button', { name: new RegExp(label, 'i') });
-      if ((await btn.count()) === 0) continue;
+    async function shotOutfit(section: number, label: string, fileSlug: string): Promise<void> {
+      await page.locator('.creator-tab[data-tab="wardrobe"]').click();
+      for (let s = 0; s < 3; s++) {
+        await page.locator('.wardrobe-section').nth(s).getByRole('button', { name: /^None/ }).click();
+      }
+      const btn = page.locator('.wardrobe-section').nth(section).getByRole('button', { name: new RegExp(label, 'i') });
+      if ((await btn.count()) === 0) return;
       await btn.first().click();
-      await page.waitForTimeout(750);
+      await page.waitForTimeout(500);
       await page.locator('.creator-preview-canvas').screenshot({
-        path: path.join(SHOTS, `AR035_outfit_${slug(label)}.png`),
+        path: path.join(SHOTS, `AR035_outfit_${fileSlug}.png`),
       });
     }
 
+    for (const group of OUTFIT_BY_SLOT) {
+      for (const label of group.labels) {
+        await shotOutfit(group.section, label, slug(label));
+      }
+    }
+
+    await page.locator('.creator-tab[data-tab="species"]').click();
+    await page.locator('.species-card[data-species="tortoise"]').click();
+    await page.locator('.creator-tab[data-tab="wardrobe"]').click();
+    for (const group of TORTOISE_ONLY) {
+      for (const label of group.labels) {
+        await shotOutfit(group.section, label, `tortoise_${slug(label)}`);
+      }
+    }
+
+    await page.locator('.creator-tab[data-tab="species"]').click();
+    await page.locator('.species-card[data-species="frog"]').click();
     await page.locator('.creator-tab[data-tab="wardrobe"]').click();
     await page.getByRole('button', { name: /Ferry kepi/i }).click();
     await page.getByRole('button', { name: /Basin travel cloak/i }).click();

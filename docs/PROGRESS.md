@@ -1,6 +1,6 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-051)
+**Last updated:** 2026-07-08 (CHECKIN-052)
 **Play online:** https://croakend-club.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
@@ -33,7 +33,7 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://croakend-club.vercel.app · CHECKIN-051
+Play: https://croakend-club.vercel.app · CHECKIN-052
 
 OVERALL  [█████████░░░░░░░░░░░]  61%
 
@@ -341,6 +341,19 @@ After any session work, update the bars/rows above in this file, then paste the 
 **Still open:** Nick creator + Lilymarket composition eye test.
 
 ---
+
+### CHECKIN-052 — 2026-07-08
+
+**Type:** AR-035 exhaustive creator visual audit (all tabs, buttons, outfits)  
+**Agent:** Cursor
+
+**Audit scope:** 9 tabs, 5 folk, 12 frog look combos (build×pattern), markings/hue/randomize/reset, 21 isolated outfit preview shots (18 frog + 3 tortoise-only), full equipped loadout, stats+/−, settings toggle, story, review. Screenshots: `docs/playtests/screenshots/AR035_*.png` (55 files).
+
+**Agent eye-check:** ✅ single-character preview all folk; ✅ ferry kepi / marsh hood / basin cloak isolated fit; ✅ vole pose-grid thumb; ✅ wardrobe item-only card icons. 🟡 shell_brooch uses procedural pin (PNG skipped — asset is full scallop); 🟡 tortoise shell_cap rear-facing preview; 🟡 cloak card thumbs still procedural color blocks.
+
+**Code:** Wardrobe compose uses full-PNG 32×32 layout map (not crop); `shell_brooch` procedural-only + smaller pin draw; `e2e/creator-full-visual-audit.spec.ts`.
+
+**Verified:** 145 unit + 7/7 character-creation e2e + AR-035 playwright. Pushed `0c4da23` then this commit.
 
 ### CHECKIN-051 — 2026-07-08
 
