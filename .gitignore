@@ -95,3 +95,7 @@ playwright-report/
 test-results/
 .vercel
 .eslintcache
+server/dist/
+
+# Accidental tsc emit into shared/
+shared/**/*.js
