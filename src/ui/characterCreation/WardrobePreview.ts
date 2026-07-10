@@ -4,6 +4,7 @@ import { defaultAppearance } from '@/gameplay/CharacterAppearance';
 import { patternLabel as registryPatternLabel } from '@/data/SpeciesAppearanceRegistry';
 import {
   composeCharacterArtCanvas,
+  drawCharacterCanvas,
   drawCroppedSprite,
 } from '@/presentation/CharacterSprites';
 import { drawItemByIdProcedural, loadWardrobeItemCanvas } from '@/presentation/WardrobeLayers';
@@ -57,6 +58,14 @@ function upgradeBodyThumbnail(
   appearance: CharacterAppearance,
   wardrobeItems: WardrobeDefinition[],
 ): void {
+  const procedural = drawCharacterCanvas(
+    species,
+    appearance.variant ?? 0,
+    bodyOnly(appearance),
+    wardrobeItems,
+  );
+  if (thumbStillCurrent(out, seq)) paintThumbCanvas(out, procedural);
+
   void composeCharacterArtCanvas(species, bodyOnly(appearance), wardrobeItems, 0).then((composed) => {
     if (!thumbStillCurrent(out, seq) || !composed) return;
     paintThumbCanvas(out, composed);

@@ -548,6 +548,9 @@ export async function composeCharacterArtCanvas(
   npcId?: string,
   cloakFrameIndex = 0,
 ): Promise<HTMLCanvasElement | null> {
+  // Player/creator bodies: procedural only until hand art lands (AR-044 reset).
+  if (!npcId) return null;
+
   const patternIdx = patternIndexFromAppearance(species, appearance);
   const sheet = await loadArtSheet(
     species,

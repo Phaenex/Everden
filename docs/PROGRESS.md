@@ -1,25 +1,25 @@
 # Everden — Development Progress
 
-**Last updated:** 2026-07-08 (CHECKIN-061)
+**Last updated:** 2026-07-09 (CHECKIN-071)
 **Play online:** https://croakend-club.vercel.app
 
 > This file is the source of truth. If an agent says "done," check here first.
 
 ## Progress dashboard (9 workstreams)
 
-**Headline overall:** `█████████░░░░░░░░░░░` **61%** — average of T1–T8 (T9 Future excluded)
+**Headline overall:** `████████░░░░░░░░░░░░` **58%** — average of T1–T8 (T9 Future excluded)
 
 | # | Track | Bar | % | Blocks % when |
 |---|-------|-----|---|---------------|
 | T1 | **Mechanics & CI** | `███████████████████░` | **92%** | e2e or CI red |
-| T2 | **First 5 minutes** | `██████████████████░░` | **88%** | Nick creator eye pending |
+| T2 | **First 5 minutes** | `████████████████░░░░` | **80%** | creator procedural reset |
 | T3 | **Districts & nav** | `█████████████████░░░` | **85%** | scene load fail; nav off-art |
 | T4 | **Quests & dialogue** | `████████████████░░░░` | **82%** | quest hard-block; missing fail-forward |
 | T5 | **Combat & D&D** | `█████████████████░░░` | **88%** | soft-lock; RAW doc gaps |
-| T6 | **Look & feel** | `████████░░░░░░░░░░░░` | **42%** | scout FAIL; Nick eye no |
-| T7 | **Art & audio** | `████████████░░░░░░░░` | **62%** | other folk crest/held packs incomplete |
+| T6 | **Look & feel** | `██████░░░░░░░░░░░░░░` | **32%** | scout FAIL; Nick eye no; PNG pipeline reset |
+| T7 | **Art & audio** | `█████████░░░░░░░░░░░` | **48%** | AI character/outfit PNGs removed; atlas-lab PoC only |
 | T8 | **Gated build V1–V5** | `█████████░░░░░░░░░░░` | **48%** | any V-row FAIL |
-| T9 | **Groundwork** | `████████░░░░░░░░░░░░` | **45%** | (future; does not move headline %) |
+| T9 | **Groundwork** | `██████████░░░░░░░░░░` | **58%** | (future; does not move headline %) |
 
 **Current milestone:** V4 mechanical PASS (AR-019) — **V2 Nick eye** on wizard + Lilymarket  
 **Next gate:** Nick MANUAL_CHECKLIST V2 sign-off  
@@ -33,68 +33,60 @@ Agents: **copy this whole block** into the user-facing reply. Do not collapse to
 
 ```
 Everden — progress snapshot
-Play: https://croakend-club.vercel.app · CHECKIN-061
+Play: https://croakend-club.vercel.app · CHECKIN-071
 
-OVERALL  [█████████░░░░░░░░░░░]  61%
+OVERALL  [████████░░░░░░░░░░░░]  58%
 
 VISUAL + CLICK PLAYWRIGHT (creator) — see docs/playtests/VISUAL_CLICK_AUDIT.md
-  CLICK+SHOT  [████████████████████] 100%  (133/133 screenshots — full per-species matrix)
-  AGENT EYE   [████████████████████] 100%  (104 pass · 29 borderline · 0 fail)
-  NICK EYE    [░░░░░░░░░░░░░░░░░░░░]   0%  (human gate — AR-042 frog crest/held art + Look proof)
-  Cmd: npm run audit:creator:visual
-  NOTE: AR-042 — frog reed/lily crests + 3 held PNGs live in preview (agent eye). Other folk
-        crest packs still missing. Nick eye before T6 %.
+  CLICK+SHOT  [████████████████████] 100%  (133/133 + AR-050 gate shots — stale vs procedural reset)
+  AGENT EYE   [████████████░░░░░░░░]  60%  (needs re-run after PNG scrap)
+  NICK EYE    [░░░░░░░░░░░░░░░░░░░░]   0%  (human gate)
+  NOTE: Creator back on procedural bodies + procedural wardrobe until hand art.
 
 WORKSTREAMS (T1–T9)
-  T1 Mechanics & CI     [████████████████████]  96%  (170 unit)
-  T2 First 5 minutes    [██████████████████░░]  88%  (AR-042 frog Look art; Nick eye)
-  T3 Districts & nav    [██████████████████░░]  90%  (MovementSim + separation)
+  T1 Mechanics & CI     [███████████████████░]  92%  (188 unit · e2e)
+  T2 First 5 minutes    [████████████████░░░░]  80%  (creator procedural reset)
+  T3 Districts & nav    [█████████████████░░░]  85%
   T4 Quests & dialogue  [████████████████░░░░]  82%
   T5 Combat & D&D       [█████████████████░░░]  88%
-  T6 Look & feel        [████████░░░░░░░░░░░░]  42%  ← gates Experience % (Nick eye)
-  T7 Art & audio        [█████████████░░░░░░░]  62%  (frog crest+held PNG pack)
+  T6 Look & feel        [██████░░░░░░░░░░░░░░]  32%  ← PNG pipeline scrapped
+  T7 Art & audio        [█████████░░░░░░░░░░░]  48%  (atlas-lab PoC kept)
   T8 Gated build V1–V5  [█████████░░░░░░░░░░░]  48%
-  T9 Groundwork         [█████████░░░░░░░░░░░]  50%  (appearance shared schema)
+  T9 Groundwork         [██████████░░░░░░░░░░]  58%  (frogwiz atlas-lab only)
 
 GATED BUILD
   V1 composition+exits  ✅ PASS (AR-002)
-  V2 Lilymarket+wizard  🟡 BORDERLINE — Nick eye (AR-003, AR-018, AR-027 creator correction)
+  V2 Lilymarket+wizard  🟡 BORDERLINE — Nick eye
   V3 district hub loop  🟡 BORDERLINE (AR-004, AR-015)
   V4 quest+combat       ✅ PASS mechanical (AR-019)
   V5 human alpha T8     ⬜ 3/5 sessions
 
 BUILD PHASES (master plan)
   P0–2, 0.5, 1         ✅ 100%
-  P3 Presentation       🟡 35%
+  P3 Presentation       🟡 28%  (procedural-only characters)
   P5 Simulation         🟡 78%
   P6 Narrative          🟡 79%
   P7 Combat             🟡 88%
-  P8 Vertical slice     🟡 52%
-  P9 Alpha              🟡 38%
+  P8 Vertical slice     🟡 50%
+  P9 Alpha              🟡 35%
   P10 Beta              ⬜ 5%
-  P11 Launch            🟡 40%  (live on Vercel)
-  P12 Post-launch       🟡 30%  (Colyseus + chat/NPC sync; Fly deploy pending)
+  P11 Launch            🟡 40%
+  P12 Post-launch       🟡 28%
 
 OPEN STEPS (⬜ / 🟡 only)
-  ⬜ Nick — wizard eye test (T2) — AR-024 all tabs + in-world outfit green, still needs Nick
-  ⬜ Nick — Lilymarket / all-district composition (T3, T6, V2)
-  ⬜ Nick — MANUAL_CHECKLIST.md V2 sign-off
-  ⬜ T8 — 5 human playtest sessions (after V2)
-  🟡 git push — Phaenex account needs `workflow` scope; pushed via Damatnic (c8abec6)
-  ⬜ NPC walk-not-teleport — 🟡 mechanical walk shipped; Nick eye on feel
-  ⬜ T6b hand-drawn art (blocked — Nick sketches)
-  ⬜ Second combat encounter (post-V5)
-  ⬜ Crest/held PNG packs for toad/turtle/tortoise/vole
+  ⬜ Hand-author Frog #1 in Piskel (128×128 SE) per FROG_CHARACTER_DESIGN.md
+  ⬜ Re-run creator visual audit after procedural reset
+  ⬜ Nick — MANUAL_CHECKLIST.md V2 sign-off (`npm run playtest:nick`)
+  🟡 Frogwiz atlas PoC — `/atlas-lab.html` (separate from production frog)
 
 DONE RECENTLY
-  · AR-042 Frog crest+held art + Look matrix screenshots (agent eye PASS frog slice)
-  · AR-041 Deep customization engine C0–C5 (appearance v4, registry, mirror, mp sync)
-  · AR-040 Deep creator pass — montage split, crisp preview, folk layout, PNG markings
+  · CHECKIN-071 — scrapped AI build sheets, wardrobe PNGs, crest PNGs; procedural-only player bodies
+  · CHECKIN-070 — AR-051 frogwiz atlas-lab PoC
 
 NEXT (pick 1–3)
-  1. Nick — eye frog Look (crests + held) on localhost or prod after deploy
-  2. Same art pack for toad (wart ridge) then shelled folk
-  3. Nick — MANUAL_CHECKLIST.md (wizard + Lilymarket) → unlock T6 %
+  1. Hand frog p1 pixel pass (Piskel) — only path to real character art
+  2. Re-audit creator on procedural baseline
+  3. Iterate frogwiz atlas-lab when source art is clean
 ```
 
 After any session work, update the bars/rows above in this file, then paste the refreshed block.
@@ -105,7 +97,7 @@ After any session work, update the bars/rows above in this file, then paste the 
 
 | Item | Status | Owner |
 |------|--------|-------|
-| 129 unit tests green | ✅ | Agent — now 141 unit |
+| 129 unit tests green | ✅ | Agent — now 176 unit |
 | 23/23 Playwright e2e | ✅ | Agent — char-creation 6/6 |
 | typecheck + build + CI workflow | ✅ | Agent |
 | Save v2 (name, motivation, v1 migrate) | ✅ | Agent |
@@ -202,7 +194,7 @@ After any session work, update the bars/rows above in this file, then paste the 
 | V4 quest + combat | ✅ PASS (mechanical) | AR-019 |
 | V5 human alpha (T8) | ⬜ | 3/5 sessions required |
 
-### T9 — Groundwork (45%)
+### T9 — Groundwork (58%)
 
 | Item | Status | Owner |
 |------|--------|-------|
@@ -214,6 +206,7 @@ After any session work, update the bars/rows above in this file, then paste the 
 | Leveling / proficiency placeholder docs | ✅ | Agent — `docs/systems/LEVELING.md` |
 | NetworkModule unit smoke | ✅ | Agent — `NetworkModule.test.ts` |
 | Demo mod pack (`public/mods/demo_pack/`) | ✅ | Agent |
+| Frogwiz JSON atlas lab (`atlas-lab.html`) | ✅ | Agent — AR-051; PoC only |
 | Mod packs (`ModLoader.ts`) | ⬜ | Post-V5 |
 | Multiplayer stub (`NetworkModule.ts`) | ⬜ | [MULTIPLAYER_FUTURE.md](systems/MULTIPLAYER_FUTURE.md) |
 
@@ -326,6 +319,103 @@ After any session work, update the bars/rows above in this file, then paste the 
 ---
 
 ## Check-in Log
+
+### CHECKIN-071 — 2026-07-09
+
+**Type:** Character art reset — scrap bad AI models + broken outfit PNGs  
+**Agent:** Cursor
+
+**Removed:**
+1. **60 build/pattern species sheets** (`*_slim/medium/heavy_p*.png`) + habbo/sprite experiment sheets
+2. **All wardrobe PNG overlays** (37 files) — outfits back to procedural drawing only
+3. **All crest PNG overlays** (frog + other folk)
+4. **character-lab / movement-lab** untracked WIP + reverted uncommitted creator CSS/lab links
+5. **Species anchors** restored to pre-pipeline small placeholders (5 files only)
+
+**Code:**
+1. **`composeCharacterArtCanvas`** returns null for player bodies (no npcId) — procedural-only until hand art
+2. **Creator preview + build thumbs** show procedural immediately (no empty placeholder flash)
+3. **Atlas-lab untouched** — frogwiz PoC remains at `/atlas-lab.html`
+
+**Mechanical:** 188 unit + typecheck + build green.
+
+**Honesty:** T6/T7 lowered. Do not claim character art "works" — creator is procedural baseline again.
+
+---
+
+### CHECKIN-070 — 2026-07-09
+
+**Type:** Frogwiz atlas web PoC (T9 groundwork)  
+**Agent:** Cursor · AR-051
+
+**Shipped:**
+1. **Assets ingested** — `public/assets/sprites/atlas/frogwiz_atlas.png` (362×377 RGBA, real alpha) + `public/data/atlas/frogwiz_atlas.json`
+2. **`AtlasFrameLoader.ts`** — `loadAtlas`, `getFrameCanvas`, `parseAtlasManifest` (standalone; production `CharacterSprites` unchanged)
+3. **`atlas-lab.html`** — 12-frame thumbnail grid, idle/walk/wave/cast state buttons, walk bob toggle (420ms state-swap)
+4. **Tests** — 6 new unit tests; 176 unit total; typecheck + build green (atlas-lab in vite multi-page build)
+5. **Visual gate** — AR-051 PASS; shots `docs/playtests/screenshots/AR051_frogwiz_*.png`
+
+**Not shipped:** Production frog species unchanged. T7 not bumped. Godot SpriteFrames import deferred.
+
+**Mechanical:** 176 unit · 31/32 e2e
+
+---
+
+### CHECKIN-069 — 2026-07-09
+
+**Type:** AR-050 visual gate (user callout — no hand-off without Playwright + screenshots)  
+**Agent:** Cursor · AR-050
+
+**Shipped:**
+1. **`e2e/ar050-nick-gate.spec.ts`** — 1280×800: all 9 tabs, 5 folk, 5 crests, Held visible without scroll, hat↔crest, kepi+staff Causeway spawn + narration path. **2/2 pass.**
+2. **22 screenshots** — `docs/playtests/screenshots/AR050_*.png`
+3. **Wardrobe CSS** — single-row horizontal scroll per slot at ≤820px height; Held in viewport at 1280×800
+4. **Skin/eye remap** — removed sclera skip band; tightened specular skip; wider `recolorEyes`
+5. **AR-049 retracted** — hand frog sheets stay reverted; prod not redeployed this session
+6. **Creator summary** — held item in sidebar outfit line
+
+**Agent verdict:** BORDERLINE (Causeway spawn still shows thin face line on composed frog; crest placeholders subtle). **Nick eye pending — T6 not bumped.**
+
+**Mechanical:** 170 unit · 31/32 e2e (1 skipped multiplayer)
+
+---
+
+### CHECKIN-068 — 2026-07-09
+
+**Type:** Recovery plan completion — P1 polish, prod deploy, labs in build  
+**Agent:** Cursor · AR-047
+
+**Shipped:**
+1. **Marsh palette thumb** — `drawCroppedSprite` aspect-fit (no squash glitch).
+2. **Look tab proof** — `AR047_look_*.png` (palette, markings overlay, crest, skin tone).
+3. **Prod redeploy** — `vercel build --prod` + `deploy --prebuilt` (fixes EPIPE from 1.8GB upload); `.vercelignore` excludes Godot/LPC bulk.
+4. **Labs in production build** — vite multi-page input for `character-lab.html`, `movement-lab.html`.
+5. **Deploy script** — `npm run deploy:preview` uses prebuilt flow.
+6. **Phase 6 docs** — LPC animation contract added to `ASSET_MANIFEST.md`.
+
+**Still open (human only):** Nick MANUAL_CHECKLIST V2, Lilymarket eye, frog p1 swap after Nick approves hand-art preview.
+
+---
+
+### CHECKIN-067 — 2026-07-09
+
+**Type:** Honest recovery — web client restored, Godot R&D preserved, Nick P0 fixes  
+**Agent:** Cursor
+
+**Shipped:**
+1. **Restored web vertical slice** from git HEAD (Antigravity had deleted `src/`, `public/`, e2e). 170 unit + 7/7 e2e + typecheck + build green.
+2. **Godot branch `godot-rnd`** — WIP commit preserves `apps/client/`, LPC library, research docs (not playable Everden).
+3. **Asset manifest** — [`docs/art/ASSET_MANIFEST.md`](art/ASSET_MANIFEST.md); UI packs + LPC reference copied to `public/assets/ui/` and `docs/art/reference/`.
+4. **P0 creator fixes** — single-column wardrobe, scrollable panel, hat↔crest mutual clear (AR-046 screenshots).
+5. **P1 honesty** — pattern vs markings labels; skin remap skips eye band; crest anchor lowered.
+6. **Labs committed** — `character-lab.html`, `movement-lab.html` with links from Review tab.
+7. **Frog hand-art tooling** — `scripts/author_frog_hand.py` + `npm run art:frog-hand` (does not replace p1 until Nick eye).
+
+**Retracted:** CHECKIN-066 Phaser rewrite — never existed on `main`; local-only fiction.
+
+**Still open:** Nick eye (MANUAL_CHECKLIST V2), hand frog p1 replace after Nick approves script output, prod redeploy.
+
+---
 
 ### CHECKIN-041 — 2026-07-08
 

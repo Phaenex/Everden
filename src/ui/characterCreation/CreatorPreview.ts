@@ -1,5 +1,5 @@
 import type { AbilityDefinition, SpeciesDefinition, WardrobeDefinition } from '@/data/types';
-import { composeCharacterArtCanvas, drawPortraitFit } from '@/presentation/CharacterSprites';
+import { composeCharacterArtCanvas, drawCharacterCanvas, drawPortraitFit } from '@/presentation/CharacterSprites';
 import type { CreatorState } from './types';
 import { BODY_BUILD_LABELS } from '@/gameplay/CharacterAppearance';
 import { patternLabel } from '@/data/SpeciesAppearanceRegistry';
@@ -13,17 +13,9 @@ import { el } from './domUtils';
  */
 let _seq = 0;
 
-function drawPreviewPlaceholder(ctx: CanvasRenderingContext2D, w: number, h: number): void {
-  ctx.fillStyle = '#0c1814';
-  ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = 'rgba(240, 193, 75, 0.22)';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(w * 0.2, h * 0.12, w * 0.6, h * 0.76);
-}
-
 /**
- * Renders the character preview canvas. Shows a neutral placeholder until PNG art
- * composes — never flashes blocky procedural sprites on top of real art.
+ * Renders the character preview canvas. Procedural body is the baseline; composed PNG
+ * art replaces it only when a named NPC sheet is available.
  */
 export function renderCreatorPreview(
   canvas: HTMLCanvasElement,
@@ -34,7 +26,13 @@ export function renderCreatorPreview(
   const seq = ++_seq;
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
-  drawPreviewPlaceholder(ctx, canvas.width, canvas.height);
+  const procedural = drawCharacterCanvas(
+    state.species,
+    state.appearance.variant ?? 0,
+    state.appearance,
+    wardrobe,
+  );
+  drawPortraitFit(ctx, procedural, canvas.width, canvas.height);
 
   void composeCharacterArtCanvas(state.species, state.appearance, wardrobe, 0).then((composed) => {
     if (seq !== _seq || !composed) return;

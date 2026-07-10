@@ -233,17 +233,26 @@ describe('CharacterSprites art fallback', () => {
     expect(canvas.width).toBe(32);
   });
 
+  it('composeCharacterArtCanvas returns null for player bodies (procedural-only reset)', async () => {
+    const player = await composeCharacterArtCanvas('frog', defaultAppearance(), []);
+    expect(player).toBeNull();
+  });
+
   it('composeCharacterArtCanvas pads the canvas when a cloak is equipped (drape needs room; AR-036)', async () => {
     MockImage.nextShouldFail = false;
     const bare = await composeCharacterArtCanvas(
       'frog',
       { ...defaultAppearance(), wardrobe: {} },
       [],
+      0,
+      'test_npc',
     );
     const cloaked = await composeCharacterArtCanvas(
       'frog',
       { ...defaultAppearance(), wardrobe: { cloak: 'basin_cloak' } },
       [{ id: 'basin_cloak', slot: 'cloak', label: 'Basin', species: ['*'], layer: 'procedural' }],
+      0,
+      'test_npc',
     );
     expect(bare).not.toBeNull();
     expect(cloaked).not.toBeNull();
@@ -257,6 +266,8 @@ describe('CharacterSprites art fallback', () => {
       'frog',
       { ...defaultAppearance(), wardrobe: { hat: 'reed_hat' } },
       [{ id: 'reed_hat', slot: 'hat', label: 'Reed', species: ['*'], layer: 'procedural' }],
+      0,
+      'test_npc',
     );
     expect(hatted).not.toBeNull();
     // Hat equip must not pad the canvas (only cloaks do) — hat sits on the body frame.
