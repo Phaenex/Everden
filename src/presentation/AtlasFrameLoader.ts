@@ -20,6 +20,16 @@ export function isMattePixel(r: number, g: number, b: number, a: number): boolea
   return luma > 198 && sat < 32;
 }
 
+/** Key opaque black export backgrounds so white halos can be cleared. */
+export function keyNearBlack(data: Uint8ClampedArray, w: number, h: number, threshold = 48): void {
+  for (let i = 0; i < w * h; i++) {
+    const o = i * 4;
+    if (data[o]! <= threshold && data[o + 1]! <= threshold && data[o + 2]! <= threshold) {
+      data[o + 3] = 0;
+    }
+  }
+}
+
 /** Flood-clear edge-connected matte pixels (white/grey padding around sprites). */
 export function floodClearMatte(data: Uint8ClampedArray, w: number, h: number): void {
   if (w <= 0 || h <= 0) return;
@@ -108,6 +118,7 @@ export function cleanAtlasFrame(raw: HTMLCanvasElement): HTMLCanvasElement {
   const h = raw.height;
   const src = raw.getContext('2d')!;
   const img = src.getImageData(0, 0, w, h);
+  keyNearBlack(img.data, w, h);
   floodClearMatte(img.data, w, h);
   defringeAtlasData(img.data, w, h);
   defringeAtlasData(img.data, w, h);

@@ -13,6 +13,15 @@ export function isMatte(r, g, b, a) {
   return luma > 198 && sat < 32;
 }
 
+export function keyNearBlack(data, w, h, channels = 4, threshold = 48) {
+  for (let i = 0; i < w * h; i++) {
+    const o = i * channels;
+    if (data[o] <= threshold && data[o + 1] <= threshold && data[o + 2] <= threshold) {
+      data[o + 3] = 0;
+    }
+  }
+}
+
 /** Flood-clear edge-connected matte from raw RGBA buffer. */
 export function floodClearMatte(data, w, h, channels = 4) {
   const visited = new Uint8Array(w * h);
@@ -77,6 +86,7 @@ export async function cleanAndTrimPng(inputPng) {
   const img = sharp(inputPng).ensureAlpha();
   const { data, info } = await img.raw().toBuffer({ resolveWithObject: true });
   const { width, height, channels } = info;
+  keyNearBlack(data, width, height, channels);
   floodClearMatte(data, width, height, channels);
   defringe(data, width, height, channels);
   defringe(data, width, height, channels);
