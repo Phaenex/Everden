@@ -1,0 +1,150 @@
+/* Self-contained styles for /atlas-lab.html (deployed without full creator CSS). */
+
+.lab-body {
+  margin: 0;
+  background: #0a1410;
+  color: #f2eee4;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.lab-header {
+  padding: 1rem 1.25rem 0.5rem;
+  border-bottom: 1px solid #6a5848;
+}
+
+.lab-header h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: #f0c14b;
+  font-size: 1.6rem;
+}
+
+.lab-sub {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 0.85rem;
+  color: #c8c4b8;
+}
+
+.lab-nav a {
+  color: #88c8a0;
+  margin-right: 1rem;
+  font-size: 0.85rem;
+}
+
+.select-label {
+  color: #c8c4b8;
+  margin: 0.15rem 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.creator-btn {
+  font-family: inherit;
+  font-size: 0.78rem;
+  padding: 0.4rem 0.65rem;
+  background: #1a2e28;
+  color: #fff8ec;
+  border: 1px solid #6a5848;
+  cursor: pointer;
+}
+
+.creator-btn:hover {
+  border-color: #f0c14b;
+  background: #243a32;
+}
+
+.creator-btn.selected {
+  border-color: #f0c14b;
+  background: #3a2c20;
+}
+
+.character-lab-preview-box {
+  border: 2px solid #f0c14b;
+  background: #101e1a;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.character-lab-preview-box canvas {
+  image-rendering: pixelated;
+  width: 288px;
+  height: 288px;
+}
+
+.character-lab-status {
+  font-size: 0.78rem;
+  color: #d8d4c8;
+  margin: 0.5rem 0 0;
+}
+
+.atlas-lab-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.atlas-lab-body {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) 1fr;
+  gap: 1rem;
+  padding: 1rem 1.25rem 1.5rem;
+  flex: 1;
+}
+
+.atlas-lab-preview-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.atlas-lab-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.atlas-lab-grid-col {
+  overflow-y: auto;
+  max-height: calc(100vh - 8rem);
+}
+
+.atlas-lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.6rem;
+}
+
+.atlas-lab-thumb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  border: 2px solid #4a5848;
+  background: #101e1a;
+  cursor: pointer;
+  color: #f2eee4;
+}
+
+.atlas-lab-thumb canvas {
+  image-rendering: pixelated;
+  max-width: 120px;
+  max-height: 120px;
+  width: auto;
+  height: auto;
+}
+
+.atlas-lab-thumb.selected {
+  border-color: #f0c14b;
+  background: #1a2820;
+}
+
+.atlas-lab-thumb-label {
+  font-size: 0.72rem;
+  color: #a8a498;
+  text-align: center;
+  word-break: break-all;
+}

@@ -1,0 +1,14 @@
+external_assets/**
+apps/**
+assesets/**
+archive/**
+.vite/**
+docs/**
+scripts/**
+server/**
+e2e/**
+playwright-report/**
+test-results/**
+node_modules/**
+**/.godot/**
+**/node_modules/**

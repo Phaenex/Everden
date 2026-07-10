@@ -52,6 +52,15 @@ export default defineConfig({
     },
   },
   plugins: [nickChecklistApi()],
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        nickPlaytest: resolve(__dirname, 'public/nick-playtest.html'),
+        atlasLab: resolve(__dirname, 'atlas-lab.html'),
+      },
+    },
+  },
   test: {
     environment: 'happy-dom',
     include: ['src/**/*.test.ts'],

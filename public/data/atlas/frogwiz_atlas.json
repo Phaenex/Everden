@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "image": "frogwiz_atlas.png",
+    "size": {
+      "w": 482,
+      "h": 370
+    },
+    "cell": {
+      "w": 121,
+      "h": 124
+    },
+    "padding": 2,
+    "columns": 4,
+    "rows": 3,
+    "anchor": "bottom-center",
+    "trimmed": true,
+    "trimTool": "sharp+sprite_key_trim"
+  },
+  "frames": {
+    "idle": {
+      "x": 16,
+      "y": 2,
+      "w": 88,
+      "h": 120,
+      "col": 0,
+      "row": 0
+    },
+    "walk": {
+      "x": 141,
+      "y": 2,
+      "w": 80,
+      "h": 120,
+      "col": 1,
+      "row": 0
+    },
+    "wave": {
+      "x": 263,
+      "y": 2,
+      "w": 78,
+      "h": 120,
+      "col": 2,
+      "row": 0
+    },
+    "cast": {
+      "x": 378,
+      "y": 2,
+      "w": 91,
+      "h": 120,
+      "col": 3,
+      "row": 0
+    },
+    "view_front": {
+      "x": 17,
+      "y": 126,
+      "w": 87,
+      "h": 120,
+      "col": 0,
+      "row": 1
+    },
+    "view_back": {
+      "x": 144,
+      "y": 126,
+      "w": 75,
+      "h": 120,
+      "col": 1,
+      "row": 1
+    },
+    "view_left": {
+      "x": 261,
+      "y": 126,
+      "w": 82,
+      "h": 120,
+      "col": 2,
+      "row": 1
+    },
+    "view_right": {
+      "x": 389,
+      "y": 126,
+      "w": 68,
+      "h": 120,
+      "col": 3,
+      "row": 1
+    },
+    "item_hat": {
+      "x": 2,
+      "y": 250,
+      "w": 117,
+      "h": 120,
+      "col": 0,
+      "row": 2
+    },
+    "item_robe": {
+      "x": 139,
+      "y": 250,
+      "w": 84,
+      "h": 120,
+      "col": 1,
+      "row": 2
+    },
+    "item_wand": {
+      "x": 273,
+      "y": 250,
+      "w": 58,
+      "h": 120,
+      "col": 2,
+      "row": 2
+    },
+    "item_amulet": {
+      "x": 389,
+      "y": 250,
+      "w": 68,
+      "h": 120,
+      "col": 3,
+      "row": 2
+    }
+  },
+  "animations": {
+    "wave": {
+      "loop": true,
+      "keys": [
+        {
+          "frame": "idle",
+          "ms": 140
+        },
+        {
+          "frame": "idle",
+          "ms": 100,
+          "dy": -2
+        },
+        {
+          "frame": "wave",
+          "ms": 180,
+          "blend": 0.35
+        },
+        {
+          "frame": "wave",
+          "ms": 160,
+          "sway": 5,
+          "dy": -2
+        },
+        {
+          "frame": "wave",
+          "ms": 160,
+          "sway": -5,
+          "dy": 0
+        },
+        {
+          "frame": "wave",
+          "ms": 160,
+          "sway": 4,
+          "dy": -1
+        },
+        {
+          "frame": "wave",
+          "ms": 140,
+          "sway": 0,
+          "dy": 0
+        },
+        {
+          "frame": "idle",
+          "ms": 180,
+          "blend": 0.4
+        }
+      ]
+    },
+    "cast": {
+      "loop": true,
+      "keys": [
+        {
+          "frame": "idle",
+          "ms": 180
+        },
+        {
+          "frame": "idle",
+          "ms": 120,
+          "dy": 2
+        },
+        {
+          "frame": "cast",
+          "ms": 220,
+          "blend": 0.4
+        },
+        {
+          "frame": "cast",
+          "ms": 280,
+          "glow": 0.35
+        },
+        {
+          "frame": "cast",
+          "ms": 280,
+          "glow": 0.75
+        },
+        {
+          "frame": "cast",
+          "ms": 280,
+          "glow": 1
+        },
+        {
+          "frame": "cast",
+          "ms": 240,
+          "glow": 0.55
+        },
+        {
+          "frame": "idle",
+          "ms": 200,
+          "blend": 0.35
+        }
+      ]
+    }
+  }
+}
