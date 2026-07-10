@@ -31,14 +31,7 @@ function mountLab(atlas: LoadedAtlas): void {
   h1.textContent = 'Atlas Lab';
   const sub = el('p', 'lab-sub');
   sub.textContent = 'Frogwiz — sharp trim + full wave/cast timelines (rAF)';
-  const nav = el('nav', 'lab-nav');
-  for (const [href, label] of [['/', 'Full game']] as const) {
-    const a = document.createElement('a');
-    a.href = href;
-    a.textContent = label;
-    nav.append(a);
-  }
-  header.append(h1, sub, nav);
+  header.append(h1, sub);
   shell.append(header);
 
   const body = el('div', 'atlas-lab-body');
