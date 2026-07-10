@@ -19,6 +19,7 @@
     "audit:creator:progress": "node scripts/visual-audit-progress.mjs",
     "atlas:trim-frogwiz": "python3 scripts/trim_frogwiz_atlas.py",
     "atlas:rebuild-frogwiz": "node scripts/rebuild_frogwiz_atlas.mjs",
+    "atlas:rebuild-owl": "node scripts/rebuild_atlas.mjs owl assets/source/owl",
     "server:dev": "npm install --prefix server && npm run dev --prefix server",
     "server:build": "npm install --prefix server && npm run build --prefix server",
     "typecheck": "tsc --noEmit",

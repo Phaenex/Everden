@@ -137,6 +137,8 @@ import type { AtlasAnimations } from './AtlasAnimationTimelines';
 
 export type AtlasManifest = {
   meta: {
+    id?: string;
+    label?: string;
     image: string;
     size: { w: number; h: number };
     cell?: { w: number; h: number };

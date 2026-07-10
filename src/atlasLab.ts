@@ -11,13 +11,22 @@ import {
 } from '@/presentation/AtlasSpriteAnimator';
 import { el, button } from '@/ui/characterCreation/domUtils';
 
-const MANIFEST_URL = '/data/atlas/frogwiz_atlas.json';
+const DEMOS = [
+  { id: 'owl', label: 'Owl Folk', manifest: '/data/atlas/owl_atlas.json' },
+  { id: 'frogwiz', label: 'Frogwiz', manifest: '/data/atlas/frogwiz_atlas.json' },
+] as const;
+
 const STATE_FRAMES: AtlasAnimState[] = ['idle', 'walk', 'wave', 'cast'];
 const DIR_FRAMES: AtlasDirection[] = ['front', 'back', 'left', 'right'];
 
-function mountLab(atlas: LoadedAtlas): void {
+type DemoId = (typeof DEMOS)[number]['id'];
+
+function mountLab(atlas: LoadedAtlas, demoId: DemoId): void {
   const root = document.getElementById('atlas-lab-root');
   if (!root) return;
+
+  root.replaceChildren();
+  const demo = DEMOS.find((d) => d.id === demoId)!;
 
   const frameCache = AtlasSpriteAnimator.buildFrameCache(atlas);
   const animator = new AtlasSpriteAnimator(atlas, frameCache);
@@ -30,9 +39,14 @@ function mountLab(atlas: LoadedAtlas): void {
   const h1 = document.createElement('h1');
   h1.textContent = 'Atlas Lab';
   const sub = el('p', 'lab-sub');
-  sub.textContent = 'Frogwiz — sharp trim + full wave/cast timelines (rAF)';
+  sub.textContent = atlas.manifest.meta.label ?? demo.label;
   header.append(h1, sub);
   shell.append(header);
+
+  const pickRow = el('div', 'atlas-lab-btn-row');
+  pickRow.append(el('p', 'select-label', 'Character'));
+  const pickBtns = el('div', 'atlas-lab-btn-row');
+  shell.append(pickRow, pickBtns);
 
   const body = el('div', 'atlas-lab-body');
   const previewCol = el('div', 'atlas-lab-preview-col');
@@ -60,6 +74,9 @@ function mountLab(atlas: LoadedAtlas): void {
   root.append(shell);
 
   const syncSelection = (): void => {
+    pickBtns.querySelectorAll('.creator-btn').forEach((node) => {
+      node.classList.toggle('selected', node.getAttribute('data-demo') === demoId);
+    });
     stateRow.querySelectorAll('.creator-btn').forEach((node) => {
       node.classList.toggle('selected', node.getAttribute('data-state') === animator.animState);
     });
@@ -149,6 +166,16 @@ function mountLab(atlas: LoadedAtlas): void {
     grid.append(thumb);
   }
 
+  for (const d of DEMOS) {
+    const btn = button(d.label, () => {
+      if (d.id === demoId) return;
+      window.location.search = `?demo=${d.id}`;
+    });
+    btn.dataset.demo = d.id;
+    if (d.id === demoId) btn.classList.add('selected');
+    pickBtns.append(btn);
+  }
+
   animator.start(paint);
   paint();
 }
@@ -156,14 +183,19 @@ function mountLab(atlas: LoadedAtlas): void {
 async function main(): Promise<void> {
   const root = document.getElementById('atlas-lab-root');
   if (!root) return;
-  root.textContent = 'Loading frogwiz atlas…';
-  const atlas = await loadAtlas(MANIFEST_URL);
+
+  const params = new URLSearchParams(window.location.search);
+  const demoParam = params.get('demo') as DemoId | null;
+  const demoId: DemoId = DEMOS.some((d) => d.id === demoParam) ? demoParam! : 'owl';
+  const demo = DEMOS.find((d) => d.id === demoId)!;
+
+  root.textContent = `Loading ${demo.label}…`;
+  const atlas = await loadAtlas(demo.manifest);
   if (!atlas) {
-    root.textContent = 'Failed to load frogwiz atlas.';
+    root.textContent = `Failed to load ${demo.label} atlas.`;
     return;
   }
-  root.textContent = '';
-  mountLab(atlas);
+  mountLab(atlas, demoId);
 }
 
 void main();
