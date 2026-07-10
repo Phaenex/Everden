@@ -118,7 +118,7 @@ export function cleanAtlasFrame(raw: HTMLCanvasElement): HTMLCanvasElement {
   const h = raw.height;
   const src = raw.getContext('2d')!;
   const img = src.getImageData(0, 0, w, h);
-  keyNearBlack(img.data, w, h);
+  // Pre-trimmed atlas cells: never keyNearBlack — it deletes pixel-art outlines.
   floodClearMatte(img.data, w, h);
   defringeAtlasData(img.data, w, h);
   defringeAtlasData(img.data, w, h);
@@ -215,7 +215,8 @@ export async function loadAtlas(manifestUrl: string, imageUrl?: string): Promise
 
 /** Crop one named frame from a loaded atlas. Returns null if the frame is missing. */
 export function getFrameCanvas(atlas: LoadedAtlas, frameName: string, clean = true): HTMLCanvasElement | null {
-  if (clean) {
+  const skipClean = atlas.manifest.meta.trimmed === true;
+  if (clean && !skipClean) {
     let cache = cleanedFrameCache.get(atlas);
     if (!cache) {
       cache = new Map();

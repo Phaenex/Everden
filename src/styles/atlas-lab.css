@@ -98,12 +98,21 @@
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
+  position: relative;
+  z-index: 2;
 }
 
 .atlas-lab-btn-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+  position: relative;
+  z-index: 2;
+}
+
+.atlas-lab-btn-row .creator-btn {
+  position: relative;
+  z-index: 2;
 }
 
 .atlas-lab-grid-col {
@@ -131,10 +140,12 @@
 
 .atlas-lab-thumb canvas {
   image-rendering: pixelated;
+  display: block;
   max-width: 120px;
   max-height: 120px;
   width: auto;
   height: auto;
+  pointer-events: none;
 }
 
 .atlas-lab-thumb.selected {

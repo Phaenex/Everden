@@ -59,6 +59,15 @@ function mountLab(atlas: LoadedAtlas): void {
   shell.append(body);
   root.append(shell);
 
+  const syncSelection = (): void => {
+    stateRow.querySelectorAll('.creator-btn').forEach((node) => {
+      node.classList.toggle('selected', node.getAttribute('data-state') === animator.animState);
+    });
+    dirRow.querySelectorAll('.creator-btn').forEach((node) => {
+      node.classList.toggle('selected', node.getAttribute('data-dir') === (animator.direction ?? ''));
+    });
+  };
+
   const paint = (): void => {
     const ctx = previewCanvas.getContext('2d');
     if (!ctx) return;
@@ -72,18 +81,18 @@ function mountLab(atlas: LoadedAtlas): void {
     ]
       .filter(Boolean)
       .join(' · ');
-    stateRow.querySelectorAll('.creator-btn').forEach((node) => {
-      node.classList.toggle('selected', node.getAttribute('data-state') === animator.animState);
-    });
-    dirRow.querySelectorAll('.creator-btn').forEach((node) => {
-      node.classList.toggle('selected', node.getAttribute('data-dir') === (animator.direction ?? ''));
-    });
+    syncSelection();
+  };
+
+  const clearGridSelection = (): void => {
+    grid.querySelectorAll('.atlas-lab-thumb').forEach((n) => n.classList.remove('selected'));
   };
 
   const pickState = (state: AtlasAnimState): void => {
     animator.setState(state);
     if (state !== 'idle') animator.setDirection(null);
-    grid.querySelectorAll('.atlas-lab-thumb').forEach((n) => n.classList.remove('selected'));
+    clearGridSelection();
+    syncSelection();
     paint();
   };
 
@@ -97,13 +106,14 @@ function mountLab(atlas: LoadedAtlas): void {
   const pickDir = (dir: AtlasDirection | null): void => {
     animator.setDirection(dir);
     animator.setState('idle');
-    grid.querySelectorAll('.atlas-lab-thumb').forEach((n) => n.classList.remove('selected'));
+    clearGridSelection();
+    syncSelection();
     paint();
   };
 
-  const noneBtn = button('action', () => pickDir(null));
-  noneBtn.dataset.dir = '';
-  dirRow.append(noneBtn);
+  const sideBtn = button('side', () => pickDir(null));
+  sideBtn.dataset.dir = '';
+  dirRow.append(sideBtn);
   for (const dir of DIR_FRAMES) {
     const btn = button(dir, () => pickDir(dir));
     btn.dataset.dir = dir;
@@ -126,19 +136,15 @@ function mountLab(atlas: LoadedAtlas): void {
     thumb.append(tc, el('span', 'atlas-lab-thumb-label', name));
     thumb.addEventListener('click', () => {
       if (name.startsWith('view_')) {
-        animator.setDirection(name.replace('view_', '') as AtlasDirection);
-        animator.setState('idle');
+        pickDir(name.replace('view_', '') as AtlasDirection);
       } else if (name === 'walk') {
-        animator.setState('walk');
-        animator.setDirection(null);
+        pickState('walk');
       } else if (['idle', 'wave', 'cast'].includes(name)) {
-        animator.setState(name as AtlasAnimState);
-        animator.setDirection(null);
+        pickState(name as AtlasAnimState);
       }
       grid.querySelectorAll('.atlas-lab-thumb').forEach((n) => {
         n.classList.toggle('selected', n.getAttribute('data-frame') === name);
       });
-      paint();
     });
     grid.append(thumb);
   }

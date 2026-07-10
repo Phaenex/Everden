@@ -4,6 +4,7 @@ import {
   floodClearMatte,
   getFrameCanvas,
   isMattePixel,
+  keyNearBlack,
   listFrameNames,
   loadAtlas,
   parseAtlasManifest,
@@ -173,6 +174,16 @@ describe('AtlasFrameLoader', () => {
     expect(data[(2 * 6 + 2) * 4 + 3]).toBe(255);
     const b = trimOpaqueBounds(data, 6, 6, 0);
     expect(b.w).toBeLessThanOrEqual(4);
+  });
+
+  it('keyNearBlack clears export backdrop but would destroy outlines if misused on sprites', () => {
+    const data = new Uint8ClampedArray(4);
+    data[0] = 0;
+    data[1] = 0;
+    data[2] = 0;
+    data[3] = 255;
+    keyNearBlack(data, 1, 1);
+    expect(data[3]).toBe(0);
   });
 
   it('listFrameNames returns manifest keys in order', () => {
